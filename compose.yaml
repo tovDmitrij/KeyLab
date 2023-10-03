@@ -1,0 +1,42 @@
+services:
+  postgres:
+    container_name: keyboard_postgres
+    image: postgres:16.0
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: main
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 6001:5432
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/create.sql:/docker-entrypoint-initdb.d/create.sql
+
+  adminer:
+    container_name: keyboard_adminer
+    image: adminer:4.8.1
+    restart: unless-stopped
+    ports:
+      - 6002:8080
+
+  minio:
+    container_name: keyboard_minio
+    image: minio/minio:edge
+    command: server --console.address ":9001" /data
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: POSTGRES_PASSWORD
+    ports:
+      - 6003:9000
+      - 6004:9001
+
+  api:
+    container_name: keyboard_api_main
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.api.main
+    ports:
+      - 6005:80
