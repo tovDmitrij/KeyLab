@@ -1,7 +1,21 @@
 using api.v1.main.Middlewares;
+using api.v1.main.Services.User;
+
+using db.v1.main.Contexts;
+using db.v1.main.Contexts.Interfaces;
+using db.v1.main.Repositories.Confirm;
+using db.v1.main.Repositories.User;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+using service.v1.configuration;
+using service.v1.email;
+using service.v1.jwt.Service;
+using service.v1.security.Service;
+using service.v1.timestamp;
+using service.v1.validation;
 
 using System.Text;
 
@@ -44,6 +58,34 @@ builder.Services.AddCors(options =>
         name: "PublicPolicy",
         policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(origin => true));
 });
+
+InitServices();
+InitRepositories();
+InitContexts();
+
+void InitServices()
+{
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
+    builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<IJWTService, JWTService>();
+    builder.Services.AddScoped<ISecurityService, SecurityService>();
+    builder.Services.AddScoped<ITimestampService, TimestampService>();
+    builder.Services.AddScoped<IValidationService, ValidationService>();
+}
+
+void InitRepositories()
+{
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IConfirmRepository, ConfirmRepository>();
+}
+
+void InitContexts()
+{
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")));
+    builder.Services.AddScoped<IUserContext, MainContext>();
+    builder.Services.AddScoped<IConfirmContext, MainContext>();
+}
 
 #endregion
 

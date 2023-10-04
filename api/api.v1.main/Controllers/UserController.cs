@@ -36,13 +36,17 @@ namespace api.v1.main.Controllers
         [HttpPost("signIn")]
         public IActionResult SignIn([FromBody] UserSignInDTO body)
         {
-            return Ok("Пользователь был успешно авторизован");
+            var tokens = _users.SignIn(body);
+            SetRefreshTokenIntoCookie(tokens.RefreshToken);
+            return Ok(tokens.AccessToken);
         }
 
         [HttpGet("refresh")]
         public IActionResult UpdateAccessToken()
         {
-            return Ok("new token");
+            var refreshToken = GetRefreshTokenFromCookies();
+            var accessToken = _users.UpdateAccessToken(refreshToken);
+            return Ok(accessToken);
         }
 
 
