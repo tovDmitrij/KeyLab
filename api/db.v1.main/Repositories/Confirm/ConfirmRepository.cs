@@ -11,14 +11,14 @@ namespace db.v1.main.Repositories.Confirm
 
 
 
-        public void InsertEmailCode(string email, int code, double expireDate)
+        public void InsertEmailCode(string email, string code, double expireDate)
         {
             var entity = new EmailConfirmEntity(email, code, expireDate);
             _db.EmailConfirms.Add(entity);
             _db.SaveChanges();
         }
 
-        public bool IsEmailCodeValid(string email, int code, double currentDate) =>
+        public bool IsEmailCodeValid(string email, string code, double currentDate) =>
             _db.EmailConfirms.Any(x => x.Email == email && x.Code == code && x.ExpireDate > currentDate);
     }
 }

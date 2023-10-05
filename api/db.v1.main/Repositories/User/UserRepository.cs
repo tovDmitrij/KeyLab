@@ -18,6 +18,15 @@ namespace db.v1.main.Repositories.User
             _db.SaveChanges();
         }
 
+        public void UpdateRefreshToken(Guid userID, string refreshToken, double expireDate)
+        {
+            var user = _db.Users.FirstOrDefault(user => user.ID == userID)!;
+            user.Token = refreshToken;
+            user.TokenExpireDate = expireDate;
+            _db.Users.Update(user);
+            _db.SaveChanges();
+        }
+
 
 
         public bool IsEmailBusy(string email) =>
@@ -33,5 +42,20 @@ namespace db.v1.main.Repositories.User
 
         public bool IsUserExist(string email, string hashPass) =>
             _db.Users.Any(user => user.Email == email && user.Password == hashPass);
+
+        public bool IsRefreshTokenExpired(Guid userID, string refreshToken, double currentDate) =>
+            _db.Users.Any(user => user.ID == userID && user.Token == refreshToken && user.TokenExpireDate > currentDate);
+
+
+
+        public UserSecurityEntity? GetUserByEmail(string email) =>
+            _db.Users.Where(user => user.Email == email)
+                .Select(user => new UserSecurityEntity(user.ID, user.Salt))
+                    .FirstOrDefault();
+
+        public UserSecurityEntity? GetUserByRefreshToken(string refreshToken) =>
+            _db.Users.Where(user => user.Token == refreshToken)
+                .Select(user => new UserSecurityEntity(user.ID, user.Salt))
+                    .FirstOrDefault();
     }
 }

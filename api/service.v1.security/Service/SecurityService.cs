@@ -9,18 +9,31 @@ namespace service.v1.security.Service
     public sealed class SecurityService : ISecurityService
     {
         private const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        private const int SALT_LENGTH = 10;
         private readonly Random rnd = new();
 
         private readonly ITimestampService _timestamp;
 
         public SecurityService(ITimestampService timestamp) => _timestamp = timestamp;
 
-        public string GenerateSalt()
+        public string GenerateRandomValue()
         {
-            var salt = Enumerable.Repeat(ALPHABET, SALT_LENGTH)
-                .Select(x => x[rnd.Next(x.Length)]).ToString()!;
-            return salt;
+            var size = 32;
+            var data = new byte[4 * size];
+            using (var crypto = RandomNumberGenerator.Create())
+            {
+                crypto.GetBytes(data);
+            }
+
+            var salt = new StringBuilder(size);
+            for (int i = 0; i < size; i++)
+            {
+                var rnd = BitConverter.ToUInt32(data, i * 4);
+                int idx = (int)(rnd % ALPHABET.Length);
+
+                salt.Append(ALPHABET[idx]);
+            }
+
+            return salt.ToString();
         }
 
         public string HashPassword(string salt, string password)
@@ -35,20 +48,11 @@ namespace service.v1.security.Service
             return hashData.ToString();
         }
 
-        public SecurityCodeDTO GenerateSecurityCode()
+        public SecurityCodeDTO GenerateEmailConfirmCode()
         {
-            var min = 100_000;
-            var max = 999_999;
-
-            var code = rnd.Next(min, max);
-            var expireDate = _timestamp.GetUNIXTime(DateTime.UtcNow);
-            return new(code, expireDate);
-        }
-
-        public string GenerateRandomValue(int bytesCount)
-        {
-            var bytes = RandomNumberGenerator.GetBytes(bytesCount);
-            return Convert.ToBase64String(bytes);
+            var code = rnd.Next(100_000, 999_999);
+            var expireDate = _timestamp.GetUNIXTime(DateTime.UtcNow.AddMinutes(5));
+            return new(code.ToString(), expireDate);
         }
     }
 }

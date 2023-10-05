@@ -10,4 +10,8 @@
     <PackageReference Include="MailKit" Version="4.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\service.v1.configuration\service.v1.configuration.csproj" />
+  </ItemGroup>
+
 </Project>

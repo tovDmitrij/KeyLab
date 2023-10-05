@@ -6,7 +6,7 @@ using db.v1.main.Repositories.Confirm;
 using db.v1.main.Repositories.User;
 
 using service.v1.email;
-using service.v1.security.DTOs;
+using service.v1.jwt.Service;
 using service.v1.security.Service;
 using service.v1.timestamp;
 using service.v1.validation;
@@ -22,9 +22,11 @@ namespace api.v1.main.Services.User
         private readonly ISecurityService _security;
         private readonly IEmailService _email;
         private readonly ITimestampService _timestamp;
+        private readonly IJWTService _jwt;
 
         public UserService(IUserRepository users, IConfirmRepository confirms, IValidationService validation, 
-                           ISecurityService security, IEmailService email, ITimestampService timestamp)
+                           ISecurityService security, IEmailService email, ITimestampService timestamp,
+                           IJWTService jwt)
         {
             _users = users;
             _confirms = confirms;
@@ -32,101 +34,84 @@ namespace api.v1.main.Services.User
             _security = security;
             _email = email;
             _timestamp = timestamp;
+            _jwt = jwt;
         }
 
 
         
-        public void ConfirmEmail(string email) 
+        public void ConfirmEmail(UserConfirmDTO body) 
         {
-            ValidateEmail(email);
+            _validation.ValidateEmail(body.Email);
 
-            var securityCode = GenerateSecurityCode();
-            SaveEmailCode(email, securityCode.Value, securityCode.ExpireDate);
-            SendEmail(email, securityCode.Value);
+            if (_users.IsEmailBusy(body.Email))
+            {
+                throw new BadRequestException("Почта уже занята другим пользователем");
+            }
+
+            var securityCode = _security.GenerateEmailConfirmCode();
+            _confirms.InsertEmailCode(body.Email, securityCode.Value, securityCode.ExpireDate);
+
+            var msgText = $"<h3>Код подтверждения почты для регистрации на платформе</h3> " +
+                $"<p>{securityCode.Value}</p> " +
+                $"<p>Код активен в течение 5 минут</p>";
+            _email.SendEmail(body.Email, "Код подтверждения почты", msgText);
         }
         
         public void SignUp(UserSignUpDTO body)
         {
-            ValidateSignUpBody(body);
+            _validation.ValidateEmail(body.Email);
+            _validation.ValidatePassword(body.Password);
+            _validation.ValidateNickname(body.Nickname);
 
-            var currentDate = GetCurrentUNIXTime();
-            ValidateEmailCode(body.email, body.emailCode, currentDate);
-
-            var salt = GenerateSalt();
-            var hashPassword = HashPassword(salt, body.password);
-            SaveUserAccount(body.email, salt, hashPassword, body.nickname);
-        }
-
-
-
-        private void ValidateEmail(string email)
-        {
-            _validation.ValidateEmail(email);
-            ValidateEmailIsBusy(email);
-        }
-        
-        private SecurityCodeDTO GenerateSecurityCode()
-        {
-            var securityCode = _security.GenerateSecurityCode();
-            return securityCode;
-        }
-
-        private void SaveEmailCode(string email, int securityCode, double expireDate)
-        {
-            _confirms.InsertEmailCode(email, securityCode, expireDate);
-        }
-
-        private void SendEmail(string email, int securityCode)
-        {
-            _email.SendEmailAsync(email, "Подтверждение почты", securityCode.ToString());
-        }
-
-        private void ValidateSignUpBody(UserSignUpDTO body)
-        {
-            _validation.ValidateEmail(body.email);
-            _validation.ValidatePassword(body.password);
-            _validation.ValidateNickname(body.nickname);
-
-            ValidateEmailIsBusy(body.email);
-        }
-
-        private double GetCurrentUNIXTime()
-        {
-            var currentDate = _timestamp.GetCurrentUNIXTime();
-            return currentDate;
-        }
-
-        private void ValidateEmailCode(string email, int emailCode, double currentDate)
-        {
-            if (!_confirms.IsEmailCodeValid(email, emailCode, currentDate))
-            {
-                throw new BadRequestException("Код не валидный. Повторите ещё раз");
-            }
-        }
-
-        private string GenerateSalt()
-        {
-            var salt = _security.GenerateSalt();
-            return salt;
-        }
-
-        private string HashPassword(string salt, string password)
-        {
-            var hashPassword = _security.HashPassword(salt, password);
-            return hashPassword;
-        }
-
-        private void SaveUserAccount(string email, string salt, string hashPassword, string nickname)
-        {
-            _users.SignUp(email, salt, hashPassword, nickname);
-        }
-
-        private void ValidateEmailIsBusy(string email)
-        {
-            if (_users.IsEmailBusy(email))
+            if (_users.IsEmailBusy(body.Email))
             {
                 throw new BadRequestException("Почта уже занята другим пользователем");
             }
+
+            var currentDate = _timestamp.GetCurrentUNIXTime();
+            if (!_confirms.IsEmailCodeValid(body.Email, body.EmailCode, currentDate))
+            {
+                throw new BadRequestException("Код подтверждения почты не валидный. Повторите ещё раз");
+            }
+
+            var salt = _security.GenerateRandomValue();
+            var hashPassword = _security.HashPassword(salt, body.Password);
+            _users.SignUp(body.Email, salt, hashPassword, body.Nickname);
+        }
+
+        public JWTTokensDTO SignIn(UserSignInDTO body)
+        {
+            _validation.ValidateEmail(body.Email);
+            _validation.ValidatePassword(body.Password);
+
+            var user = _users.GetUserByEmail(body.Email) ?? throw new BadRequestException("Пользователя с заданной почтой не существует");
+
+            var hashPassword = _security.HashPassword(user.Salt, body.Password);
+            if (!_users.IsUserExist(body.Email, hashPassword))
+            {
+                throw new BadRequestException("Пользователя с заданной почтой и паролем не существует");
+            }
+
+            var accessToken = _jwt.CreateAccessToken(new(user.ID));
+            var refreshToken = _jwt.CreateRefreshToken();
+
+            _users.UpdateRefreshToken(user.ID, refreshToken.Value, refreshToken.ExpireDate);
+
+            return new(accessToken, refreshToken.Value);
+        }
+
+        public string UpdateAccessToken(string refreshToken)
+        {
+            var user = _users.GetUserByRefreshToken(refreshToken) ?? throw new UnauthorizedException("Refresh токен повреждён либо не существует. Пройдите заново процесс авторизации");
+
+            var currentDate = _timestamp.GetCurrentUNIXTime();
+            if (!_users.IsRefreshTokenExpired(user.ID, refreshToken, currentDate))
+            {
+                throw new UnauthorizedException("Refresh токен просрочен. Пройдите заново процесс авторизации");
+            }
+            
+            var accessToken = _jwt.CreateAccessToken(new(user.ID));
+            return accessToken;
         }
     }
 }

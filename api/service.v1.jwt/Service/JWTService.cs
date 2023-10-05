@@ -101,7 +101,7 @@ namespace service.v1.jwt.Service
 
         private string GenerateRandomValue()
         {
-            var rndValue = _security.GenerateRandomValue(64);
+            var rndValue = _security.GenerateRandomValue();
             return rndValue;
         }
 

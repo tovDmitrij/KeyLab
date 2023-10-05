@@ -19,8 +19,15 @@ namespace service.v1.configuration
 
 
         public string GetMinioEndpoint() => _cfg["Minio:Endpoint"]!;
-        public string GetMinioPort() => _cfg["Minio:Port"]!;
+        public int GetMinioPort() => Convert.ToInt32(_cfg["Minio:Port"]);
         public string GetMinioAccessKey() => _cfg["Minio:AccessKey"]!;
         public string GetMinioSecretKey() => _cfg["Minio:SecretKey"]!;
+
+
+
+        public string GetEmailHost() => _cfg["Email:Host"]!;
+        public int GetEmailPort() => Convert.ToInt32(_cfg["Email:Port"]);
+        public string GetEmailLogin() => _cfg["Email:Login"]!;
+        public string GetEmailPassword() => _cfg["Email:Password"]!;
     }
 }
