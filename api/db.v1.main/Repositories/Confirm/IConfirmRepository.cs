@@ -2,7 +2,7 @@
 {
     public interface IConfirmRepository
     {
-        public void InsertEmailCode(string email, int code, double expireDate);
-        public bool IsEmailCodeValid(string email, int code, double currentDate);
+        public void InsertEmailCode(string email, string code, double expireDate);
+        public bool IsEmailCodeValid(string email, string code, double currentDate);
     }
 }

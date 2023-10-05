@@ -6,9 +6,11 @@ namespace service.v1.validation
 {
     public sealed class ValidationService : IValidationService
     {
+        private static Regex rgx;
+
         public void ValidateEmail(string email)
         {
-            string pattern = @"^[\w]+\@[\-\w]+\.[\w]+$";
+            string pattern = @"^[\w-.]+\@[\-\w]+\.[\w]+$";
             string error = "Почта не валидная. Пример: ivanov@mail.ru";
             Validate(email, pattern, error);
         }
@@ -29,7 +31,7 @@ namespace service.v1.validation
 
         private static void Validate(string value, string pattern, string error)
         {
-            var rgx = new Regex(pattern);
+            rgx = new Regex(pattern);
             if (!rgx.IsMatch(value))
             {
                 throw new BadRequestException(error);

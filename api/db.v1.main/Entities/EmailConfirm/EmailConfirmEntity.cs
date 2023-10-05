@@ -14,12 +14,12 @@ namespace db.v1.main.Entities.Confirm
         public string Email { get; set; }
 
         [Column("code")]
-        public int Code { get; set; }
+        public string Code { get; set; }
 
         [Column("expire_date")]
         public double ExpireDate { get; set; }
 
-        public EmailConfirmEntity(long id, string email, int code, double expireDate)
+        public EmailConfirmEntity(long id, string email, string code, double expireDate)
         {
             ID = id;
             Email = email;
@@ -27,7 +27,7 @@ namespace db.v1.main.Entities.Confirm
             ExpireDate = expireDate;
         }
 
-        public EmailConfirmEntity(string email, int code, double expireDate)
+        public EmailConfirmEntity(string email, string code, double expireDate)
         {
             Email = email;
             Code = code;

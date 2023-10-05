@@ -32,21 +32,35 @@ namespace api.v1.main.Middlewares
 
         private static void WriteTXTLogs(Exception e)
         {
-            var currentTime = DateTime.UtcNow;
-            var fileName = currentTime + ".txt";
+            var currentTime = GetCurrentTime();
+            var fileName = $"{currentTime}.txt";
             var path = "/logs/";
             var fullPath = path + fileName;
 
-            var sw = new StreamWriter(fullPath);
+            var streamWriter = new StreamWriter(fullPath);
 
-            sw.WriteLine(e.Message);
-            sw.WriteLine(e.Data);
-            sw.WriteLine(e.Source);
-            sw.WriteLine(e.TargetSite);
-            sw.WriteLine(e.StackTrace);
-            sw.WriteLine(e.InnerException);
+            streamWriter.WriteLine($">>>Message:\n\t{e.Message}\n");
+            streamWriter.WriteLine($">>>Data:\n\t{e.Data}\n");
+            streamWriter.WriteLine($">>>Source:\n\t{e.Source}\n");
+            streamWriter.WriteLine($">>>TargetSite:\n\t{e.TargetSite}\n");
+            streamWriter.WriteLine($">>>StackTrace:\n{e.StackTrace}\n");
 
-            sw.Close();
+            streamWriter.Close();
+        }
+
+        private static string GetCurrentTime()
+        {
+            var utcNow = DateTime.UtcNow;
+
+            var year = utcNow.Year;
+            var month = utcNow.Month.ToString("00");
+            var day = utcNow.Day.ToString("00");
+            var hour = utcNow.Hour.ToString("00");
+            var minute = utcNow.Minute.ToString("00");
+            var second = utcNow.Second.ToString("00");
+
+            var currentTime = $"{year}-{month}-{day}__{hour}-{minute}-{second}";
+            return currentTime;
         }
     }
 }

@@ -13,15 +13,6 @@ COPY api/component.v1.exceptions/*.csproj ./component.v1.exceptions/
 RUN dotnet restore
 
 COPY api/ ./
-#COPY api/api.v1.main/ ./api.v1.main/
-#COPY api/service.v1.validation/ ./service.v1.validation/
-#COPY api/service.v1.timestamp/ ./service.v1.timestamp/
-#COPY api/service.v1.security/ ./service.v1.security/
-#COPY api/service.v1.jwt/ ./service.v1.jwt/
-#COPY api/service.v1.email/ ./service.v1.email/
-#COPY api/service.v1.configuration/ ./service.v1.configuration/
-#COPY api/db.v1.main/ ./db.v1.main/
-#COPY api/component.v1.exceptions/ ./component.v1.exceptions/
 RUN dotnet publish -c Release -o /publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 as runtime

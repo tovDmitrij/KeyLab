@@ -23,15 +23,15 @@ namespace db.v1.main.Entities.Users
         public string Nickname { get; set; }
 
         [Column("token")]
-        public string Token { get; set; }
+        public string? Token { get; set; }
 
         [Column("token_expire_date")]
-        public double TokenExpireDate { get; set; }
+        public double? TokenExpireDate { get; set; }
 
         [Column("registration_date")]
         public double RegistrationDate { get; set; }
 
-        public UserEntity(Guid id, string email, string salt, string password, string nickname, string token, double tokenExpireDate, double registrationDate)
+        public UserEntity(Guid id, string email, string salt, string password, string nickname, string? token, double? tokenExpireDate, double registrationDate)
         {
             ID = id;
             Email = email;

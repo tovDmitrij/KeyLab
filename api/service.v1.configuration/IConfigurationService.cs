@@ -9,8 +9,13 @@
         public string GetJWTAudience();
 
         public string GetMinioEndpoint();
-        public string GetMinioPort();
+        public int GetMinioPort();
         public string GetMinioAccessKey();
         public string GetMinioSecretKey();
+
+        public string GetEmailHost();
+        public int GetEmailPort();
+        public string GetEmailLogin();
+        public string GetEmailPassword();
     }
 }

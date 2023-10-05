@@ -4,9 +4,8 @@ namespace service.v1.security.Service
 {
     public interface ISecurityService
     {
-        public string GenerateSalt();
+        public string GenerateRandomValue();
         public string HashPassword(string salt, string password);
-        public SecurityCodeDTO GenerateSecurityCode();
-        public string GenerateRandomValue(int bytesCount);
+        public SecurityCodeDTO GenerateEmailConfirmCode();
     }
 }

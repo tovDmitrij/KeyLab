@@ -57,6 +57,5 @@ namespace db.v1.main.Repositories.User
             _db.Users.Where(user => user.Token == refreshToken)
                 .Select(user => new UserSecurityEntity(user.ID, user.Salt))
                     .FirstOrDefault();
-
     }
 }

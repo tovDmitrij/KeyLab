@@ -20,9 +20,9 @@ namespace api.v1.main.Controllers
 
 
         [HttpPost("confirm")]        
-        public IActionResult ConfirmEmail([FromBody] string email)
+        public IActionResult ConfirmEmail([FromBody] UserConfirmDTO body)
         {
-            _users.ConfirmEmail(email);
+            _users.ConfirmEmail(body);
             return Ok("Код был успешно отправлен на почту. Ожидайте сообщения");
         }
 
