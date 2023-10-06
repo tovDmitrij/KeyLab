@@ -4,26 +4,22 @@ using System.Text.RegularExpressions;
 
 namespace misc.benchmarks.Benchmarks
 {
-    //https://youtu.be/WosEhlHATOk
     [MemoryDiagnoser]
     public partial class ValidationServiceBenchmark
     {
-        [Params("ivanov@mail.ru", "ivanovmail.ru")]
-        public string Email { get; set; }
-
-
-
+        //https://youtu.be/WosEhlHATOk
+        //Заранее создаём regex, что в разы улучшает производительность (Source generator)
         [GeneratedRegex(@"^[\w-.]+\@[\-\w]+\.[\w]+$")]
         private partial Regex EmailRgx();
 
         private readonly Regex _emailRgx;
 
-        public ValidationServiceBenchmark()
-        {
-            _emailRgx = EmailRgx();
-        }
+        public ValidationServiceBenchmark() => _emailRgx = EmailRgx();
 
 
+
+        [Params("ivanov@mail.ru", "ivanovmail.ru")]
+        public string Email { get; set; }
 
         [Benchmark]
         public void Validate_OLD()

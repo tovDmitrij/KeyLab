@@ -43,12 +43,13 @@ namespace db.v1.main.Entities.Users
             RegistrationDate = registrationDate;
         }
 
-        public UserEntity(string email, string salt, string password, string nickname)
+        public UserEntity(string email, string salt, string password, string nickname, double registrationDate)
         {
             Email = email;
             Salt = salt;
             Password = password;
             Nickname = nickname;
+            RegistrationDate = registrationDate;
         }
 
         public UserEntity() { }

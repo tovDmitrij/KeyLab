@@ -8,7 +8,7 @@ namespace misc.benchmarks.Benchmarks
         private readonly DateTime EPOCH_TIME = DateTime.UnixEpoch;
 
         [Benchmark]
-        public double GetCurrentUNIXTime()
+        public double GetCurrentUNIXTime_OLD()
         {
             var currentUNIXTime = DateTime.UtcNow.Subtract(EPOCH_TIME);
             return currentUNIXTime.TotalSeconds;

@@ -44,6 +44,8 @@ namespace api.v1.main.Middlewares
             streamWriter.WriteLine($">>>Source:\n\t{e.Source}\n");
             streamWriter.WriteLine($">>>TargetSite:\n\t{e.TargetSite}\n");
             streamWriter.WriteLine($">>>StackTrace:\n{e.StackTrace}\n");
+            streamWriter.WriteLine($">>>HelpLink:\n\t{e.HelpLink}\n");
+            streamWriter.WriteLine($">>>HResult:\n\t{e.HResult}\n");
 
             streamWriter.Close();
         }

@@ -52,8 +52,9 @@ namespace api.v1.main.Services.User
             _confirms.InsertEmailCode(body.Email, securityCode.Value, securityCode.ExpireDate);
 
             var msgText = $"<h3>Код подтверждения почты для регистрации на платформе</h3> " +
-                $"<p>{securityCode.Value}</p> " +
-                $"<p>Код активен в течение 5 минут</p>";
+                $"<b>{securityCode.Value}</b> " +
+                $"<p>Код будет активен в течение 5 минут.</p>" +
+                $"<p>Это письмо было создано автоматически. На него отвечать не нужно.</p>";
             _email.SendEmail(body.Email, "Код подтверждения почты", msgText);
         }
         
@@ -76,7 +77,7 @@ namespace api.v1.main.Services.User
 
             var salt = _security.GenerateRandomValue();
             var hashPassword = _security.HashPassword(salt, body.Password);
-            _users.SignUp(body.Email, salt, hashPassword, body.Nickname);
+            _users.SignUp(body.Email, salt, hashPassword, body.Nickname, currentDate);
         }
 
         public JWTTokensDTO SignIn(UserSignInDTO body)
@@ -84,33 +85,34 @@ namespace api.v1.main.Services.User
             _validation.ValidateEmail(body.Email);
             _validation.ValidatePassword(body.Password);
 
-            var user = _users.GetUserByEmail(body.Email) ?? throw new BadRequestException("Пользователя с заданной почтой не существует");
+            var salt = _users.GetUserSaltByEmail(body.Email) ?? throw new BadRequestException("Пользователя с заданной почтой не существует");
+            var usedID = _users.GetUserIDByEmail(body.Email) ?? throw new BadRequestException("Пользователя с заданной почтой не существует");
 
-            var hashPassword = _security.HashPassword(user.Salt, body.Password);
+            var hashPassword = _security.HashPassword(salt, body.Password);
             if (!_users.IsUserExist(body.Email, hashPassword))
             {
                 throw new BadRequestException("Пользователя с заданной почтой и паролем не существует");
             }
 
-            var accessToken = _jwt.CreateAccessToken(new(user.ID));
+            var accessToken = _jwt.CreateAccessToken(usedID);
             var refreshToken = _jwt.CreateRefreshToken();
 
-            _users.UpdateRefreshToken(user.ID, refreshToken.Value, refreshToken.ExpireDate);
+            _users.UpdateRefreshToken(usedID, refreshToken.Value, refreshToken.ExpireDate);
 
             return new(accessToken, refreshToken.Value);
         }
 
         public string UpdateAccessToken(string refreshToken)
         {
-            var user = _users.GetUserByRefreshToken(refreshToken) ?? throw new UnauthorizedException("Refresh токен повреждён либо не существует. Пройдите заново процесс авторизации");
+            var userID = _users.GetUserIDByRefreshToken(refreshToken) ?? throw new UnauthorizedException("Refresh токен повреждён либо не существует. Пройдите заново процесс авторизации");
 
             var currentDate = _timestamp.GetCurrentUNIXTime();
-            if (!_users.IsRefreshTokenExpired(user.ID, refreshToken, currentDate))
+            if (!_users.IsRefreshTokenExpired(userID, refreshToken, currentDate))
             {
                 throw new UnauthorizedException("Refresh токен просрочен. Пройдите заново процесс авторизации");
             }
             
-            var accessToken = _jwt.CreateAccessToken(new(user.ID));
+            var accessToken = _jwt.CreateAccessToken(userID);
             return accessToken;
         }
     }

@@ -11,15 +11,4 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.13.8" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\api.v1.main\api.v1.main.csproj" />
-    <ProjectReference Include="..\db.v1.main\db.v1.main.csproj" />
-    <ProjectReference Include="..\service.v1.configuration\service.v1.configuration.csproj" />
-    <ProjectReference Include="..\service.v1.email\service.v1.email.csproj" />
-    <ProjectReference Include="..\service.v1.jwt\service.v1.jwt.csproj" />
-    <ProjectReference Include="..\service.v1.security\service.v1.security.csproj" />
-    <ProjectReference Include="..\service.v1.timestamp\service.v1.timestamp.csproj" />
-    <ProjectReference Include="..\service.v1.validation\service.v1.validation.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -6,7 +6,7 @@ namespace service.v1.validation
 {
     public sealed partial class ValidationService : IValidationService
     {
-        [GeneratedRegex(@"^[\w-.]+\@[\-\w]+\.[\w]+$")]
+        [GeneratedRegex(@"^[\w\-\.]+\@[\-\w]+\.[\w]+$")]
         private partial Regex EmailRgx();
 
         [GeneratedRegex(@"^[\w]{8,}$")]
@@ -23,7 +23,7 @@ namespace service.v1.validation
         {
             _emailRgx = EmailRgx();
             _passwordRgx = PasswordRgx();
-            _nicknameRgx = PasswordRgx();
+            _nicknameRgx = NicknameRgx();
         }
 
         public void ValidateEmail(string email)

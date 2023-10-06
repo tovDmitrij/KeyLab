@@ -1,10 +1,8 @@
-﻿using db.v1.main.Entities.Users;
-
-namespace db.v1.main.Repositories.User
+﻿namespace db.v1.main.Repositories.User
 {
     public interface IUserRepository
     {
-        public void SignUp(string email, string salt, string hashPass, string nickname);
+        public void SignUp(string email, string salt, string hashPass, string nickname, double registrationDate);
         public void UpdateRefreshToken(Guid userID, string refreshToken, double expireDate);
 
         public bool IsEmailBusy(string email);
@@ -15,7 +13,9 @@ namespace db.v1.main.Repositories.User
 
         public bool IsRefreshTokenExpired(Guid userID, string refreshToken, double currentDate);
 
-        public UserSecurityEntity? GetUserByEmail(string email);
-        public UserSecurityEntity? GetUserByRefreshToken(string refreshToken);
+        public string? GetUserSaltByEmail(string email);
+
+        public Guid? GetUserIDByEmail(string email);
+        public Guid? GetUserIDByRefreshToken(string refreshToken);
     }
 }
