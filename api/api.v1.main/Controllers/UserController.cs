@@ -41,12 +41,12 @@ namespace api.v1.main.Controllers
             return Ok(tokens.AccessToken);
         }
 
-        [HttpGet("refresh")]
+        [HttpPut("refresh")]
         public IActionResult UpdateAccessToken()
         {
             var refreshToken = GetRefreshTokenFromCookies();
-            var accessToken = _users.UpdateAccessToken(refreshToken);
-            return Ok(accessToken);
+            var AccessToken = _users.UpdateAccessToken(refreshToken);
+            return Ok(AccessToken);
         }
 
 

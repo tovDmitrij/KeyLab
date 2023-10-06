@@ -11,9 +11,9 @@ namespace db.v1.main.Repositories.User
 
 
 
-        public void SignUp(string email, string salt, string hashPass, string nickname)
+        public void SignUp(string email, string salt, string hashPass, string nickname, double registrationDate)
         {
-            var user = new UserEntity(email, salt, hashPass, nickname);
+            var user = new UserEntity(email, salt, hashPass, nickname, registrationDate);
             _db.Users.Add(user);
             _db.SaveChanges();
         }
@@ -48,14 +48,21 @@ namespace db.v1.main.Repositories.User
 
 
 
-        public UserSecurityEntity? GetUserByEmail(string email) =>
+        public string? GetUserSaltByEmail(string email) =>
             _db.Users.Where(user => user.Email == email)
-                .Select(user => new UserSecurityEntity(user.ID, user.Salt))
+                .Select(user => user.Salt)
                     .FirstOrDefault();
 
-        public UserSecurityEntity? GetUserByRefreshToken(string refreshToken) =>
+
+
+        public Guid? GetUserIDByEmail(string email) =>
+            _db.Users.Where(user => user.Email == email)
+                .Select(user => user.ID)
+                    .FirstOrDefault();
+
+        public Guid? GetUserIDByRefreshToken(string refreshToken) =>
             _db.Users.Where(user => user.Token == refreshToken)
-                .Select(user => new UserSecurityEntity(user.ID, user.Salt))
+                .Select(user => user.ID)
                     .FirstOrDefault();
     }
 }

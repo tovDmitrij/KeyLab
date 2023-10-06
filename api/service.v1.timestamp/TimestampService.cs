@@ -15,5 +15,11 @@
             var currentUNIXTime = DateTime.UtcNow.Subtract(EPOCH_TIME);
             return currentUNIXTime.TotalSeconds;
         }
+
+        public DateTime GetDateTimeWithAddedSeconds(double seconds)
+        {
+            var dateTime = DateTime.UtcNow.AddSeconds(seconds);
+            return dateTime;
+        }
     }
 }
