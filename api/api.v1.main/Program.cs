@@ -1,4 +1,5 @@
 using api.v1.main.Middlewares;
+using api.v1.main.Services.Confirm;
 using api.v1.main.Services.User;
 
 using db.v1.main.Contexts;
@@ -81,6 +82,7 @@ void InitServices()
     builder.Services.AddScoped<ITimestampService, TimestampService>();
     builder.Services.AddScoped<IValidationService, ValidationService>();
     builder.Services.AddScoped<IMinioService, MinioService>();
+    builder.Services.AddScoped<IConfirmService, ConfirmService>();
 }
 
 void InitRepositories()
