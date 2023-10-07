@@ -11,9 +11,9 @@ namespace service.v1.security.Service
         private const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         private readonly Random rnd = new();
 
-        private readonly ITimestampService _timestamp;
+        private readonly ITimestampService _timestampService;
 
-        public SecurityService(ITimestampService timestamp) => _timestamp = timestamp;
+        public SecurityService(ITimestampService timestampService) => _timestampService = timestampService;
 
         public string GenerateRandomValue()
         {
@@ -51,7 +51,7 @@ namespace service.v1.security.Service
         public SecurityCodeDTO GenerateEmailConfirmCode()
         {
             var code = rnd.Next(100_000, 999_999);
-            var expireDate = _timestamp.GetUNIXTime(DateTime.UtcNow.AddMinutes(5));
+            var expireDate = _timestampService.GetUNIXTime(DateTime.UtcNow.AddMinutes(5));
             return new(code.ToString(), expireDate);
         }
     }

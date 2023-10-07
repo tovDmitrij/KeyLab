@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using service.v1.configuration;
 using service.v1.email;
 using service.v1.jwt.Service;
+using service.v1.minio;
 using service.v1.security.Service;
 using service.v1.timestamp;
 using service.v1.validation;
@@ -29,25 +30,32 @@ var cfg = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
+builder.Services.AddHealthChecks();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAntiforgery(options =>
+{
+    options.FormFieldName = "KeyboardAntiforgery";
+    options.HeaderName = "X-CSRF-TOKEN-KEYBOARD";
+    options.SuppressXFrameOptionsHeader = false;
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidIssuer = cfg["JWT:Issuer"],
-            ValidateIssuer = true,
+        ValidIssuer = cfg["JWT:Issuer"],
+        ValidateIssuer = true,
 
-            ValidAudience = cfg["JWT:Audience"],
-            ValidateAudience = true,
+        ValidAudience = cfg["JWT:Audience"],
+        ValidateAudience = true,
 
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(cfg["JWT:SecretKey"]!)),
-            ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(cfg["JWT:SecretKey"]!)),
+        ValidateIssuerSigningKey = true,
 
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 builder.Services.AddCors(options =>
 {
@@ -72,6 +80,7 @@ void InitServices()
     builder.Services.AddScoped<ISecurityService, SecurityService>();
     builder.Services.AddScoped<ITimestampService, TimestampService>();
     builder.Services.AddScoped<IValidationService, ValidationService>();
+    builder.Services.AddScoped<IMinioService, MinioService>();
 }
 
 void InitRepositories()
@@ -99,6 +108,7 @@ app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
+app.MapHealthChecks("/health");
 app.MapControllers();
 app.Run();
 

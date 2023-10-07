@@ -7,27 +7,27 @@ using service.v1.configuration;
 
 namespace service.v1.email
 {
-    public sealed class EmailService : IEmailService
+    public sealed class EmailService : IEmailService, IDisposable
     {
-        private readonly SmtpClient _smpt;
+        private readonly ISmtpClient _smptClient;
         private readonly MailboxAddress _admin;
-        private readonly IConfigurationService _cfg;
 
         public EmailService(IConfigurationService cfg)
         {
-            _cfg = cfg;
-            _smpt = new SmtpClient();
+            _smptClient = new SmtpClient();
 
-            var host = _cfg.GetEmailHost();
-            var port = _cfg.GetEmailPort();
-            _smpt.Connect(host, port, SecureSocketOptions.StartTls);
+            var host = cfg.GetEmailHost();
+            var port = cfg.GetEmailPort();
+            _smptClient.Connect(host, port, SecureSocketOptions.StartTls);
 
-            var login = _cfg.GetEmailLogin();
-            var password = _cfg.GetEmailPassword();
-            _smpt.Authenticate(login, password);
+            var login = cfg.GetEmailLogin();
+            var password = cfg.GetEmailPassword();
+            _smptClient.Authenticate(login, password);
 
             _admin = new MailboxAddress("Keyboard administration", login);
         }
+
+        
 
         public async Task SendEmail(string emailTo, string msgTitle, string msgText)
         {
@@ -40,7 +40,15 @@ namespace service.v1.email
                 Text = msgText
             };
 
-            await _smpt.SendAsync(msg);
+            await _smptClient.SendAsync(msg);
+        }
+
+
+
+        public void Dispose()
+        {
+            _smptClient.Disconnect(true);
+            _smptClient.Dispose();
         }
     }
 }

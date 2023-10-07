@@ -37,6 +37,9 @@ services:
   api:
     container_name: keyboard_api
     restart: unless-stopped
+    depends_on:
+      - minio
+      - postgres
     build:
       context: .
       dockerfile: Dockerfile.api
@@ -44,3 +47,4 @@ services:
       - 6005:80
     volumes:
       - ./api/logs:/logs
+      - ./minio/data:/data

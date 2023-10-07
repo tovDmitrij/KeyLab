@@ -13,32 +13,33 @@ namespace service.v1.jwt.Service
 {
     public sealed class JWTService : IJWTService
     {
-        private readonly IConfigurationService _cfg;
-        private readonly ITimestampService _timestamp;
-        private readonly ISecurityService _security;
+        private readonly IConfigurationService _configService;
+        private readonly ITimestampService _timestampService;
+        private readonly ISecurityService _securityService;
 
-        public JWTService(IConfigurationService cfg, ITimestampService timestamp, ISecurityService security)
+        public JWTService(IConfigurationService configService, ITimestampService timestampService, 
+                          ISecurityService securityService)
         {
-            _cfg = cfg;
-            _timestamp = timestamp;
-            _security = security;
+            _configService = configService;
+            _timestampService = timestampService;
+            _securityService = securityService;
         }
 
 
 
         public string CreateAccessToken(Guid userID)
         {
-            var secretKey = _cfg.GetJWTSecretKey();
+            var secretKey = _configService.GetJWTSecretKey();
             var secretKeyViaBytes = Encoding.UTF8.GetBytes(secretKey);
 
             var claimsList = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Name, userID.ToString()),
-                new(JwtRegisteredClaimNames.Iss, _cfg.GetJWTIssuer()),
-                new(JwtRegisteredClaimNames.Aud, _cfg.GetJWTAudience())
+                new(JwtRegisteredClaimNames.Iss, _configService.GetJWTIssuer()),
+                new(JwtRegisteredClaimNames.Aud, _configService.GetJWTAudience())
             };
 
-            var expireDate = _timestamp.GetDateTimeWithAddedSeconds(_cfg.GetJWTAccessExpireDate());
+            var expireDate = _timestampService.GetDateTimeWithAddedSeconds(_configService.GetJWTAccessExpireDate());
 
             var credentials = new SigningCredentials(
                 new SymmetricSecurityKey(secretKeyViaBytes),
@@ -55,9 +56,9 @@ namespace service.v1.jwt.Service
 
         public RefreshTokenDTO CreateRefreshToken()
         {
-            var randomValue = _security.GenerateRandomValue();
-            var creationDate = _timestamp.GetUNIXTime(DateTime.UtcNow);
-            var expireDate = creationDate + _cfg.GetJWTRefreshExpireDate();
+            var randomValue = _securityService.GenerateRandomValue();
+            var creationDate = _timestampService.GetUNIXTime(DateTime.UtcNow);
+            var expireDate = creationDate + _configService.GetJWTRefreshExpireDate();
 
             var refreshToken = new RefreshTokenDTO(randomValue, creationDate, expireDate);
             return refreshToken;
