@@ -38,8 +38,8 @@ namespace api.v1.main.Controllers
         public IActionResult UpdateAccessToken()
         {
             var refreshToken = GetRefreshTokenFromCookies();
-            var AccessToken = _userService.UpdateAccessToken(refreshToken);
-            return Ok(AccessToken);
+            var accessToken = _userService.UpdateAccessToken(refreshToken);
+            return Ok(accessToken);
         }
 
 

@@ -21,6 +21,7 @@ namespace api.v1.main.Controllers
         [HttpPost("push")]
         public IActionResult PushFile([FromBody] FilePushDTO body)
         {
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
             //body.File.ContentType = "application/json";
             var userID = GetUserIDFromAccessToken();
             //_minioService.PushFile(userID, )
