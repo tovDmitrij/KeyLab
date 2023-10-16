@@ -8,6 +8,7 @@ COPY api/service.v1.security/*.csproj ./service.v1.security/
 COPY api/service.v1.jwt/*.csproj ./service.v1.jwt/
 COPY api/service.v1.email/*.csproj ./service.v1.email/
 COPY api/service.v1.configuration/*.csproj ./service.v1.configuration/
+COPY api/service.v1.minio/*.csproj ./service.v1.minio/
 COPY api/db.v1.main/*.csproj ./db.v1.main/
 COPY api/component.v1.exceptions/*.csproj ./component.v1.exceptions/
 COPY api/misc.unit-tests/*.csproj ./misc.unit-tests/

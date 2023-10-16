@@ -20,43 +20,21 @@ namespace api.v1.main.Services.User
 
         private readonly IValidationService _validation;
         private readonly ISecurityService _security;
-        private readonly IEmailService _email;
         private readonly ITimestampService _timestamp;
         private readonly IJWTService _jwt;
 
-        public UserService(IUserRepository users, IConfirmRepository confirms, IValidationService validation, 
-                           ISecurityService security, IEmailService email, ITimestampService timestamp,
-                           IJWTService jwt)
+        public UserService(IUserRepository users, IConfirmRepository confirms, IValidationService validations, 
+                           ISecurityService security, ITimestampService timestamp, IJWTService jwt)
         {
             _users = users;
             _confirms = confirms;
-            _validation = validation;
+            _validation = validations;
             _security = security;
-            _email = email;
             _timestamp = timestamp;
             _jwt = jwt;
         }
 
 
-        
-        public void ConfirmEmail(UserConfirmDTO body) 
-        {
-            _validation.ValidateEmail(body.Email);
-
-            if (_users.IsEmailBusy(body.Email))
-            {
-                throw new BadRequestException("Почта уже занята другим пользователем");
-            }
-
-            var securityCode = _security.GenerateEmailConfirmCode();
-            _confirms.InsertEmailCode(body.Email, securityCode.Value, securityCode.ExpireDate);
-
-            var msgText = $"<h3>Код подтверждения почты для регистрации на платформе</h3> " +
-                $"<b>{securityCode.Value}</b> " +
-                $"<p>Код будет активен в течение 5 минут.</p>" +
-                $"<p>Это письмо было создано автоматически. На него отвечать не нужно.</p>";
-            _email.SendEmail(body.Email, "Код подтверждения почты", msgText);
-        }
         
         public void SignUp(UserSignUpDTO body)
         {

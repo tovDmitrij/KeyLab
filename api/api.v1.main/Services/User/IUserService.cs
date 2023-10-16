@@ -4,7 +4,6 @@ namespace api.v1.main.Services.User
 {
     public interface IUserService
     {
-        public void ConfirmEmail(UserConfirmDTO body);
         public void SignUp(UserSignUpDTO body);
         public JWTTokensDTO SignIn(UserSignInDTO body);
         public string UpdateAccessToken(string refreshToken);

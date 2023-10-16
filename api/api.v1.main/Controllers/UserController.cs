@@ -13,30 +13,23 @@ namespace api.v1.main.Controllers
     [Route("api/v1/users")]
     public sealed class UserController : ControllerBase
     {
-        private readonly IUserService _users;
+        private readonly IUserService _userService;
 
-        public UserController(IUserService users) => _users = users;
+        public UserController(IUserService userService) => _userService = userService;
 
 
-
-        [HttpPost("confirm")]        
-        public IActionResult ConfirmEmail([FromBody] UserConfirmDTO body)
-        {
-            _users.ConfirmEmail(body);
-            return Ok("Код был успешно отправлен на почту. Ожидайте сообщения");
-        }
 
         [HttpPost("signUp")]
         public IActionResult SignUp([FromBody] UserSignUpDTO body)
         {
-            _users.SignUp(body);
+            _userService.SignUp(body);
             return Ok("Пользователь был успешно зарегистрирован");
         }
 
         [HttpPost("signIn")]
         public IActionResult SignIn([FromBody] UserSignInDTO body)
         {
-            var tokens = _users.SignIn(body);
+            var tokens = _userService.SignIn(body);
             SetRefreshTokenIntoCookie(tokens.RefreshToken);
             return Ok(tokens.AccessToken);
         }
@@ -45,8 +38,8 @@ namespace api.v1.main.Controllers
         public IActionResult UpdateAccessToken()
         {
             var refreshToken = GetRefreshTokenFromCookies();
-            var AccessToken = _users.UpdateAccessToken(refreshToken);
-            return Ok(AccessToken);
+            var accessToken = _userService.UpdateAccessToken(refreshToken);
+            return Ok(accessToken);
         }
 
 
