@@ -47,4 +47,4 @@ services:
       - 6005:80
     volumes:
       - ./api/logs:/logs
-      - ./minio/data:/data
+      - ./minio/data:/minio/data

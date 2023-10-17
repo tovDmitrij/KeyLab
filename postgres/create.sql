@@ -42,6 +42,7 @@ create index on boxes(id);
 create table if not exists base_types(
     id integer primary key,
     title text not null,
+    slots integer not null,
     tag text not null,
     description text not null
 );
@@ -60,7 +61,7 @@ create table if not exists bases(
     owner_id uuid not null references users(id),
     type_id integer not null references base_types(id),
     title text not null,
-    link text not null
+    model_link text not null
 );
 create index on bases(id);
 create index on bases(owner_id);
@@ -93,6 +94,7 @@ create index on sets(owner_id);
 
 create table if not exists switch_types(
     id integer primary key,
+    box_id integer not null references boxes(id),
     title text not null,
     tag text not null,
     description text not null
@@ -104,7 +106,8 @@ create table if not exists switches(
     id uuid default uuid_generate_v4() primary key,
     type_id integer not null references switch_types(id),
     title text not null,
-    link text not null
+    model_link text not null,
+    sound_link text not null
 );
 create index on switches(id);
 
@@ -112,6 +115,7 @@ create table if not exists keyboard_switches(
     id serial primary key,
     keyboard_id uuid not null references keyboards(id),
     switch_id uuid not null references keyboards(id),
+    position integer not null,
     date numeric not null
 );
 create index on keyboard_switches(id);
@@ -121,6 +125,7 @@ create index on keyboard_switches(keyboard_id);
 
 create table if not exists keycap_types(
     id integer primary key,
+    box_id integer not null references boxes(id),
     title text not null,
     tag text not null,
     description text not null
@@ -128,18 +133,11 @@ create table if not exists keycap_types(
 create index on keycap_types(id);
 create index on keycap_types(tag);
 
-create table if not exists keycap_boxes(
-    keycap_type_id integer not null references keycap_types(id),
-    box_id integer not null references boxes(id)
-);
-create index on keycap_boxes(keycap_type_id);
-create index on keycap_boxes(box_id);
-
 create table if not exists keycaps(
     id uuid default uuid_generate_v4() primary key,
     type_id integer not null references keycap_types(id),
     title text not null,
-    link text not null
+    model_link text not null
 );
 create index on keycaps(id);
 
@@ -147,6 +145,7 @@ create table if not exists keyboard_keycaps(
     id serial primary key,
     keyboard_id uuid not null references keyboards(id),
     keycap_id uuid not null references keycaps(id),
+    position integer not null,
     date numeric not null
 );
 create index on keyboard_keycaps(id);
@@ -160,3 +159,19 @@ create table if not exists keycap_sets(
 );
 create index on keycap_sets(id);
 create index on keycap_sets(set_id);
+
+
+
+create or replace procedure generate_rnd_values() as
+    $$ begin
+        for r in 1..1000000 loop
+            insert into users(email, salt, password, nickname, registration_date) 
+            values( 
+                md5(random()::text) || '@' || md5(random()::text) || '.' || md5(random()::text), 
+                md5(random()::text), 
+                md5(random()::text), 
+                md5(random()::text), 
+                trunc(random()*10 * 2 + 10)
+            );
+        end loop;
+    end; $$ language plpgsql;

@@ -1,3 +1,3 @@
 postgres here
 
-![Keyboard_db](https://github.com/tovDmitrij/keyboards/assets/86602542/89b30b2b-8c32-4058-9636-1e7de8c123d3)
+![Keyboard_db](https://github.com/tovDmitrij/java_Bednyakova/assets/86602542/4f18d9cf-d1b2-4fe8-ac77-bb93b96100e5)
