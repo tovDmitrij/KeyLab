@@ -39,7 +39,7 @@ namespace api.v1.main.Controllers
         {
             var refreshToken = GetRefreshTokenFromCookies();
             var accessToken = _userService.UpdateAccessToken(refreshToken);
-            return Ok(accessToken);
+            return Ok(new { AccessToken = accessToken });
         }
 
 

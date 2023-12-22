@@ -93,7 +93,7 @@ void InitRepositories()
 
 void InitContexts()
 {
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Singleton);
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main_local")), ServiceLifetime.Singleton);
     builder.Services.AddSingleton<IUserContext, MainContext>();
     builder.Services.AddSingleton<IConfirmContext, MainContext>();
 }

@@ -26,28 +26,40 @@ namespace api.v1.main.Middlewares
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await context.Response.WriteAsJsonAsync("Произошла непредвиденная ошибка. Повторите позже");
 
-                WriteTXTLogs(e);
+                WriteTXTLogs(e, context.Request);
             }
         }
 
-        private static void WriteTXTLogs(Exception e)
+        private static void WriteTXTLogs(Exception e, HttpRequest r)
         {
             var currentTime = GetCurrentTime();
             var fileName = $"{currentTime}.txt";
             var path = "/logs/";
             var fullPath = path + fileName;
 
-            var streamWriter = new StreamWriter(fullPath);
+            var sw = new StreamWriter(fullPath);
 
-            streamWriter.WriteLine($">>>Message:\n\t{e.Message}\n");
-            streamWriter.WriteLine($">>>Data:\n\t{e.Data}\n");
-            streamWriter.WriteLine($">>>Source:\n\t{e.Source}\n");
-            streamWriter.WriteLine($">>>TargetSite:\n\t{e.TargetSite}\n");
-            streamWriter.WriteLine($">>>StackTrace:\n{e.StackTrace}\n");
-            streamWriter.WriteLine($">>>HelpLink:\n\t{e.HelpLink}\n");
-            streamWriter.WriteLine($">>>HResult:\n\t{e.HResult}\n");
+            sw.WriteLine(GetStreamWriterMsg("Path", r.Path.Value));
+            sw.WriteLine(GetStreamWriterMsg("Method", r.Method));
 
-            streamWriter.Close();
+            using (var reader = new StreamReader(r.Body))
+            {
+                string body = reader.ReadToEnd();
+                sw.WriteLine(GetStreamWriterMsg("Body", body));
+            }
+
+            sw.WriteLine(GetStreamWriterMsg("Message", e.Message));
+            sw.WriteLine(GetStreamWriterMsg("Source", e.Source));
+            sw.WriteLine(GetStreamWriterMsg("TargetSite", e.TargetSite.ToString()));
+            sw.WriteLine(GetStreamWriterMsg("StackTrace", e.StackTrace));
+
+            sw.Close();
+        }
+
+        private static string GetStreamWriterMsg(string key, string value)
+        {
+            string msg = $">>>{key}:\n\t{value}\n";
+            return msg;
         }
 
         private static string GetCurrentTime()
