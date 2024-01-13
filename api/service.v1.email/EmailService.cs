@@ -7,7 +7,7 @@ using service.v1.configuration;
 
 namespace service.v1.email
 {
-    public sealed class EmailService : IEmailService, IDisposable
+    public sealed class EmailService : IEmailService
     {
         private readonly ISmtpClient _smptClient;
         private readonly MailboxAddress _admin;
@@ -41,14 +41,6 @@ namespace service.v1.email
             };
 
             await _smptClient.SendAsync(msg);
-        }
-
-
-
-        public void Dispose()
-        {
-            _smptClient.Disconnect(true);
-            _smptClient.Dispose();
         }
     }
 }
