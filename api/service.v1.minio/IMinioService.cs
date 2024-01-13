@@ -4,7 +4,7 @@ namespace service.v1.minio
 {
     public interface IMinioService
     {
-        public void PushFile(string userID, IFormFile file, string fileType);
+        public void PushFile(string userID, IFormFile file);
 
         public Task<byte[]> GetFile(string userID, string fileTitle);
     }

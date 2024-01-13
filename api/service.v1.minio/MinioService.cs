@@ -13,23 +13,22 @@ namespace service.v1.minio
         public MinioService(IConfigurationService cfg)
         {
             var endpoint = cfg.GetMinioEndpoint();
-            var port = cfg.GetMinioPort();
             var accessKey = cfg.GetMinioAccessKey();
             var secretKey = cfg.GetMinioSecretKey();
 
             _minio = new MinioClient()
-                .WithEndpoint(endpoint, port)
+                .WithEndpoint(endpoint)
                 .WithCredentials(accessKey, secretKey)
                 .Build();
         }
 
 
 
-        public void PushFile(string userID, IFormFile file, string fileType)
+        public void PushFile(string userID, IFormFile file)
         {
             InitBucket(userID);
 
-            UploadFileIntoBucket(userID, file, fileType);
+            UploadFileIntoBucket(userID, file);
         }
 
         public async Task<byte[]> GetFile(string userID, string fileTitle)
@@ -65,10 +64,12 @@ namespace service.v1.minio
             }
         }
 
-        private async void UploadFileIntoBucket(string bucketName, IFormFile file, string fileType)
+        private async void UploadFileIntoBucket(string bucketName, IFormFile file)
         {
-            var contentType = $"application/{fileType}";
+            var contentType = file.ContentType;
+            var fileType = contentType.Split('/')[1];
             var fileName = $"{Guid.NewGuid()}.{fileType}";
+            var fileSize = file.Length;
 
             var stream = new MemoryStream();
             file.CopyTo(stream);
@@ -76,6 +77,7 @@ namespace service.v1.minio
             var putObjectArgs = new PutObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(fileName)
+                .WithObjectSize(fileSize)
                 .WithStreamData(stream)
                 .WithContentType(contentType);
 

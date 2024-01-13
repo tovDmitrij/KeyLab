@@ -1,7 +1,8 @@
+drop procedure if exists generate_rnd_values;
+
 drop table if exists keycap_sets;
 drop table if exists keyboard_keycaps;
 drop table if exists keycaps;
-drop table if exists keycap_boxes;
 drop table if exists keycap_types;
 drop table if exists keyboard_switches;
 drop table if exists switches;
