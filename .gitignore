@@ -2,6 +2,7 @@ postgres/data
 postgres/scripts
 minio/data
 .vs
+.github
 logs
 
 

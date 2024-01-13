@@ -47,6 +47,11 @@ namespace api.v1.main.Services.User
                 throw new BadRequestException("Почта уже занята другим пользователем");
             }
 
+            if (body.Password != body.RepeatedPassword)
+            {
+                throw new BadRequestException("Пароли не совпадают");
+            }
+
             var currentDate = _timestamp.GetCurrentUNIXTime();
             if (!_confirms.IsEmailCodeValid(body.Email, body.EmailCode, currentDate))
             {
