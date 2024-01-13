@@ -4,6 +4,6 @@
     {
         public double GetUNIXTime(DateTime dateTime);
         public double GetCurrentUNIXTime();
-        public DateTime GetDateTimeWithAddedSeconds(double seconds);
+        public DateTime GetCurrentDateTimeWithAddedSeconds(double seconds);
     }
 }

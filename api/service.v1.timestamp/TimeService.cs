@@ -2,21 +2,22 @@
 {
     public sealed class TimeService : ITimeService
     {
-        private readonly DateTime EPOCH_TIME = DateTime.UnixEpoch;
+        private readonly DateTime _epoch = DateTime.UnixEpoch;
 
         public double GetUNIXTime(DateTime dateTime)
         {
-            var UNIXTime = dateTime.Subtract(EPOCH_TIME);
+            dateTime = dateTime.ToUniversalTime();
+            var UNIXTime = dateTime.Subtract(_epoch);
             return UNIXTime.TotalSeconds;
         }
 
         public double GetCurrentUNIXTime()
         {
-            var currentUNIXTime = DateTime.UtcNow.Subtract(EPOCH_TIME);
+            var currentUNIXTime = DateTime.UtcNow.Subtract(_epoch);
             return currentUNIXTime.TotalSeconds;
         }
 
-        public DateTime GetDateTimeWithAddedSeconds(double seconds)
+        public DateTime GetCurrentDateTimeWithAddedSeconds(double seconds)
         {
             var dateTime = DateTime.UtcNow.AddSeconds(seconds);
             return dateTime;

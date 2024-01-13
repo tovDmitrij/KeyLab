@@ -37,7 +37,7 @@ namespace service.v1.jwt.Service
                 new(JwtRegisteredClaimNames.Aud, _cfg.GetJWTAudience())
             };
 
-            var expireDate = _time.GetDateTimeWithAddedSeconds(_cfg.GetJWTAccessExpireDate());
+            var expireDate = _time.GetCurrentDateTimeWithAddedSeconds(_cfg.GetJWTAccessExpireDate());
 
             var credentials = new SigningCredentials(
                 new SymmetricSecurityKey(secretKeyViaBytes),
