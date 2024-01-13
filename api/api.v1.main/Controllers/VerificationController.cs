@@ -8,19 +8,19 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [AllowAnonymous]
-    [Route("api/v1/confirms")]
-    public sealed class ConfirmController : ControllerBase
+    [Route("api/v1/verifications")]
+    public sealed class VerificationController : ControllerBase
     {
-        private readonly IConfirmService _confirmService;
+        private readonly IVerificationService _verification;
 
-        public ConfirmController(IConfirmService confirmService) => _confirmService = confirmService;
+        public VerificationController(IVerificationService verification) => _verification = verification;
 
 
 
         [HttpPost("email")]
         public IActionResult ConfirmEmail([FromBody] ConfirmEmailDTO body)
         {
-            _confirmService.ConfirmEmail(body);
+            _verification.SendVerificationEmailCode(body);
             return Ok("Код был успешно отправлен на почту. Ожидайте сообщения");
         }
     }

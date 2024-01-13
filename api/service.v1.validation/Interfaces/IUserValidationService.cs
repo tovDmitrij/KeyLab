@@ -1,6 +1,6 @@
-﻿namespace service.v1.validation
+﻿namespace service.v1.validation.Interfaces
 {
-    public interface IValidationService
+    public interface IUserValidationService
     {
         public void ValidateEmail(string email);
         public void ValidatePassword(string password);

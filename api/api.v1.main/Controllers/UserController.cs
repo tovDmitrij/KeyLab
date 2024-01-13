@@ -13,24 +13,24 @@ namespace api.v1.main.Controllers
     [Route("api/v1/users")]
     public sealed class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUserService _user;
 
-        public UserController(IUserService userService) => _userService = userService;
+        public UserController(IUserService user) => _user = user;
 
 
 
         [HttpPost("signUp")]
         public IActionResult SignUp([FromBody] UserSignUpDTO body)
         {
-            _userService.SignUp(body);
+            _user.SignUp(body);
             return Ok("Пользователь был успешно зарегистрирован");
         }
 
         [HttpPost("signIn")]
         public IActionResult SignIn([FromBody] UserSignInDTO body)
         {
-            var tokens = _userService.SignIn(body);
-            SetRefreshTokenIntoCookie(tokens.RefreshToken);
+            var tokens = _user.SignIn(body);
+            SetRefreshTokenInCookie(tokens.RefreshToken);
             return Ok(tokens.AccessToken);
         }
 
@@ -38,7 +38,7 @@ namespace api.v1.main.Controllers
         public IActionResult UpdateAccessToken()
         {
             var refreshToken = GetRefreshTokenFromCookies();
-            var accessToken = _userService.UpdateAccessToken(refreshToken);
+            var accessToken = _user.UpdateAccessToken(refreshToken);
             return Ok(new { AccessToken = accessToken });
         }
 
@@ -53,7 +53,7 @@ namespace api.v1.main.Controllers
         }
 
         [NonAction]
-        private void SetRefreshTokenIntoCookie(string refreshToken)
+        private void SetRefreshTokenInCookie(string refreshToken)
         {
             Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
             {

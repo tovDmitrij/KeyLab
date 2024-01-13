@@ -1,8 +1,7 @@
-﻿using service.v1.configuration;
-
-using Minio;
+﻿using Minio;
 using Minio.DataModel.Args;
 using Microsoft.AspNetCore.Http;
+using service.v1.configuration.Interfaces;
 
 namespace service.v1.minio
 {
@@ -10,7 +9,7 @@ namespace service.v1.minio
     {
         private readonly IMinioClient _minio;
 
-        public MinioService(IConfigurationService cfg)
+        public MinioService(IMinioConfigurationService cfg)
         {
             var endpoint = cfg.GetMinioEndpoint();
             var accessKey = cfg.GetMinioAccessKey();

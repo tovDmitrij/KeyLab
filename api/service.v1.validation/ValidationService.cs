@@ -1,10 +1,10 @@
 ﻿using component.v1.exceptions;
-
+using service.v1.validation.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace service.v1.validation
 {
-    public sealed partial class ValidationService : IValidationService
+    public sealed partial class ValidationService : IUserValidationService
     {
         [GeneratedRegex(@"^[\w\-\.]+\@[\-\w]+\.[\w]+$")]
         private partial Regex EmailRgx();

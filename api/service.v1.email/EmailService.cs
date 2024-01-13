@@ -2,8 +2,7 @@
 using MailKit.Security;
 
 using MimeKit;
-
-using service.v1.configuration;
+using service.v1.configuration.Interfaces;
 
 namespace service.v1.email
 {
@@ -12,7 +11,7 @@ namespace service.v1.email
         private readonly ISmtpClient _smptClient;
         private readonly MailboxAddress _admin;
 
-        public EmailService(IConfigurationService cfg)
+        public EmailService(IEmailConfigurationService cfg)
         {
             _smptClient = new SmtpClient();
 

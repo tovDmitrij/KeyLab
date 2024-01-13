@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace db.v1.main.Entities.Confirm
+namespace db.v1.main.Entities.EmailVerificationCode
 {
-    [Table("email_confirms")]
-    public sealed class EmailConfirmEntity
+    [Table("email_codes")]
+    public sealed class EmailVerificationCodeEntity
     {
         [Key]
         [Column("id")]
@@ -19,7 +19,7 @@ namespace db.v1.main.Entities.Confirm
         [Column("expire_date")]
         public double ExpireDate { get; set; }
 
-        public EmailConfirmEntity(long id, string email, string code, double expireDate)
+        public EmailVerificationCodeEntity(long id, string email, string code, double expireDate)
         {
             ID = id;
             Email = email;
@@ -27,13 +27,13 @@ namespace db.v1.main.Entities.Confirm
             ExpireDate = expireDate;
         }
 
-        public EmailConfirmEntity(string email, string code, double expireDate)
+        public EmailVerificationCodeEntity(string email, string code, double expireDate)
         {
             Email = email;
             Code = code;
             ExpireDate = expireDate;
         }
 
-        public EmailConfirmEntity() { }
+        public EmailVerificationCodeEntity() { }
     }
 }

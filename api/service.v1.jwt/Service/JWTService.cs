@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-
-using service.v1.configuration;
+using service.v1.configuration.Interfaces;
 using service.v1.jwt.DTOs;
 using service.v1.security.Service;
 using service.v1.timestamp;
@@ -13,33 +12,32 @@ namespace service.v1.jwt.Service
 {
     public sealed class JWTService : IJWTService
     {
-        private readonly IConfigurationService _configService;
-        private readonly ITimestampService _timestampService;
-        private readonly ISecurityService _securityService;
+        private readonly IJWTConfigurationService _cfg;
+        private readonly ITimeService _time;
+        private readonly ISecurityService _security;
 
-        public JWTService(IConfigurationService configService, ITimestampService timestampService, 
-                          ISecurityService securityService)
+        public JWTService(IJWTConfigurationService cfg, ITimeService time, ISecurityService security)
         {
-            _configService = configService;
-            _timestampService = timestampService;
-            _securityService = securityService;
+            _cfg = cfg;
+            _time = time;
+            _security = security;
         }
 
 
 
         public string CreateAccessToken(Guid userID)
         {
-            var secretKey = _configService.GetJWTSecretKey();
+            var secretKey = _cfg.GetJWTSecretKey();
             var secretKeyViaBytes = Encoding.UTF8.GetBytes(secretKey);
 
             var claimsList = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Name, userID.ToString()),
-                new(JwtRegisteredClaimNames.Iss, _configService.GetJWTIssuer()),
-                new(JwtRegisteredClaimNames.Aud, _configService.GetJWTAudience())
+                new(JwtRegisteredClaimNames.Iss, _cfg.GetJWTIssuer()),
+                new(JwtRegisteredClaimNames.Aud, _cfg.GetJWTAudience())
             };
 
-            var expireDate = _timestampService.GetDateTimeWithAddedSeconds(_configService.GetJWTAccessExpireDate());
+            var expireDate = _time.GetDateTimeWithAddedSeconds(_cfg.GetJWTAccessExpireDate());
 
             var credentials = new SigningCredentials(
                 new SymmetricSecurityKey(secretKeyViaBytes),
@@ -56,9 +54,9 @@ namespace service.v1.jwt.Service
 
         public RefreshTokenDTO CreateRefreshToken()
         {
-            var randomValue = _securityService.GenerateRandomValue();
-            var creationDate = _timestampService.GetUNIXTime(DateTime.UtcNow);
-            var expireDate = creationDate + _configService.GetJWTRefreshExpireDate();
+            var randomValue = _security.GenerateRandomValue();
+            var creationDate = _time.GetUNIXTime(DateTime.UtcNow);
+            var expireDate = creationDate + _cfg.GetJWTRefreshExpireDate();
 
             var refreshToken = new RefreshTokenDTO(randomValue, creationDate, expireDate);
             return refreshToken;

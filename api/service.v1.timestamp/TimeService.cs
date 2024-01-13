@@ -1,6 +1,6 @@
 ﻿namespace service.v1.timestamp
 {
-    public sealed class TimestampService : ITimestampService
+    public sealed class TimeService : ITimeService
     {
         private readonly DateTime EPOCH_TIME = DateTime.UnixEpoch;
 
