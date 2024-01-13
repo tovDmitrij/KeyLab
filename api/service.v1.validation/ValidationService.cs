@@ -28,28 +28,27 @@ namespace service.v1.validation
 
         public void ValidateEmail(string email)
         {
-            if (!_emailRgx.IsMatch(email))
-            {
-                string error = "Почта не валидная. Пример: ivanov@mail.ru";
-                throw new BadRequestException(error);
-            }
+            string txtError = "Почта не валидная. Пример: ivanov@mail.ru";
+            Validate(_emailRgx, email, txtError);
         }
 
         public void ValidatePassword(string password)
         {
-            if (!_passwordRgx.IsMatch(password))
-            {
-                string error = "Пароль не валидный. Разрешённые символы: буквы, цифры. Мин. длина 8 символов";
-                throw new BadRequestException(error);
-            }
+            string txtError = "Пароль не валидный. Разрешённые символы: буквы, цифры. Мин. длина 8 символов";
+            Validate(_passwordRgx, password, txtError);
         }
 
         public void ValidateNickname(string nickname)
         {
-            if (!_nicknameRgx.IsMatch(nickname))
-            { 
-                string error = "Никнейм не валидный. Разрешённые символы: буквы, цифры. Мин. длина 3 символа";
-                throw new BadRequestException(error);
+            string txtError = "Никнейм не валидный. Разрешённые символы: буквы, цифры. Мин. длина 3 символа";
+            Validate(_nicknameRgx, nickname, txtError);
+        }
+
+        private void Validate(Regex rgx, string value, string txtError)
+        {
+            if (!rgx.IsMatch(value))
+            {
+                throw new BadRequestException(txtError);
             }
         }
     }
