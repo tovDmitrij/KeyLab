@@ -1,4 +1,4 @@
-services: 
+services:
   postgres:
     container_name: keyboard_postgres
     image: postgres:16.0
