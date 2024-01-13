@@ -74,28 +74,28 @@ InitContexts();
 
 void InitServices()
 {
-    builder.Services.AddSingleton<IUserService, UserService>();
-    builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
-    builder.Services.AddSingleton<IEmailService, EmailService>();
-    builder.Services.AddSingleton<IJWTService, JWTService>();
-    builder.Services.AddSingleton<ISecurityService, SecurityService>();
-    builder.Services.AddSingleton<ITimestampService, TimestampService>();
-    builder.Services.AddSingleton<IValidationService, ValidationService>();
-    builder.Services.AddSingleton<IMinioService, MinioService>();
-    builder.Services.AddSingleton<IConfirmService, ConfirmService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
+    builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<IJWTService, JWTService>();
+    builder.Services.AddScoped<ISecurityService, SecurityService>();
+    builder.Services.AddScoped<ITimestampService, TimestampService>();
+    builder.Services.AddScoped<IValidationService, ValidationService>();
+    builder.Services.AddScoped<IMinioService, MinioService>();
+    builder.Services.AddScoped<IConfirmService, ConfirmService>();
 }
 
 void InitRepositories()
 {
-    builder.Services.AddSingleton<IUserRepository, UserRepository>();
-    builder.Services.AddSingleton<IConfirmRepository, ConfirmRepository>();
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IConfirmRepository, ConfirmRepository>();
 }
 
 void InitContexts()
 {
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main_local")), ServiceLifetime.Singleton);
-    builder.Services.AddSingleton<IUserContext, MainContext>();
-    builder.Services.AddSingleton<IConfirmContext, MainContext>();
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")));
+    builder.Services.AddScoped<IUserContext, MainContext>();
+    builder.Services.AddScoped<IConfirmContext, MainContext>();
 }
 
 #endregion
@@ -105,6 +105,7 @@ void InitContexts()
 #region App
 
 var app = builder.Build();
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 app.UseCors("PublicPolicy");
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();

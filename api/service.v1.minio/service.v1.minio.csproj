@@ -1,20 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
-    <PackageReference Include="Minio" Version="6.0.0" />
+    <PackageReference Include="Minio" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />
     <ProjectReference Include="..\service.v1.configuration\service.v1.configuration.csproj" />
-    <ProjectReference Include="..\service.v1.timestamp\service.v1.timestamp.csproj" />
   </ItemGroup>
 
 </Project>
