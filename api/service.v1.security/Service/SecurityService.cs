@@ -1,5 +1,5 @@
 ﻿using service.v1.security.DTOs;
-using service.v1.timestamp;
+using service.v1.time;
 
 using System.Security.Cryptography;
 using System.Text;
@@ -11,9 +11,9 @@ namespace service.v1.security.Service
         private const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         private readonly Random rnd = new();
 
-        private readonly ITimestampService _timestampService;
+        private readonly ITimeService _time;
 
-        public SecurityService(ITimestampService timestampService) => _timestampService = timestampService;
+        public SecurityService(ITimeService time) => _time = time;
 
         public string GenerateRandomValue()
         {
@@ -51,7 +51,7 @@ namespace service.v1.security.Service
         public SecurityCodeDTO GenerateEmailConfirmCode()
         {
             var code = rnd.Next(100_000, 999_999);
-            var expireDate = _timestampService.GetUNIXTime(DateTime.UtcNow.AddMinutes(5));
+            var expireDate = _time.GetUNIXTime(DateTime.UtcNow.AddMinutes(5));
             return new(code.ToString(), expireDate);
         }
     }

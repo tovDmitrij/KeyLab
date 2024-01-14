@@ -2,29 +2,29 @@
 
 using component.v1.exceptions;
 
-using db.v1.main.Repositories.Confirm;
+using db.v1.main.Repositories.Verification;
 using db.v1.main.Repositories.User;
 
 using service.v1.email;
 using service.v1.jwt.Service;
 using service.v1.security.Service;
-using service.v1.timestamp;
-using service.v1.validation;
+using service.v1.time;
+using service.v1.validation.Interfaces;
 
 namespace api.v1.main.Services.User
 {
     public sealed class UserService : IUserService
     {
         private readonly IUserRepository _users;
-        private readonly IConfirmRepository _confirms;
+        private readonly IVerificationRepository _confirms;
 
-        private readonly IValidationService _validation;
+        private readonly IUserValidationService _validation;
         private readonly ISecurityService _security;
-        private readonly ITimestampService _timestamp;
+        private readonly ITimeService _timestamp;
         private readonly IJWTService _jwt;
 
-        public UserService(IUserRepository users, IConfirmRepository confirms, IValidationService validations, 
-                           ISecurityService security, ITimestampService timestamp, IJWTService jwt)
+        public UserService(IUserRepository users, IVerificationRepository confirms, IUserValidationService validations, 
+                           ISecurityService security, ITimeService timestamp, IJWTService jwt)
         {
             _users = users;
             _confirms = confirms;

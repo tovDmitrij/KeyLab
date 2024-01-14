@@ -17,10 +17,10 @@
     <ProjectReference Include="..\db.v1.main\db.v1.main.csproj" />
     <ProjectReference Include="..\service.v1.configuration\service.v1.configuration.csproj" />
     <ProjectReference Include="..\service.v1.email\service.v1.email.csproj" />
+    <ProjectReference Include="..\service.v1.file\service.v1.file.csproj" />
     <ProjectReference Include="..\service.v1.jwt\service.v1.jwt.csproj" />
-    <ProjectReference Include="..\service.v1.minio\service.v1.minio.csproj" />
     <ProjectReference Include="..\service.v1.security\service.v1.security.csproj" />
-    <ProjectReference Include="..\service.v1.timestamp\service.v1.timestamp.csproj" />
+    <ProjectReference Include="..\service.v1.time\service.v1.time.csproj" />
     <ProjectReference Include="..\service.v1.validation\service.v1.validation.csproj" />
   </ItemGroup>
 

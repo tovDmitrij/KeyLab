@@ -4,7 +4,7 @@ using api.v1.main.Services.User;
 
 using db.v1.main.Contexts;
 using db.v1.main.Contexts.Interfaces;
-using db.v1.main.Repositories.Confirm;
+using db.v1.main.Repositories.Verification;
 using db.v1.main.Repositories.User;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,13 +12,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using service.v1.configuration;
+using service.v1.configuration.Interfaces;
 using service.v1.email;
 using service.v1.jwt.Service;
-using service.v1.minio;
+using service.v1.file;
 using service.v1.security.Service;
-using service.v1.timestamp;
+using service.v1.time;
 using service.v1.validation;
-
+using service.v1.validation.Interfaces;
 using System.Text;
 
 
@@ -74,28 +75,30 @@ InitContexts();
 
 void InitServices()
 {
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
-    builder.Services.AddScoped<IEmailService, EmailService>();
-    builder.Services.AddScoped<IJWTService, JWTService>();
-    builder.Services.AddScoped<ISecurityService, SecurityService>();
-    builder.Services.AddScoped<ITimestampService, TimestampService>();
-    builder.Services.AddScoped<IValidationService, ValidationService>();
-    builder.Services.AddScoped<IMinioService, MinioService>();
-    builder.Services.AddScoped<IConfirmService, ConfirmService>();
+    builder.Services.AddSingleton<IEmailConfigurationService, ConfigurationService>();
+    builder.Services.AddSingleton<IJWTConfigurationService, ConfigurationService>();
+    builder.Services.AddSingleton<IMinioConfigurationService, ConfigurationService>();
+    builder.Services.AddSingleton<IEmailService, EmailService>();
+    builder.Services.AddSingleton<IJWTService, JWTService>();
+    builder.Services.AddSingleton<IFileService, MinioService>();
+    builder.Services.AddSingleton<ISecurityService, SecurityService>();
+    builder.Services.AddSingleton<ITimeService, TimeService>();
+    builder.Services.AddSingleton<IUserValidationService, ValidationService>();
+    builder.Services.AddSingleton<IUserService, UserService>();
+    builder.Services.AddSingleton<IVerificationService, VerificationService>();
 }
 
 void InitRepositories()
 {
-    builder.Services.AddScoped<IUserRepository, UserRepository>();
-    builder.Services.AddScoped<IConfirmRepository, ConfirmRepository>();
+    builder.Services.AddSingleton<IUserRepository, UserRepository>();
+    builder.Services.AddSingleton<IVerificationRepository, VerificationRepository>();
 }
 
 void InitContexts()
 {
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")));
-    builder.Services.AddScoped<IUserContext, MainContext>();
-    builder.Services.AddScoped<IConfirmContext, MainContext>();
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Singleton);
+    builder.Services.AddSingleton<IUserContext, MainContext>();
+    builder.Services.AddSingleton<IVerificationContext, MainContext>();
 }
 
 #endregion

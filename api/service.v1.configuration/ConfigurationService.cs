@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
+using service.v1.configuration.Interfaces;
 
 namespace service.v1.configuration
 {
-    public sealed class ConfigurationService : IConfigurationService
+    public sealed class ConfigurationService : IEmailConfigurationService, IJWTConfigurationService, IMinioConfigurationService
     {
         private readonly IConfiguration _cfg;
 
