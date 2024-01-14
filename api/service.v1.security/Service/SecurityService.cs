@@ -1,5 +1,5 @@
 ﻿using service.v1.security.DTOs;
-using service.v1.timestamp;
+using service.v1.time;
 
 using System.Security.Cryptography;
 using System.Text;

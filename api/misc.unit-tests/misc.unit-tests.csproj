@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />
-    <ProjectReference Include="..\service.v1.timestamp\service.v1.time.csproj" />
+    <ProjectReference Include="..\service.v1.time\service.v1.time.csproj" />
     <ProjectReference Include="..\service.v1.validation\service.v1.validation.csproj" />
   </ItemGroup>
 

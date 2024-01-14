@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\service.v1.timestamp\service.v1.time.csproj" />
+    <ProjectReference Include="..\service.v1.time\service.v1.time.csproj" />
   </ItemGroup>
 
 </Project>

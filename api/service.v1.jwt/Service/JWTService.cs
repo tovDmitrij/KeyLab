@@ -2,7 +2,7 @@
 using service.v1.configuration.Interfaces;
 using service.v1.jwt.DTOs;
 using service.v1.security.Service;
-using service.v1.timestamp;
+using service.v1.time;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

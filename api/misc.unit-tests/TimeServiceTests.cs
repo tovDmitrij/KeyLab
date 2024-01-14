@@ -1,4 +1,4 @@
-﻿using service.v1.timestamp;
+﻿using service.v1.time;
 
 using Xunit;
 

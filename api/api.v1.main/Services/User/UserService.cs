@@ -8,7 +8,7 @@ using db.v1.main.Repositories.User;
 using service.v1.email;
 using service.v1.jwt.Service;
 using service.v1.security.Service;
-using service.v1.timestamp;
+using service.v1.time;
 using service.v1.validation.Interfaces;
 
 namespace api.v1.main.Services.User

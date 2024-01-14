@@ -18,7 +18,7 @@ namespace api.v1.main.Controllers
 
 
         [HttpPost("email")]
-        public IActionResult ConfirmEmail([FromBody] ConfirmEmailDTO body)
+        public IActionResult VerificateEmail([FromBody] ConfirmEmailDTO body)
         {
             _verification.SendVerificationEmailCode(body);
             return Ok("Код был успешно отправлен на почту. Ожидайте сообщения");

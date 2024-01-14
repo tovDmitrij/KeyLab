@@ -1,4 +1,4 @@
-﻿namespace service.v1.timestamp
+﻿namespace service.v1.time
 {
     public interface ITimeService
     {

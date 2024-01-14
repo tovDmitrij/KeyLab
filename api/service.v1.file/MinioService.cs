@@ -3,9 +3,9 @@ using Minio.DataModel.Args;
 using Microsoft.AspNetCore.Http;
 using service.v1.configuration.Interfaces;
 
-namespace service.v1.minio
+namespace service.v1.file
 {
-    public sealed class MinioService : IMinioService, IDisposable
+    public sealed class MinioService : IFileService
     {
         private readonly IMinioClient _minio;
 
@@ -81,13 +81,6 @@ namespace service.v1.minio
                 .WithContentType(contentType);
 
             await _minio.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
-        }
-
-
-
-        public void Dispose()
-        {
-            _minio.Dispose();
         }
     }
 }

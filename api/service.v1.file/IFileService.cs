@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace service.v1.minio
+namespace service.v1.file
 {
-    public interface IMinioService
+    public interface IFileService
     {
         public void PushFile(string userID, IFormFile file);
 
