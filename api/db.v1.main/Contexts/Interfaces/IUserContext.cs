@@ -1,5 +1,4 @@
-﻿using db.v1.main.Entities.Users;
-
+﻿using db.v1.main.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace db.v1.main.Contexts.Interfaces

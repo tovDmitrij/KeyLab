@@ -20,20 +20,6 @@ services:
     ports:
       - 6002:8080
 
-  minio:
-    container_name: keyboard_minio
-    image: minio/minio:edge
-    command: server --console-address ":9001" /data
-    restart: unless-stopped
-    environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: password
-    ports:
-      - 6003:9000
-      - 6004:9001
-    volumes:
-      - ./minio/data:/data
-
   api:
     container_name: keyboard_api
     restart: unless-stopped
@@ -44,4 +30,4 @@ services:
       - 6005:8080
     volumes:
       - ./api/logs:/logs
-      - ./minio/data:/minio/data
+      - ./files:/files

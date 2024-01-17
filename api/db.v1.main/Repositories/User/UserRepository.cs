@@ -1,5 +1,5 @@
 ﻿using db.v1.main.Contexts.Interfaces;
-using db.v1.main.Entities.Users;
+using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.User
 {

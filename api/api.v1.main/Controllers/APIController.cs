@@ -14,6 +14,12 @@ namespace api.v1.main.Controllers
             var accessToken = GetAccessToken();
             var claims = GetClaimsFromAccessToken(accessToken);
             var userID = claims.First(claim => claim.Type == JwtRegisteredClaimNames.Name).Value;
+
+            if (userID == null)
+            {
+                throw new UnauthorizedException("Access токен повреждён или отсутствует. Пожалуйста, пройдите заново процесс авторизации");
+            }
+
             return Guid.Parse(userID);
         }
 
