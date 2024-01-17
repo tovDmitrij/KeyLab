@@ -4,5 +4,6 @@
     {
         public string GetDefaultModelsDirectoryPath();
         public string GetOtherModelsDirectoryPath();
+        public string GetDefaultModelsUserID();
     }
 }

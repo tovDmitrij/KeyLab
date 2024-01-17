@@ -1,6 +1,8 @@
 ﻿using component.v1.exceptions;
 
+using db.v1.main.DTOs;
 using db.v1.main.Repositories.Keyboard;
+using db.v1.main.Repositories.User;
 
 using service.v1.configuration.Interfaces;
 using service.v1.file.File;
@@ -13,18 +15,20 @@ namespace api.v1.main.Services.Keyboard
         private readonly IFileService _file;
         private readonly IFileConfigurationService _cfg;
         private readonly ITimeService _time;
-        private readonly IKeyboardRepository _keyboard;
+        private readonly IKeyboardRepository _keyboards;
+        private readonly IUserRepository _users;
 
         public KeyboardService(IFileService file, IFileConfigurationService cfg, ITimeService time,
-            IKeyboardRepository keyboard)
+            IKeyboardRepository keyboard, IUserRepository users)
         {
             _file = file;
             _cfg = cfg;
             _time = time;
-            _keyboard = keyboard;
+            _keyboards = keyboard;
+            _users = users;
         }
 
-        public void AddKeyboard(IFormFile file, string title, string? description, Guid userID)
+        public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID)
         {
             if (file == null)
             {
@@ -35,7 +39,7 @@ namespace api.v1.main.Services.Keyboard
                 throw new BadRequestException("Пожалуйста, дайте клавиатуре наименование");
             }
 
-            if (_keyboard.IsKeyboardTitleBusy(userID, title))
+            if (_keyboards.IsKeyboardTitleBusy(userID, title))
             {
                 throw new BadRequestException("Такое наименование клавиатуры уже существует на Вашем аккаунте. Пожалуйста, выберите другое");
             }
@@ -51,7 +55,7 @@ namespace api.v1.main.Services.Keyboard
             try
             {
                 //title и description regex??
-                keyboardID = _keyboard.InsertKeyboardFileInfo(userID, title, description, fullFilePath, creationDate);
+                keyboardID = _keyboards.InsertKeyboardFileInfo(userID, title, description, fullFilePath, creationDate);
 
                 using var ms = new MemoryStream();
                 file.CopyTo(ms);
@@ -61,9 +65,35 @@ namespace api.v1.main.Services.Keyboard
             }
             catch (Exception ex)
             {
-                _keyboard.DeleteKeyboardFileInfo(keyboardID);
+                _keyboards.DeleteKeyboardFileInfo(keyboardID);
 
                 throw ex;
+            }
+        }
+
+        public List<KeyboardModel> GetDefaultKeyboardModels()
+        {
+            var defaultUserID = Guid.Parse(_cfg.GetDefaultModelsUserID());
+
+            IsUserExist(defaultUserID);
+
+            var keyboards = _keyboards.GetUserKeyboards(defaultUserID);
+            return keyboards;
+        }
+
+        public List<KeyboardModel> GetUserKeyboards(Guid userID)
+        {
+            IsUserExist(userID);
+
+            var keyboards = _keyboards.GetUserKeyboards(userID);
+            return keyboards;
+        }
+
+        private void IsUserExist(Guid userID)
+        {
+            if (!_users.IsUserExist(userID))
+            {
+                throw new BadRequestException("Пользователя с заданным идентификатором не существует");
             }
         }
     }

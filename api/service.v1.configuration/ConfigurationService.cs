@@ -37,5 +37,6 @@ namespace service.v1.configuration
         public string GetDefaultModelsDirectoryPath() => _cfg["File:DefaultModelsParentDirectory"];
 
         public string GetOtherModelsDirectoryPath() => _cfg["File:OtherModelsParentDirectory"];
+        public string GetDefaultModelsUserID() => _cfg["File:DefaultModelsUserID"];
     }
 }
