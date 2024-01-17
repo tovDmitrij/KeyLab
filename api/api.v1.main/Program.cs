@@ -1,5 +1,5 @@
 using api.v1.main.Middlewares;
-using api.v1.main.Services.Confirm;
+using api.v1.main.Services.Verification;
 using api.v1.main.Services.User;
 
 using db.v1.main.Contexts;
@@ -82,16 +82,19 @@ void InitServices()
     builder.Services.AddSingleton<IMinioConfigurationService, ConfigurationService>();
     builder.Services.AddSingleton<IFileConfigurationService, ConfigurationService>();
 
+    builder.Services.AddSingleton<IUserValidationService, ValidationService>();
+    builder.Services.AddSingleton<IVerificationValidationService, ValidationService>();
+    builder.Services.AddSingleton<IKeyboardValidationService, ValidationService>();
+
+    builder.Services.AddSingleton<IUserService, UserService>();
+    builder.Services.AddSingleton<IVerificationService, VerificationService>();
+    builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
+
     builder.Services.AddSingleton<IEmailService, EmailService>();
     builder.Services.AddSingleton<IJWTService, JWTService>();
     builder.Services.AddSingleton<IFileService, FileService>();
     builder.Services.AddSingleton<ISecurityService, SecurityService>();
     builder.Services.AddSingleton<ITimeService, TimeService>();
-    builder.Services.AddSingleton<IUserValidationService, ValidationService>();
-
-    builder.Services.AddSingleton<IUserService, UserService>();
-    builder.Services.AddSingleton<IVerificationService, VerificationService>();
-    builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
 }
 
 void InitRepositories()

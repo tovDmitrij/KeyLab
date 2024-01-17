@@ -41,8 +41,8 @@ namespace db.v1.main.Repositories.Keyboard
         public string? GetKeyboardFilePath(Guid keyboardID) => 
             _db.Keyboards.Where(x => x.ID == keyboardID).Select(x => x.FilePath).FirstOrDefault();
 
-        public List<KeyboardModel> GetUserKeyboards(Guid userID) =>
+        public List<KeyboardDTO> GetUserKeyboards(Guid userID) =>
             _db.Keyboards.Where(x => x.OwnerID == userID)
-                .Select(x => new KeyboardModel(x.ID, x.Title, x.Description, x.CreationDate)).ToList();
+                .Select(x => new KeyboardDTO(x.ID, x.Title, x.Description, x.CreationDate)).ToList();
     }
 }

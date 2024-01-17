@@ -6,17 +6,17 @@ using service.v1.email;
 using service.v1.security.Service;
 using service.v1.validation.Interfaces;
 
-namespace api.v1.main.Services.Confirm
+namespace api.v1.main.Services.Verification
 {
     public sealed class VerificationService : IVerificationService
     {
         private readonly IVerificationRepository _verification;
 
-        private readonly IUserValidationService _validation;
+        private readonly IVerificationValidationService _validation;
         private readonly IEmailService _email;
         private readonly ISecurityService _security;
 
-        public VerificationService(IVerificationRepository verigication, IUserValidationService validation, 
+        public VerificationService(IVerificationRepository verigication, IVerificationValidationService validation, 
                               IEmailService email, ISecurityService security)
         {
             _verification = verigication;
@@ -31,7 +31,7 @@ namespace api.v1.main.Services.Confirm
         {
             _validation.ValidateEmail(body.Email);
 
-            var securityCode = _security.GenerateEmailConfirmCode();
+            var securityCode = _security.GenerateEmailVerificationCode();
             _verification.InsertEmailCode(body.Email, securityCode.Value, securityCode.ExpireDate);
 
             var msgText = GenerateConfirmEmailMsgText(securityCode.Value);

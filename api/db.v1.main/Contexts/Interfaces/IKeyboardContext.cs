@@ -7,7 +7,6 @@ namespace db.v1.main.Contexts.Interfaces
     public interface IKeyboardContext
     {
         public DbSet<KeyboardEntity> Keyboards { get; set; }
-
         public int SaveChanges();
     }
 }

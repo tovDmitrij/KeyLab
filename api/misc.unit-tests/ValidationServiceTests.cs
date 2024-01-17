@@ -43,5 +43,29 @@ namespace misc.unit_tests
                 Assert.Throws<BadRequestException>(() => validation.ValidateNickname(nickname));
             }
         }
+
+        [Fact]
+        public void ValidateKeyboardTitle()
+        {
+            var validation = new ValidationService();
+            var titles = new List<string>() { "", "Eu", "E76s8_$%" };
+            
+            foreach (var title in titles)
+            {
+                Assert.Throws<BadRequestException>(() => validation.ValidateKeyboardTitle(title));
+            }
+        }
+
+        [Fact]
+        public void ValidateKeyboardDescription()
+        {
+            var validation = new ValidationService();
+            var descriptions = new List<string>() { "", "Eu", "E76s8_$%" };
+
+            foreach (var description in descriptions)
+            {
+                Assert.Throws<BadRequestException>(() => validation.ValidateKeyboardTitle(description));
+            }
+        }
     }
 }

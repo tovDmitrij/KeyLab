@@ -48,7 +48,7 @@ namespace service.v1.security.Service
             return hashData.ToString();
         }
 
-        public SecurityCodeDTO GenerateEmailConfirmCode()
+        public SecurityCodeDTO GenerateEmailVerificationCode()
         {
             var code = rnd.Next(100_000, 999_999);
             var expireDate = _time.GetUNIXTime(DateTime.UtcNow.AddMinutes(5));
