@@ -15,12 +15,14 @@ using service.v1.configuration;
 using service.v1.configuration.Interfaces;
 using service.v1.email;
 using service.v1.jwt.Service;
-using service.v1.file;
 using service.v1.security.Service;
 using service.v1.time;
 using service.v1.validation;
 using service.v1.validation.Interfaces;
 using System.Text;
+using service.v1.file.File;
+using db.v1.main.Repositories.Keyboard;
+using api.v1.main.Services.Keyboard;
 
 
 
@@ -78,20 +80,25 @@ void InitServices()
     builder.Services.AddSingleton<IEmailConfigurationService, ConfigurationService>();
     builder.Services.AddSingleton<IJWTConfigurationService, ConfigurationService>();
     builder.Services.AddSingleton<IMinioConfigurationService, ConfigurationService>();
+    builder.Services.AddSingleton<IFileConfigurationService, ConfigurationService>();
+
     builder.Services.AddSingleton<IEmailService, EmailService>();
     builder.Services.AddSingleton<IJWTService, JWTService>();
-    builder.Services.AddSingleton<IFileService, MinioService>();
+    builder.Services.AddSingleton<IFileService, FileService>();
     builder.Services.AddSingleton<ISecurityService, SecurityService>();
     builder.Services.AddSingleton<ITimeService, TimeService>();
     builder.Services.AddSingleton<IUserValidationService, ValidationService>();
+
     builder.Services.AddSingleton<IUserService, UserService>();
     builder.Services.AddSingleton<IVerificationService, VerificationService>();
+    builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
 }
 
 void InitRepositories()
 {
     builder.Services.AddSingleton<IUserRepository, UserRepository>();
     builder.Services.AddSingleton<IVerificationRepository, VerificationRepository>();
+    builder.Services.AddSingleton<IKeyboardRepository, KeyboardRepository>();
 }
 
 void InitContexts()
@@ -99,6 +106,7 @@ void InitContexts()
     builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Singleton);
     builder.Services.AddSingleton<IUserContext, MainContext>();
     builder.Services.AddSingleton<IVerificationContext, MainContext>();
+    builder.Services.AddSingleton<IKeyboardContext, MainContext>();
 }
 
 #endregion

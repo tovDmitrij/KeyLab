@@ -4,6 +4,7 @@ minio/data
 .vs
 .github
 logs
+files/other
 
 
 
