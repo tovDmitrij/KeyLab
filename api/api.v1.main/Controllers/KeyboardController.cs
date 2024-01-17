@@ -17,7 +17,7 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public IActionResult GetDefaultKeyboardsList()
         {
-            var keyboards = _keyboard.GetDefaultKeyboardModels();
+            var keyboards = _keyboard.GetDefaultKeyboardsList();
 
             return Ok(keyboards);
         }
@@ -28,16 +28,18 @@ namespace api.v1.main.Controllers
         {
             var userID = GetUserIDFromAccessToken();
 
-            var keyboards = _keyboard.GetUserKeyboards(userID);
+            var keyboards = _keyboard.GetUserKeyboardsList(userID);
 
             return Ok(keyboards);
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetKeyboardFile(Guid keyboardID) 
+        public void GetKeyboardFile(Guid keyboardID) 
         {
-            return Ok();
+            var filePath = _keyboard.GetKeyboardFilePath(keyboardID);
+
+            Response.SendFileAsync(filePath);
         }
 
         [HttpPost, DisableRequestSizeLimit]

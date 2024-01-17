@@ -71,7 +71,14 @@ namespace api.v1.main.Services.Keyboard
             }
         }
 
-        public List<KeyboardModel> GetDefaultKeyboardModels()
+        public string GetKeyboardFilePath(Guid keyboardID)
+        {
+            var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? throw new BadRequestException("Такого файла не существует");
+
+            return keyboardPath;
+        }
+
+        public List<KeyboardModel> GetDefaultKeyboardsList()
         {
             var defaultUserID = Guid.Parse(_cfg.GetDefaultModelsUserID());
 
@@ -81,7 +88,7 @@ namespace api.v1.main.Services.Keyboard
             return keyboards;
         }
 
-        public List<KeyboardModel> GetUserKeyboards(Guid userID)
+        public List<KeyboardModel> GetUserKeyboardsList(Guid userID)
         {
             IsUserExist(userID);
 
