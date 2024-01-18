@@ -34,7 +34,7 @@ namespace api.v1.main.Controllers
             return Ok(tokens.AccessToken);
         }
 
-        [HttpPut("refresh")]
+        [HttpGet("refresh")]
         public IActionResult UpdateAccessToken()
         {
             var refreshToken = GetRefreshTokenFromCookies();

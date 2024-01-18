@@ -24,5 +24,7 @@
             }
 
         }
+
+        public bool IsFileExist(string filePath) => System.IO.File.Exists(filePath);
     }
 }

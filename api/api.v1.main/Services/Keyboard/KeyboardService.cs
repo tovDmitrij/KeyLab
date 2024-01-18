@@ -4,9 +4,11 @@ using db.v1.main.DTOs;
 using db.v1.main.Repositories.Keyboard;
 using db.v1.main.Repositories.User;
 
+using service.v1.cache;
 using service.v1.configuration.Interfaces;
 using service.v1.file.File;
 using service.v1.time;
+using service.v1.validation.Interfaces;
 
 namespace api.v1.main.Services.Keyboard
 {
@@ -15,18 +17,27 @@ namespace api.v1.main.Services.Keyboard
         private readonly IFileService _file;
         private readonly IFileConfigurationService _cfg;
         private readonly ITimeService _time;
+        private readonly IKeyboardValidationService _validation;
+
+        private readonly IKeyboardCacheService _cache;
+
         private readonly IKeyboardRepository _keyboards;
         private readonly IUserRepository _users;
 
         public KeyboardService(IFileService file, IFileConfigurationService cfg, ITimeService time,
-            IKeyboardRepository keyboard, IUserRepository users)
+            IKeyboardRepository keyboard, IUserRepository users, IKeyboardValidationService validation,
+            IKeyboardCacheService cache)
         {
             _file = file;
             _cfg = cfg;
             _time = time;
             _keyboards = keyboard;
             _users = users;
+            _validation = validation;
+            _cache = cache;
         }
+
+
 
         public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID)
         {
@@ -34,9 +45,20 @@ namespace api.v1.main.Services.Keyboard
             {
                 throw new BadRequestException("Файл клавиатуры не был прикреплён");
             }
+            if (file.Length == 0)
+            {
+                throw new BadRequestException("Файл клавиатуры не имеет размера");
+            }
+
             if (title == null)
             {
                 throw new BadRequestException("Пожалуйста, дайте клавиатуре наименование");
+            }
+            _validation.ValidateKeyboardTitle(title);
+
+            if (description != null)
+            {
+                _validation.ValidateKeyboardDescription(description);
             }
 
             if (_keyboards.IsKeyboardTitleBusy(userID, title))
@@ -54,7 +76,6 @@ namespace api.v1.main.Services.Keyboard
             Guid keyboardID = default;
             try
             {
-                //title и description regex??
                 keyboardID = _keyboards.InsertKeyboardFileInfo(userID, title, description, fullFilePath, creationDate);
 
                 using var ms = new MemoryStream();
@@ -63,11 +84,10 @@ namespace api.v1.main.Services.Keyboard
 
                 _file.AddFile(bytes, filePath, fileName);
             }
-            catch (Exception ex)
+            catch
             {
                 _keyboards.DeleteKeyboardFileInfo(keyboardID);
-
-                throw ex;
+                throw;
             }
         }
 
@@ -75,26 +95,39 @@ namespace api.v1.main.Services.Keyboard
         {
             var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? throw new BadRequestException("Такого файла не существует");
 
+            if (!_file.IsFileExist(keyboardPath))
+            {
+                throw new BadRequestException("Такого файла не существует");
+            }
+
             return keyboardPath;
         }
 
-        public List<KeyboardModel> GetDefaultKeyboardsList()
+        public List<KeyboardDTO> GetDefaultKeyboardsList()
         {
             var defaultUserID = Guid.Parse(_cfg.GetDefaultModelsUserID());
 
             IsUserExist(defaultUserID);
 
-            var keyboards = _keyboards.GetUserKeyboards(defaultUserID);
+            _cache.TryGetDefaultKeyboardsList(out List<KeyboardDTO> keyboards);
+            if (keyboards == null)
+            {
+                keyboards = _keyboards.GetUserKeyboards(defaultUserID);
+                _cache.SetDefaultKeyboardsList(keyboards);
+            }
+
             return keyboards;
         }
 
-        public List<KeyboardModel> GetUserKeyboardsList(Guid userID)
+        public List<KeyboardDTO> GetUserKeyboardsList(Guid userID)
         {
             IsUserExist(userID);
 
             var keyboards = _keyboards.GetUserKeyboards(userID);
             return keyboards;
         }
+
+
 
         private void IsUserExist(Guid userID)
         {

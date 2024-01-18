@@ -1,5 +1,5 @@
 ﻿using api.v1.main.DTOs.User;
-using api.v1.main.Services.Confirm;
+using api.v1.main.Services.Verification;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />
     <ProjectReference Include="..\db.v1.main\db.v1.main.csproj" />
+    <ProjectReference Include="..\service.v1.cache\service.v1.cache.csproj" />
     <ProjectReference Include="..\service.v1.configuration\service.v1.configuration.csproj" />
     <ProjectReference Include="..\service.v1.email\service.v1.email.csproj" />
     <ProjectReference Include="..\service.v1.file\service.v1.file.csproj" />

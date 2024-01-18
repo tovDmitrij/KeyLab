@@ -6,6 +6,6 @@ namespace service.v1.security.Service
     {
         public string GenerateRandomValue();
         public string HashPassword(string salt, string password);
-        public SecurityCodeDTO GenerateEmailConfirmCode();
+        public SecurityCodeDTO GenerateEmailVerificationCode();
     }
 }

@@ -6,7 +6,7 @@ namespace api.v1.main.Services.Keyboard
     {
         public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID);
         public string GetKeyboardFilePath(Guid keyboardID);
-        public List<KeyboardModel> GetDefaultKeyboardsList();
-        public List<KeyboardModel> GetUserKeyboardsList(Guid userID);
+        public List<KeyboardDTO> GetDefaultKeyboardsList();
+        public List<KeyboardDTO> GetUserKeyboardsList(Guid userID);
     }
 }

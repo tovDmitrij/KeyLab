@@ -12,6 +12,6 @@ namespace db.v1.main.Repositories.Keyboard
 
         public string? GetKeyboardFilePath(Guid keyboardID);
 
-        public List<KeyboardModel> GetUserKeyboards(Guid userID);
+        public List<KeyboardDTO> GetUserKeyboards(Guid userID);
     }
 }

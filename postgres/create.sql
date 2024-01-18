@@ -45,16 +45,18 @@ create table if not exists keyboards(
 create index on keyboards(id);
 create index on keyboards(owner_id);
 create index on keyboards(owner_id, title);
-insert into keyboards(owner_id, title, description, file_path, creation_date)
+insert into keyboards(id, owner_id, title, description, file_path, creation_date)
 values(
+    'd296c943-4894-484a-b0c3-9b3783accbaa',
     'dced1acd-b907-47e0-9659-77cb2c95e0aa',
     'Клавиатура по умолчанию №1',
     'Клавиатура размерностью 60%',
     '/files/default/keyboards/60percent.glb',
     1
 );
-insert into keyboards(owner_id, title, description, file_path, creation_date)
+insert into keyboards(id, owner_id, title, description, file_path, creation_date)
 values(
+    '6e8ac55c-d2de-47d2-8794-a864d14af1ce',
     'dced1acd-b907-47e0-9659-77cb2c95e0aa',
     'Клавиатура по умолчанию №2',
     'Описание...',

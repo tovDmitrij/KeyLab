@@ -4,7 +4,7 @@ using service.v1.configuration.Interfaces;
 namespace service.v1.configuration
 {
     public sealed class ConfigurationService : IEmailConfigurationService, IJWTConfigurationService, 
-        IMinioConfigurationService, IFileConfigurationService
+        IMinioConfigurationService, IFileConfigurationService, IKeyboardCacheConfigurationService
     {
         private readonly IConfiguration _cfg;
 
@@ -35,8 +35,12 @@ namespace service.v1.configuration
 
 
         public string GetDefaultModelsDirectoryPath() => _cfg["File:DefaultModelsParentDirectory"];
-
         public string GetOtherModelsDirectoryPath() => _cfg["File:OtherModelsParentDirectory"];
         public string GetDefaultModelsUserID() => _cfg["File:DefaultModelsUserID"];
+
+
+
+        public int GetCacheExpirationMinutes() => Convert.ToInt32(_cfg["Cache:ExpirationMinutes"]);
+        public string GetDefaultKeyboardsListCacheKey() => _cfg["Cache:DefaultKeyboardsList"];
     }
 }
