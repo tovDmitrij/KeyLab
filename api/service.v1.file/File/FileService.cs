@@ -1,20 +1,44 @@
-﻿namespace service.v1.file.File
+﻿using service.v1.configuration.Interfaces;
+
+namespace service.v1.file.File
 {
     public sealed class FileService : IFileService
     {
-        public void AddFile(byte[] file, string filePath, string fileName)
-        {
-            Directory.CreateDirectory(filePath);
+        private readonly IFileConfigurationService _cfg;
 
-            var fullFilePath = Path.Combine(filePath, fileName);
-            using (var fs = new FileStream(fullFilePath, FileMode.Create, FileAccess.Write))
+        public FileService(IFileConfigurationService cfg)
+        {
+            _cfg = cfg;
+        }
+
+
+
+        public void AddFile(byte[] file, string filePath)
+        {
+            var parentDirectory = _cfg.GetModelsDirectoryPath();
+            var fullFilePath = Path.Combine(parentDirectory, filePath);
+            Directory.CreateDirectory(fullFilePath[..fullFilePath.LastIndexOf('/')]);
+
+            using (var fileStream = new FileStream(fullFilePath, FileMode.Create, FileAccess.Write))
             {
-                fs.Write(file, 0, file.Length);
+                fileStream.Write(file, 0, file.Length);
             }
         }
 
-        public byte[] GetFile(string filePath) => System.IO.File.ReadAllBytes(filePath);
+        public byte[] GetFile(string filePath)
+        {
+            var parentDirectory = _cfg.GetModelsDirectoryPath();
+            var fullFilePath = Path.Combine(parentDirectory, filePath);
 
-        public bool IsFileExist(string filePath) => System.IO.File.Exists(filePath);
+            return System.IO.File.ReadAllBytes(fullFilePath);
+        }
+
+        public bool IsFileExist(string filePath)
+        {
+            var parentDirectory = _cfg.GetModelsDirectoryPath();
+            var fullFilePath = Path.Combine(parentDirectory, filePath);
+
+            return System.IO.File.Exists(fullFilePath);
+        }
     }
 }

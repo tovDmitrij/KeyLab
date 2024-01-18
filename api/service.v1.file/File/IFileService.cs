@@ -2,7 +2,7 @@
 {
     public interface IFileService
     {
-        public void AddFile(byte[] file, string filePath, string fileName);
+        public void AddFile(byte[] file, string filePath);
         public byte[] GetFile(string filePath);
         public bool IsFileExist(string filePath);
     }

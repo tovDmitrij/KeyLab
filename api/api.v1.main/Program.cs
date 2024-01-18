@@ -83,6 +83,7 @@ void InitServices()
     builder.Services.AddSingleton<IJWTConfigurationService, ConfigurationService>();
     builder.Services.AddSingleton<IMinioConfigurationService, ConfigurationService>();
     builder.Services.AddSingleton<IFileConfigurationService, ConfigurationService>();
+    builder.Services.AddSingleton<IKeyboardConfigurationService, ConfigurationService>();
     builder.Services.AddSingleton<IKeyboardCacheConfigurationService, ConfigurationService>();
 
     builder.Services.AddSingleton<IKeyboardCacheService, MemoryCacheService>();

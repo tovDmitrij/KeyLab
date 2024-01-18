@@ -4,7 +4,8 @@ using service.v1.configuration.Interfaces;
 namespace service.v1.configuration
 {
     public sealed class ConfigurationService : IEmailConfigurationService, IJWTConfigurationService, 
-        IMinioConfigurationService, IFileConfigurationService, IKeyboardCacheConfigurationService
+        IMinioConfigurationService, IFileConfigurationService, IKeyboardCacheConfigurationService,
+        IKeyboardConfigurationService
     {
         private readonly IConfiguration _cfg;
 

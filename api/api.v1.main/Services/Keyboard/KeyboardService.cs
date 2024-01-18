@@ -15,26 +15,26 @@ namespace api.v1.main.Services.Keyboard
     public sealed class KeyboardService : IKeyboardService
     {
         private readonly IFileService _file;
-        private readonly IFileConfigurationService _cfg;
         private readonly ITimeService _time;
         private readonly IKeyboardValidationService _validation;
+        private readonly IKeyboardConfigurationService _cfg;
 
         private readonly IKeyboardCacheService _cache;
 
         private readonly IKeyboardRepository _keyboards;
         private readonly IUserRepository _users;
 
-        public KeyboardService(IFileService file, IFileConfigurationService cfg, ITimeService time,
-            IKeyboardRepository keyboard, IUserRepository users, IKeyboardValidationService validation,
-            IKeyboardCacheService cache)
+        public KeyboardService(IFileService file, ITimeService time, IKeyboardRepository keyboard, 
+            IUserRepository users, IKeyboardValidationService validation, IKeyboardCacheService cache,
+            IKeyboardConfigurationService cfg)
         {
             _file = file;
-            _cfg = cfg;
             _time = time;
             _keyboards = keyboard;
             _users = users;
             _validation = validation;
             _cache = cache;
+            _cfg = cfg;
         }
 
 
@@ -66,25 +66,19 @@ namespace api.v1.main.Services.Keyboard
                 throw new BadRequestException("Такое наименование клавиатуры уже существует на Вашем аккаунте. Пожалуйста, выберите другое");
             }
 
-            var parentFolder = _cfg.GetModelsDirectoryPath();
-            var userIDFolder = userID.ToString();
-            var modelTypeFolder = "keyboards";
-            var fileName = $"{title}.glb";
-
             var creationDate = _time.GetCurrentUNIXTime();
 
             Guid keyboardID = default;
             try
             {
-                var filePath = $"{userIDFolder}/{modelTypeFolder}/{fileName}";
+                var filePath = $"{userID}/keyboards/{title}.glb";
                 keyboardID = _keyboards.InsertKeyboardFileInfo(userID, title, description, filePath, creationDate);
 
-                using var ms = new MemoryStream();
-                file.CopyTo(ms);
-                var bytes = ms.ToArray();
+                using var memoryStream = new MemoryStream();
+                file.CopyTo(memoryStream);
+                var bytes = memoryStream.ToArray();
 
-                filePath = $"{parentFolder}/{userIDFolder}/{modelTypeFolder}";
-                _file.AddFile(bytes, filePath, fileName);
+                _file.AddFile(bytes, filePath);
             }
             catch
             {
@@ -95,16 +89,15 @@ namespace api.v1.main.Services.Keyboard
 
         public byte[] GetKeyboardFile(Guid keyboardID)
         {
-            var parentFolder = _cfg.GetModelsDirectoryPath();
-            var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? throw new BadRequestException("Такого файла не существует");
-            var fullPath = $"{parentFolder}/{keyboardPath}";
+            var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? 
+                throw new BadRequestException("Такого файла не существует");
 
-            if (!_file.IsFileExist(fullPath))
+            if (!_file.IsFileExist(keyboardPath))
             {
                 throw new BadRequestException("Такого файла не существует");
             }
 
-            var file = _file.GetFile(fullPath);
+            var file = _file.GetFile(keyboardPath);
             return file;
         }
 
