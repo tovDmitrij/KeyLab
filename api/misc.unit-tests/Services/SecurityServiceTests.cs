@@ -3,7 +3,7 @@ using service.v1.time;
 
 using Xunit;
 
-namespace misc.unit_tests
+namespace misc.unit_tests.Services
 {
     public sealed class SecurityServiceTests
     {

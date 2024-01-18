@@ -1,10 +1,9 @@
 ﻿using component.v1.exceptions;
-
 using service.v1.validation;
 
 using Xunit;
 
-namespace misc.unit_tests
+namespace misc.unit_tests.Services
 {
     public sealed class ValidationServiceTests
     {
@@ -49,7 +48,7 @@ namespace misc.unit_tests
         {
             var validation = new ValidationService();
             var titles = new List<string>() { "", "Eu", "E76s8_$%" };
-            
+
             foreach (var title in titles)
             {
                 Assert.Throws<BadRequestException>(() => validation.ValidateKeyboardTitle(title));

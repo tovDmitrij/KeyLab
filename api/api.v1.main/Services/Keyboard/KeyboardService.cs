@@ -4,6 +4,7 @@ using db.v1.main.DTOs;
 using db.v1.main.Repositories.Keyboard;
 using db.v1.main.Repositories.User;
 
+using service.v1.cache;
 using service.v1.configuration.Interfaces;
 using service.v1.file.File;
 using service.v1.time;
@@ -18,11 +19,14 @@ namespace api.v1.main.Services.Keyboard
         private readonly ITimeService _time;
         private readonly IKeyboardValidationService _validation;
 
+        private readonly IKeyboardCacheService _cache;
+
         private readonly IKeyboardRepository _keyboards;
         private readonly IUserRepository _users;
 
         public KeyboardService(IFileService file, IFileConfigurationService cfg, ITimeService time,
-            IKeyboardRepository keyboard, IUserRepository users, IKeyboardValidationService validation)
+            IKeyboardRepository keyboard, IUserRepository users, IKeyboardValidationService validation,
+            IKeyboardCacheService cache)
         {
             _file = file;
             _cfg = cfg;
@@ -30,7 +34,10 @@ namespace api.v1.main.Services.Keyboard
             _keyboards = keyboard;
             _users = users;
             _validation = validation;
+            _cache = cache;
         }
+
+
 
         public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID)
         {
@@ -102,7 +109,13 @@ namespace api.v1.main.Services.Keyboard
 
             IsUserExist(defaultUserID);
 
-            var keyboards = _keyboards.GetUserKeyboards(defaultUserID);
+            _cache.TryGetDefaultKeyboardsList(out List<KeyboardDTO> keyboards);
+            if (keyboards == null)
+            {
+                keyboards = _keyboards.GetUserKeyboards(defaultUserID);
+                _cache.SetDefaultKeyboardsList(keyboards);
+            }
+
             return keyboards;
         }
 
@@ -113,6 +126,8 @@ namespace api.v1.main.Services.Keyboard
             var keyboards = _keyboards.GetUserKeyboards(userID);
             return keyboards;
         }
+
+
 
         private void IsUserExist(Guid userID)
         {

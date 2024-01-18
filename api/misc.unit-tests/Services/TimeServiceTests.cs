@@ -2,7 +2,7 @@
 
 using Xunit;
 
-namespace misc.unit_tests
+namespace misc.unit_tests.Services
 {
     public sealed class TimeServiceTests
     {
