@@ -66,22 +66,24 @@ namespace api.v1.main.Services.Keyboard
                 throw new BadRequestException("Такое наименование клавиатуры уже существует на Вашем аккаунте. Пожалуйста, выберите другое");
             }
 
-            var parentDirectory = _cfg.GetOtherModelsDirectoryPath();
-            var filePath = Path.Combine(parentDirectory, userID.ToString());
+            var parentFolder = _cfg.GetModelsDirectoryPath();
+            var userIDFolder = userID.ToString();
+            var modelTypeFolder = "keyboards";
             var fileName = $"{title}.glb";
-            var fullFilePath = Path.Combine(filePath, fileName);
 
             var creationDate = _time.GetCurrentUNIXTime();
 
             Guid keyboardID = default;
             try
             {
-                keyboardID = _keyboards.InsertKeyboardFileInfo(userID, title, description, fullFilePath, creationDate);
+                var filePath = $"{userIDFolder}/{modelTypeFolder}/{fileName}";
+                keyboardID = _keyboards.InsertKeyboardFileInfo(userID, title, description, filePath, creationDate);
 
                 using var ms = new MemoryStream();
                 file.CopyTo(ms);
                 var bytes = ms.ToArray();
 
+                filePath = $"{parentFolder}/{userIDFolder}/{modelTypeFolder}";
                 _file.AddFile(bytes, filePath, fileName);
             }
             catch
@@ -93,14 +95,16 @@ namespace api.v1.main.Services.Keyboard
 
         public string GetKeyboardFilePath(Guid keyboardID)
         {
+            var parentFolder = _cfg.GetModelsDirectoryPath();
             var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? throw new BadRequestException("Такого файла не существует");
+            var fullPath = $"{parentFolder}/{keyboardPath}";
 
-            if (!_file.IsFileExist(keyboardPath))
+            if (!_file.IsFileExist(fullPath))
             {
                 throw new BadRequestException("Такого файла не существует");
             }
 
-            return keyboardPath;
+            return fullPath;
         }
 
         public List<KeyboardDTO> GetDefaultKeyboardsList()

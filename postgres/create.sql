@@ -51,7 +51,7 @@ values(
     'dced1acd-b907-47e0-9659-77cb2c95e0aa',
     'Клавиатура по умолчанию №1',
     'Клавиатура размерностью 60%',
-    '/files/default/keyboards/60percent.glb',
+    'dced1acd-b907-47e0-9659-77cb2c95e0aa/keyboards/60percent.glb',
     1
 );
 insert into keyboards(id, owner_id, title, description, file_path, creation_date)
@@ -60,6 +60,6 @@ values(
     'dced1acd-b907-47e0-9659-77cb2c95e0aa',
     'Клавиатура по умолчанию №2',
     'Описание...',
-    '/files/default/keyboards/nonkeyboard.glb',
+    'dced1acd-b907-47e0-9659-77cb2c95e0aa/keyboards/nonkeyboard.glb',
     1
 );
