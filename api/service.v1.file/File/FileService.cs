@@ -13,17 +13,7 @@
             }
         }
 
-        public async Task<byte[]> GetFile(string filePath)
-        {
-            using (var fs = new FileStream(filePath, FileMode.Open))
-            {
-                var file = new byte[fs.Length];
-                await fs.ReadAsync(file);
-
-                return file;
-            }
-
-        }
+        public byte[] GetFile(string filePath) => System.IO.File.ReadAllBytes(filePath);
 
         public bool IsFileExist(string filePath) => System.IO.File.Exists(filePath);
     }

@@ -93,7 +93,7 @@ namespace api.v1.main.Services.Keyboard
             }
         }
 
-        public string GetKeyboardFilePath(Guid keyboardID)
+        public byte[] GetKeyboardFile(Guid keyboardID)
         {
             var parentFolder = _cfg.GetModelsDirectoryPath();
             var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? throw new BadRequestException("Такого файла не существует");
@@ -104,8 +104,11 @@ namespace api.v1.main.Services.Keyboard
                 throw new BadRequestException("Такого файла не существует");
             }
 
-            return fullPath;
+            var file = _file.GetFile(fullPath);
+            return file;
         }
+
+
 
         public List<KeyboardDTO> GetDefaultKeyboardsList()
         {
