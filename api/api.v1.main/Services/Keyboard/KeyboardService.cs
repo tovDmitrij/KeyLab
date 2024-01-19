@@ -97,7 +97,11 @@ namespace api.v1.main.Services.Keyboard
                 throw new BadRequestException("Такого файла не существует");
             }
 
-            var file = _file.GetFile(keyboardPath);
+            if (!_cache.TryGetKeyboardFile(keyboardID, out var file))
+            {
+                file = _file.GetFile(keyboardPath);
+                _cache.SetKeyboardFile(keyboardID, file);
+            }
             return file;
         }
 
@@ -109,13 +113,11 @@ namespace api.v1.main.Services.Keyboard
 
             IsUserExist(defaultUserID);
 
-            _cache.TryGetDefaultKeyboardsList(out List<KeyboardDTO> keyboards);
-            if (keyboards == null)
+            if (!_cache.TryGetDefaultKeyboardsList(out List<KeyboardDTO> keyboards))
             {
                 keyboards = _keyboards.GetUserKeyboards(defaultUserID);
                 _cache.SetDefaultKeyboardsList(keyboards);
             }
-
             return keyboards;
         }
 
