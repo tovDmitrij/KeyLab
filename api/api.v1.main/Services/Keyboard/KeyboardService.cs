@@ -14,19 +14,18 @@ namespace api.v1.main.Services.Keyboard
 {
     public sealed class KeyboardService : IKeyboardService
     {
-        private readonly IFileService _file;
-        private readonly ITimeService _time;
-        private readonly IKeyboardValidationService _validation;
-        private readonly IKeyboardConfigurationService _cfg;
-
-        private readonly IKeyboardCacheService _cache;
-
         private readonly IKeyboardRepository _keyboards;
         private readonly IUserRepository _users;
 
+        private readonly IKeyboardValidationService _validation;
+        private readonly IKeyboardCacheService _cache;
+        private readonly IFileConfigurationService _cfg;
+        private readonly IFileService _file;
+        private readonly ITimeService _time;
+
         public KeyboardService(IFileService file, ITimeService time, IKeyboardRepository keyboard, 
             IUserRepository users, IKeyboardValidationService validation, IKeyboardCacheService cache,
-            IKeyboardConfigurationService cfg)
+            IFileConfigurationService cfg)
         {
             _file = file;
             _time = time;
@@ -42,29 +41,21 @@ namespace api.v1.main.Services.Keyboard
         public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID)
         {
             if (file == null)
-            {
                 throw new BadRequestException("Файл клавиатуры не был прикреплён");
-            }
             if (file.Length == 0)
-            {
                 throw new BadRequestException("Файл клавиатуры не имеет размера");
-            }
 
             if (title == null)
-            {
                 throw new BadRequestException("Пожалуйста, дайте клавиатуре наименование");
-            }
             _validation.ValidateKeyboardTitle(title);
 
             if (description != null)
-            {
                 _validation.ValidateKeyboardDescription(description);
-            }
 
             if (_keyboards.IsKeyboardTitleBusy(userID, title))
-            {
                 throw new BadRequestException("Такое наименование клавиатуры уже существует на Вашем аккаунте. Пожалуйста, выберите другое");
-            }
+
+
 
             var creationDate = _time.GetCurrentUNIXTime();
 
@@ -93,14 +84,12 @@ namespace api.v1.main.Services.Keyboard
                 throw new BadRequestException("Такого файла не существует");
 
             if (!_file.IsFileExist(keyboardPath))
-            {
                 throw new BadRequestException("Такого файла не существует");
-            }
 
-            if (!_cache.TryGetKeyboardFile(keyboardID, out var file))
+            if (!_cache.TryGetFile(keyboardID, out var file))
             {
                 file = _file.GetFile(keyboardPath);
-                _cache.SetKeyboardFile(keyboardID, file);
+                _cache.SetFile(keyboardID, file);
             }
             return file;
         }
@@ -113,10 +102,10 @@ namespace api.v1.main.Services.Keyboard
 
             IsUserExist(defaultUserID);
 
-            if (!_cache.TryGetDefaultKeyboardsList(out List<KeyboardDTO> keyboards))
+            if (!_cache.TryGetKeyboardsList(defaultUserID, out List <KeyboardDTO> keyboards))
             {
                 keyboards = _keyboards.GetUserKeyboards(defaultUserID);
-                _cache.SetDefaultKeyboardsList(keyboards);
+                _cache.SetKeyboardsList(defaultUserID, keyboards);
             }
             return keyboards;
         }
@@ -134,9 +123,7 @@ namespace api.v1.main.Services.Keyboard
         private void IsUserExist(Guid userID)
         {
             if (!_users.IsUserExist(userID))
-            {
                 throw new BadRequestException("Пользователя с заданным идентификатором не существует");
-            }
         }
     }
 }

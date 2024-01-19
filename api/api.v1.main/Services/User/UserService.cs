@@ -5,7 +5,6 @@ using component.v1.exceptions;
 using db.v1.main.Repositories.Verification;
 using db.v1.main.Repositories.User;
 
-using service.v1.email;
 using service.v1.jwt.Service;
 using service.v1.security.Service;
 using service.v1.time;
