@@ -35,11 +35,10 @@ namespace api.v1.main.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public void GetKeyboardFile(Guid keyboardID) 
+        public async Task GetKeyboardFile(Guid keyboardID) 
         {
-            var filePath = _keyboard.GetKeyboardFilePath(keyboardID);
-
-            Response.SendFileAsync(filePath);
+            var file = _keyboard.GetKeyboardFile(keyboardID);
+            await Response.Body.WriteAsync(file);
         }
 
         [HttpPost, DisableRequestSizeLimit]

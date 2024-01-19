@@ -1,16 +1,14 @@
-﻿using Microsoft.VisualBasic;
-
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 
 using Xunit;
 
 namespace misc.unit_tests.Controllers
 {
-    public sealed class UserControllerService
+    public sealed class UserControllerTests
     {
         [Fact]
-        public void SignIn1()
+        public async void SignIn_400()
         {
             var httpClient = new HttpClient();
 
@@ -18,13 +16,15 @@ namespace misc.unit_tests.Controllers
             var email = "admin@keyboard.ru";
             var password = "111111112";
 
-            var actual = httpClient.PostAsJsonAsync(signInUrl, new { email, password }).Result.StatusCode;
+            var response = await httpClient.PostAsJsonAsync(signInUrl, new { email, password });
+
+            var actual = response.StatusCode;
             var expected = HttpStatusCode.BadRequest;
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public void SignIn2()
+        public async void SignIn_200()
         {
             var httpClient = new HttpClient();
 
@@ -32,7 +32,9 @@ namespace misc.unit_tests.Controllers
             var email = "admin@keyboard.ru";
             var password = "11111111";
 
-            var actual = httpClient.PostAsJsonAsync(signInUrl, new { email, password }).Result.StatusCode;
+            var response = await httpClient.PostAsJsonAsync(signInUrl, new { email, password });
+
+            var actual = response.StatusCode;
             var expected = HttpStatusCode.OK;
             Assert.Equal(expected, actual);
         }

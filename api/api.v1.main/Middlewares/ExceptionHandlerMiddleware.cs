@@ -1,6 +1,7 @@
 ﻿using component.v1.exceptions;
 
 using System.Net;
+using System.Text;
 
 namespace api.v1.main.Middlewares
 {
@@ -30,39 +31,47 @@ namespace api.v1.main.Middlewares
             }
         }
 
-        private static void WriteTXTLogs(Exception e, HttpRequest r)
+
+
+        private static void WriteTXTLogs(Exception ex, HttpRequest req)
         {
-            var currentTime = GetCurrentTime();
-            var fileName = $"{currentTime}.txt";
-            var path = "/logs/";
-            var fullPath = path + fileName;
+            var currentTime = GetCurrentUTCTimeFormat();
+            var logPath = $"/logs/{currentTime}.txt";
+            using var writer = new StreamWriter(logPath);
 
-            var sw = new StreamWriter(fullPath);
+            var requestPath = req.Path.Value;
+            if (requestPath != null) 
+                writer.WriteLine(GetStreamWriterMsg("Path", requestPath));
 
-            sw.WriteLine(GetStreamWriterMsg("Path", r.Path.Value));
-            sw.WriteLine(GetStreamWriterMsg("Method", r.Method));
+            var requestMethod = req.Method;
+            writer.WriteLine(GetStreamWriterMsg("Method", requestMethod));
 
-            using (var reader = new StreamReader(r.Body))
-            {
-                string body = reader.ReadToEnd();
-                sw.WriteLine(GetStreamWriterMsg("Body", body));
-            }
+            var requestQueryParams = req.QueryString.ToString();
+            if (requestQueryParams.Length != 0) 
+                writer.WriteLine(GetStreamWriterMsg("Query params", requestQueryParams));
 
-            sw.WriteLine(GetStreamWriterMsg("Message", e.Message));
-            sw.WriteLine(GetStreamWriterMsg("Source", e.Source));
-            sw.WriteLine(GetStreamWriterMsg("TargetSite", e.TargetSite.ToString()));
-            sw.WriteLine(GetStreamWriterMsg("StackTrace", e.StackTrace));
+            var body = GetRawBodyAsync(req).Result;
+            if (body.Length != 0)
+                writer.WriteLine(GetStreamWriterMsg("Body", body));
 
-            sw.Close();
+            var exceptionMsg = ex.Message;
+            if (exceptionMsg.Length != 0) 
+                writer.WriteLine(GetStreamWriterMsg("Message", exceptionMsg));
+
+            var exceptionSource = ex.Source;
+            if (exceptionSource != null) 
+                writer.WriteLine(GetStreamWriterMsg("Source", exceptionSource));
+
+            var exceptionTargetSite = ex.TargetSite;
+            if (exceptionTargetSite != null) 
+                writer.WriteLine(GetStreamWriterMsg("TargetSite", exceptionTargetSite.ToString()!));
+
+            var exceptionStackTrace = ex.StackTrace;
+            if (exceptionStackTrace != null) 
+                writer.WriteLine(GetStreamWriterMsg("StackTrace", exceptionStackTrace));
         }
 
-        private static string GetStreamWriterMsg(string key, string value)
-        {
-            string msg = $">>>{key}:\n\t{value}\n";
-            return msg;
-        }
-
-        private static string GetCurrentTime()
+        private static string GetCurrentUTCTimeFormat()
         {
             var utcNow = DateTime.UtcNow;
 
@@ -75,6 +84,24 @@ namespace api.v1.main.Middlewares
 
             var currentTime = $"{year}-{month}-{day}__{hour}-{minute}-{second}";
             return currentTime;
+        }
+
+        private static string GetStreamWriterMsg(string key, string value)
+        {
+            string msg = $">>>{key}:\n\t{value}\n";
+            return msg;
+        }
+    
+        private static async Task<string> GetRawBodyAsync(HttpRequest req)
+        {
+            if (!req.Body.CanSeek) req.EnableBuffering();
+
+            req.Body.Position = 0;
+            var reader = new StreamReader(req.Body, Encoding.UTF8);
+            var body = await reader.ReadToEndAsync().ConfigureAwait(false);
+            req.Body.Position = 0;
+
+            return body;
         }
     }
 }

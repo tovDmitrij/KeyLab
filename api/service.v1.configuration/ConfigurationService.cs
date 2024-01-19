@@ -4,7 +4,8 @@ using service.v1.configuration.Interfaces;
 namespace service.v1.configuration
 {
     public sealed class ConfigurationService : IEmailConfigurationService, IJWTConfigurationService, 
-        IMinioConfigurationService, IFileConfigurationService, IKeyboardCacheConfigurationService
+        IMinioConfigurationService, IFileConfigurationService, IKeyboardCacheConfigurationService,
+        IKeyboardConfigurationService
     {
         private readonly IConfiguration _cfg;
 
@@ -34,8 +35,7 @@ namespace service.v1.configuration
 
 
 
-        public string GetDefaultModelsDirectoryPath() => _cfg["File:DefaultModelsParentDirectory"];
-        public string GetOtherModelsDirectoryPath() => _cfg["File:OtherModelsParentDirectory"];
+        public string GetModelsDirectoryPath() => _cfg["File:ModelsParentDirectory"];
         public string GetDefaultModelsUserID() => _cfg["File:DefaultModelsUserID"];
 
 

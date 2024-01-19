@@ -26,6 +26,7 @@ namespace db.v1.main.Repositories.Keyboard
         {
             var keyboard = _db.Keyboards.First(x => x.ID == keyboardID);
             _db.Keyboards.Remove(keyboard);
+            _db.SaveChanges();
         }
 
 

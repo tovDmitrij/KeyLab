@@ -4,7 +4,8 @@ minio/data
 .vs
 .github
 logs
-files/other
+files/*
+!files/dced1acd-b907-47e0-9659-77cb2c95e0aa
 
 
 

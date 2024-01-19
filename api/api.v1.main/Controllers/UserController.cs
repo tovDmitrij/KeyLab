@@ -31,7 +31,7 @@ namespace api.v1.main.Controllers
         {
             var tokens = _user.SignIn(body);
             SetRefreshTokenInCookie(tokens.RefreshToken);
-            return Ok(tokens.AccessToken);
+            return Ok(new { AccessToken = tokens.AccessToken });
         }
 
         [HttpGet("refresh")]

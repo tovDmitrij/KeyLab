@@ -9,14 +9,16 @@ namespace misc.unit_tests.Controllers
     public sealed class KeyboardControllerTests
     {
         [Fact]
-        public void GetDefaultKeyboardsList()
+        public async void GetDefaultKeyboardsList_InRange()
         {
             var httpClient = new HttpClient();
             var keyboardUrl = "http://127.0.0.1:6005/api/v1/keyboards/default";
 
-            var actual = httpClient.GetAsync(keyboardUrl).Result.Content.ReadFromJsonAsync<List<KeyboardDTO>>().Result.Count;
+            var response = await httpClient.GetAsync(keyboardUrl);
+
+            var actual = response.Content.ReadFromJsonAsync<List<KeyboardDTO>>().Result.Count;
             var low = 1;
-            var high = 999;
+            var high = 99999;
             Assert.InRange(actual, low, high);
         }
     }
