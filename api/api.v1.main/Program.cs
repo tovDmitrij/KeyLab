@@ -92,9 +92,9 @@ void InitServices()
     builder.Services.AddSingleton<IVerificationValidationService, ValidationService>();
     builder.Services.AddSingleton<IKeyboardValidationService, ValidationService>();
 
-    builder.Services.AddSingleton<IUserService, UserService>();
-    builder.Services.AddSingleton<IVerificationService, VerificationService>();
-    builder.Services.AddSingleton<IKeyboardService, KeyboardService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IVerificationService, VerificationService>();
+    builder.Services.AddScoped<IKeyboardService, KeyboardService>();
 
     builder.Services.AddSingleton<IEmailService, EmailService>();
     builder.Services.AddSingleton<IJWTService, JWTService>();
@@ -105,17 +105,17 @@ void InitServices()
 
 void InitRepositories()
 {
-    builder.Services.AddSingleton<IUserRepository, UserRepository>();
-    builder.Services.AddSingleton<IVerificationRepository, VerificationRepository>();
-    builder.Services.AddSingleton<IKeyboardRepository, KeyboardRepository>();
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IVerificationRepository, VerificationRepository>();
+    builder.Services.AddScoped<IKeyboardRepository, KeyboardRepository>();
 }
 
 void InitContexts()
 {
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Singleton);
-    builder.Services.AddSingleton<IUserContext, MainContext>();
-    builder.Services.AddSingleton<IVerificationContext, MainContext>();
-    builder.Services.AddSingleton<IKeyboardContext, MainContext>();
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Scoped);
+    builder.Services.AddScoped<IUserContext, MainContext>();
+    builder.Services.AddScoped<IVerificationContext, MainContext>();
+    builder.Services.AddScoped<IKeyboardContext, MainContext>();
 }
 
 #endregion

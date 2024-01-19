@@ -47,14 +47,15 @@ namespace api.v1.main.Middlewares
             writer.WriteLine(GetStreamWriterMsg("Method", requestMethod));
 
             var requestQueryParams = req.QueryString.ToString();
-            if (requestQueryParams != "") 
+            if (requestQueryParams.Length != 0) 
                 writer.WriteLine(GetStreamWriterMsg("Query params", requestQueryParams));
 
             var body = GetRawBodyAsync(req).Result;
-            writer.WriteLine(GetStreamWriterMsg("Body", body));
+            if (body.Length != 0)
+                writer.WriteLine(GetStreamWriterMsg("Body", body));
 
             var exceptionMsg = ex.Message;
-            if (exceptionMsg != "") 
+            if (exceptionMsg.Length != 0) 
                 writer.WriteLine(GetStreamWriterMsg("Message", exceptionMsg));
 
             var exceptionSource = ex.Source;
