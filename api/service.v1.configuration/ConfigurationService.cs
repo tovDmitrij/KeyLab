@@ -4,8 +4,7 @@ using service.v1.configuration.Interfaces;
 namespace service.v1.configuration
 {
     public sealed class ConfigurationService : IEmailConfigurationService, IJWTConfigurationService, 
-        IMinioConfigurationService, IFileConfigurationService, IKeyboardCacheConfigurationService,
-        IKeyboardConfigurationService
+        IMinioConfigurationService, IFileConfigurationService, ICacheConfigurationService
     {
         private readonly IConfiguration _cfg;
 
@@ -41,6 +40,5 @@ namespace service.v1.configuration
 
 
         public int GetCacheExpirationMinutes() => Convert.ToInt32(_cfg["Cache:ExpirationMinutes"]);
-        public string GetDefaultKeyboardsListCacheKey() => _cfg["Cache:DefaultKeyboardsList"];
     }
 }
