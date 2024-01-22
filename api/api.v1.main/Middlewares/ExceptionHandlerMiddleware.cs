@@ -39,6 +39,8 @@ namespace api.v1.main.Middlewares
             var logPath = $"/logs/{currentTime}.txt";
             using var writer = new StreamWriter(logPath);
 
+
+
             var requestPath = req.Path.Value;
             if (requestPath != null) 
                 writer.WriteLine(GetStreamWriterMsg("Path", requestPath));
@@ -49,6 +51,10 @@ namespace api.v1.main.Middlewares
             var requestQueryParams = req.QueryString.ToString();
             if (requestQueryParams.Length != 0) 
                 writer.WriteLine(GetStreamWriterMsg("Query params", requestQueryParams));
+
+            var requestFormData = GetFormData(req.Form);
+            if (requestFormData.Length != 0)
+                writer.WriteLine(GetStreamWriterMsg("Form data", requestFormData));
 
             var body = GetRawBodyAsync(req).Result;
             if (body.Length != 0)
@@ -71,6 +77,8 @@ namespace api.v1.main.Middlewares
                 writer.WriteLine(GetStreamWriterMsg("StackTrace", exceptionStackTrace));
         }
 
+
+
         private static string GetCurrentUTCTimeFormat()
         {
             var utcNow = DateTime.UtcNow;
@@ -86,12 +94,18 @@ namespace api.v1.main.Middlewares
             return currentTime;
         }
 
-        private static string GetStreamWriterMsg(string key, string value)
+        private static string GetStreamWriterMsg(string key, string value) => $"\t>>>{key}<<<\n{value}\n";
+
+        private static string GetFormData(IFormCollection formData)
         {
-            string msg = $">>>{key}:\n\t{value}\n";
-            return msg;
+            var result = new StringBuilder();
+            foreach (var item in formData)
+            {
+                result.Append($"{item.Key}: {item.Value}\n");
+            }
+            return result.ToString();
         }
-    
+
         private static async Task<string> GetRawBodyAsync(HttpRequest req)
         {
             if (!req.Body.CanSeek) req.EnableBuffering();

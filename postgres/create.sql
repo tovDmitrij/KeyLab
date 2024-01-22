@@ -1,5 +1,7 @@
 create extension if not exists "uuid-ossp";
 
+
+
 create table if not exists users(
     id uuid default uuid_generate_v4() primary key,
     email text not null,
@@ -25,6 +27,8 @@ values(
     1705443770.40067
 );
 
+
+
 create table if not exists email_codes(
     id serial primary key,
     email text not null,
@@ -33,6 +37,8 @@ create table if not exists email_codes(
 );
 create index on email_codes(id);
 create index on email_codes(email, code, expire_date);
+
+
 
 create table if not exists keyboards(
     id uuid default uuid_generate_v4() primary key,
@@ -63,3 +69,5 @@ values(
     'dced1acd-b907-47e0-9659-77cb2c95e0aa/keyboards/nonkeyboard.glb',
     1
 );
+
+

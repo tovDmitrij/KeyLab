@@ -3,6 +3,6 @@
     public interface IFileConfigurationService
     {
         public string GetModelsDirectoryPath();
-        public string GetDefaultModelsUserID();
+        public Guid GetDefaultModelsUserID();
     }
 }

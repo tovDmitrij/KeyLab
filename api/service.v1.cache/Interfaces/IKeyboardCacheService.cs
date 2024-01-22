@@ -4,10 +4,13 @@ namespace service.v1.cache
 {
     public interface IKeyboardCacheService
     {
-        public bool TryGetKeyboardsList(Guid key, out List<KeyboardDTO>? keyboards);
-        public void SetKeyboardsList(Guid key, List<KeyboardDTO> keyboards);
+        public bool TryGetKeyboardsList(Guid userID, out List<KeyboardDTO>? keyboards);
+        public void SetKeyboardsList(Guid userID, List<KeyboardDTO> keyboards);
+        public void DeleteKeyboardsList(Guid userID);
 
-        public bool TryGetFile(Guid key, out byte[]? keyboard);
-        public void SetFile(Guid key, byte[] keyboard);
+        public bool TryGetFile(Guid fileID, out byte[]? file);
+        public void SetFile(Guid fileID, byte[] file);
+        public void DeleteFile(Guid fileID);
+
     }
 }

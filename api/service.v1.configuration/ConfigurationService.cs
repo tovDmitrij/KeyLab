@@ -35,7 +35,7 @@ namespace service.v1.configuration
 
 
         public string GetModelsDirectoryPath() => _cfg["File:ModelsParentDirectory"];
-        public string GetDefaultModelsUserID() => _cfg["File:DefaultModelsUserID"];
+        public Guid GetDefaultModelsUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"]);
 
 
 
