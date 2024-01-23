@@ -34,8 +34,10 @@ namespace service.v1.configuration
 
 
 
-        public string GetModelsDirectoryPath() => _cfg["File:ModelsParentDirectory"];
+        public string GetModelsParentDirectory() => _cfg["File:ModelsParentDirectory"];
         public Guid GetDefaultModelsUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"]);
+        public string GetSwitchModelsDirectory() => _cfg["File:SwitchModelDirectory"];
+        public string GetSwitchSoundsDirectory() => _cfg["File:SwitchSoundDirectory"];
 
 
 

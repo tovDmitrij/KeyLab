@@ -2,7 +2,10 @@
 {
     public interface IFileConfigurationService
     {
-        public string GetModelsDirectoryPath();
+        public string GetModelsParentDirectory();
         public Guid GetDefaultModelsUserID();
+
+        public string GetSwitchModelsDirectory();
+        public string GetSwitchSoundsDirectory();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using db.v1.main.Contexts.Interfaces;
+using db.v1.main.DTOs;
 
 namespace db.v1.main.Repositories.Switch
 {
@@ -12,5 +13,14 @@ namespace db.v1.main.Repositories.Switch
 
         public bool IsSwitchExist(Guid switchID) => _db.Switches
             .Any(x => x.ID == switchID);
+
+        public List<SwitchInfoDTO> GetSwitches() => _db.Switches
+            .Select(x => new SwitchInfoDTO(x.ID, x.Title, x.Description)).ToList();
+
+        public string? GetSwitchModelPath(Guid switchID) => _db.Switches
+            .Where(x => x.ID == switchID).Select(x => x.FilePath).FirstOrDefault();
+
+        public string? GetSwitchSoundPath(Guid switchID) => _db.Switches
+            .Where(x => x.ID == switchID).Select(x => x.SoundPath).FirstOrDefault();
     }
 }
