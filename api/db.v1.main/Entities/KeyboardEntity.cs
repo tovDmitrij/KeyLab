@@ -13,6 +13,12 @@ namespace db.v1.main.Entities
         [Column("owner_id")]
         public Guid OwnerID { get; set; }
 
+        [Column("switch_type_id")]
+        public Guid SwitchTypeID { get; set; }
+
+        [Column("box_type_id")]
+        public Guid BoxTypeID { get; set; }
+
         [Column("title")]
         public string Title { get; set; }
 
@@ -25,19 +31,23 @@ namespace db.v1.main.Entities
         [Column("creation_date")]
         public double CreationDate { get; set; }
 
-        public KeyboardEntity(Guid id, Guid ownerID, string title, string? description, string filePath, double creationDate)
+        public KeyboardEntity(Guid id, Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, string? description, string filePath, double creationDate)
         {
             ID = id;
             OwnerID = ownerID;
+            SwitchTypeID = switchTypeID;
+            BoxTypeID = boxTypeID;
             Title = title;
             Description = description;
             FilePath = filePath;
             CreationDate = creationDate;
         }
 
-        public KeyboardEntity(Guid ownerID, string title, string? description, string filePath, double creationDate)
+        public KeyboardEntity(Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, string? description, string filePath, double creationDate)
         {
             OwnerID = ownerID;
+            SwitchTypeID = switchTypeID;
+            BoxTypeID = boxTypeID;
             Title = title;
             Description = description;
             FilePath = filePath;

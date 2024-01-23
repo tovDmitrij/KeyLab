@@ -24,6 +24,8 @@ using service.v1.file.File;
 using db.v1.main.Repositories.Keyboard;
 using api.v1.main.Services.Keyboard;
 using service.v1.cache;
+using db.v1.main.Repositories.Box;
+using db.v1.main.Repositories.Switch;
 
 
 
@@ -107,6 +109,8 @@ void InitRepositories()
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IVerificationRepository, VerificationRepository>();
     builder.Services.AddScoped<IKeyboardRepository, KeyboardRepository>();
+    builder.Services.AddScoped<IBoxRepository, BoxRepository>();
+    builder.Services.AddScoped<ISwitchRepository, SwitchRepository>();
 }
 
 void InitContexts()
@@ -115,6 +119,8 @@ void InitContexts()
     builder.Services.AddScoped<IUserContext, MainContext>();
     builder.Services.AddScoped<IVerificationContext, MainContext>();
     builder.Services.AddScoped<IKeyboardContext, MainContext>();
+    builder.Services.AddScoped<IBoxContext, MainContext>();
+    builder.Services.AddScoped<ISwitchContext, MainContext>();
 }
 
 #endregion

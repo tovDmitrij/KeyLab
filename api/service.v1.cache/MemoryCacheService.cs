@@ -19,8 +19,8 @@ namespace service.v1.cache
 
 
 
-        public bool TryGetKeyboardsList(Guid key, out List<KeyboardDTO>? keyboards) => _cache.TryGetValue(key, out keyboards);
-        public void SetKeyboardsList(Guid key, List<KeyboardDTO> keyboards) => Set(key, keyboards);
+        public bool TryGetKeyboardsList(Guid key, out List<KeyboardInfoDTO>? keyboards) => _cache.TryGetValue(key, out keyboards);
+        public void SetKeyboardsList(Guid key, List<KeyboardInfoDTO> keyboards) => Set(key, keyboards);
         public void DeleteKeyboardsList(Guid userID) => _cache.Remove(userID);
 
 

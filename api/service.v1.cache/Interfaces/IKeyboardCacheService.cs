@@ -4,8 +4,8 @@ namespace service.v1.cache
 {
     public interface IKeyboardCacheService
     {
-        public bool TryGetKeyboardsList(Guid userID, out List<KeyboardDTO>? keyboards);
-        public void SetKeyboardsList(Guid userID, List<KeyboardDTO> keyboards);
+        public bool TryGetKeyboardsList(Guid userID, out List<KeyboardInfoDTO>? keyboards);
+        public void SetKeyboardsList(Guid userID, List<KeyboardInfoDTO> keyboards);
         public void DeleteKeyboardsList(Guid userID);
 
         public bool TryGetFile(Guid fileID, out byte[]? file);

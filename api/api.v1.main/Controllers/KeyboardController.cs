@@ -1,5 +1,7 @@
 ﻿using api.v1.main.Services.Keyboard;
 
+using component.v1.exceptions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,11 +48,14 @@ namespace api.v1.main.Controllers
         public IActionResult AddKeyboard()
         {
             var file = Request.Form.Files[0];
-            var title = Request.Form["title"];
-            var description = Request.Form["description"];
+            string title = Request.Form["title"];
+            string? description = Request.Form["description"];
+            Guid switchTypeID = Guid.Parse(Request.Form["switchTypeID"]);
+            Guid boxTypeID = Guid.Parse(Request.Form["boxTypeID"]);
+
             var userID = GetUserIDFromAccessToken();
 
-            _keyboard.AddKeyboard(file, title, description, userID);
+            _keyboard.AddKeyboard(file, title, description, userID, boxTypeID, switchTypeID);
 
             return Ok("Клавиатура была успешно сохранена");
         }
