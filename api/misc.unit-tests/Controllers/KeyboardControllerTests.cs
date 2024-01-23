@@ -19,7 +19,7 @@ namespace misc.unit_tests.Controllers
 
             var response = await httpClient.GetAsync(keyboardUrl);
 
-            var actual = response.Content.ReadFromJsonAsync<List<KeyboardDTO>>().Result.Count;
+            var actual = response.Content.ReadFromJsonAsync<List<KeyboardInfoDTO>>().Result.Count;
             Assert.NotEqual(0, actual);
         }
 

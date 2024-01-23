@@ -4,7 +4,7 @@ namespace db.v1.main.Repositories.Keyboard
 {
     public interface IKeyboardRepository
     {
-        public Guid InsertKeyboardFileInfo(Guid ownerID, string title, string? description, string filePath, double creationDate);
+        public Guid InsertKeyboardFileInfo(Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, string? description, string filePath, double creationDate);
         public void DeleteKeyboardFileInfo(Guid keyboardID);
 
         public bool IsKeyboardTitleBusy(Guid ownerID, string title);
@@ -12,6 +12,6 @@ namespace db.v1.main.Repositories.Keyboard
 
         public string? GetKeyboardFilePath(Guid keyboardID);
 
-        public List<KeyboardDTO> GetUserKeyboards(Guid userID);
+        public List<KeyboardInfoDTO> GetUserKeyboards(Guid userID);
     }
 }

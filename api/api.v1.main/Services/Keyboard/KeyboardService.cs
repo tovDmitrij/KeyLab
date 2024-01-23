@@ -1,7 +1,9 @@
 ﻿using component.v1.exceptions;
 
 using db.v1.main.DTOs;
+using db.v1.main.Repositories.Box;
 using db.v1.main.Repositories.Keyboard;
+using db.v1.main.Repositories.Switch;
 using db.v1.main.Repositories.User;
 
 using service.v1.cache;
@@ -16,6 +18,8 @@ namespace api.v1.main.Services.Keyboard
     {
         private readonly IKeyboardRepository _keyboards;
         private readonly IUserRepository _users;
+        private readonly IBoxRepository _boxes;
+        private readonly ISwitchRepository _switches;
 
         private readonly IKeyboardValidationService _validation;
         private readonly IKeyboardCacheService _cache;
@@ -25,7 +29,7 @@ namespace api.v1.main.Services.Keyboard
 
         public KeyboardService(IFileService file, ITimeService time, IKeyboardRepository keyboard, 
             IUserRepository users, IKeyboardValidationService validation, IKeyboardCacheService cache,
-            IFileConfigurationService cfg)
+            IFileConfigurationService cfg, IBoxRepository boxes, ISwitchRepository switches)
         {
             _file = file;
             _time = time;
@@ -34,11 +38,13 @@ namespace api.v1.main.Services.Keyboard
             _validation = validation;
             _cache = cache;
             _cfg = cfg;
+            _boxes = boxes;
+            _switches = switches;
         }
 
 
 
-        public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID)
+        public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID, Guid boxTypeID, Guid switchTypeID)
         {
             if (file == null)
                 throw new BadRequestException("Файл клавиатуры не был прикреплён");
@@ -55,6 +61,11 @@ namespace api.v1.main.Services.Keyboard
             if (_keyboards.IsKeyboardTitleBusy(userID, title))
                 throw new BadRequestException("Такое наименование клавиатуры уже существует на Вашем аккаунте. Пожалуйста, выберите другое");
 
+            if (!_boxes.IsBoxTypeExist(boxTypeID))
+                throw new BadRequestException("Такого типа боксов не существует");
+
+            if (!_switches.IsSwitchExist(switchTypeID))
+                throw new BadRequestException("Такого типа свитчей не существует");
 
 
             var creationDate = _time.GetCurrentUNIXTime();
@@ -63,7 +74,7 @@ namespace api.v1.main.Services.Keyboard
             try
             {
                 var filePath = $"{userID}/keyboards/{title}.glb";
-                keyboardID = _keyboards.InsertKeyboardFileInfo(userID, title, description, filePath, creationDate);
+                keyboardID = _keyboards.InsertKeyboardFileInfo(userID, switchTypeID, boxTypeID, title, description, filePath, creationDate);
 
                 using var memoryStream = new MemoryStream();
                 file.CopyTo(memoryStream);
@@ -98,19 +109,19 @@ namespace api.v1.main.Services.Keyboard
 
 
 
-        public List<KeyboardDTO> GetDefaultKeyboardsList()
+        public List<KeyboardInfoDTO> GetDefaultKeyboardsList()
         {
             var defaultUserID = _cfg.GetDefaultModelsUserID();
             return GetKeyboardsList(defaultUserID);
         }
 
-        public List<KeyboardDTO> GetUserKeyboardsList(Guid userID) => GetKeyboardsList(userID);
+        public List<KeyboardInfoDTO> GetUserKeyboardsList(Guid userID) => GetKeyboardsList(userID);
 
-        private List<KeyboardDTO> GetKeyboardsList(Guid userID)
+        private List<KeyboardInfoDTO> GetKeyboardsList(Guid userID)
         {
             IsUserExist(userID);
 
-            if (!_cache.TryGetKeyboardsList(userID, out List<KeyboardDTO> keyboards))
+            if (!_cache.TryGetKeyboardsList(userID, out List<KeyboardInfoDTO> keyboards))
             {
                 keyboards = _keyboards.GetUserKeyboards(userID);
                 _cache.SetKeyboardsList(userID, keyboards);
