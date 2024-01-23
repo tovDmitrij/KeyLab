@@ -70,6 +70,8 @@ namespace api.v1.main.Services.Keyboard
                 var bytes = memoryStream.ToArray();
 
                 _file.AddFile(bytes, filePath);
+
+                _cache.DeleteKeyboardsList(userID);
             }
             catch
             {
@@ -98,23 +100,21 @@ namespace api.v1.main.Services.Keyboard
 
         public List<KeyboardDTO> GetDefaultKeyboardsList()
         {
-            var defaultUserID = Guid.Parse(_cfg.GetDefaultModelsUserID());
-
-            IsUserExist(defaultUserID);
-
-            if (!_cache.TryGetKeyboardsList(defaultUserID, out List <KeyboardDTO> keyboards))
-            {
-                keyboards = _keyboards.GetUserKeyboards(defaultUserID);
-                _cache.SetKeyboardsList(defaultUserID, keyboards);
-            }
-            return keyboards;
+            var defaultUserID = _cfg.GetDefaultModelsUserID();
+            return GetKeyboardsList(defaultUserID);
         }
 
-        public List<KeyboardDTO> GetUserKeyboardsList(Guid userID)
+        public List<KeyboardDTO> GetUserKeyboardsList(Guid userID) => GetKeyboardsList(userID);
+
+        private List<KeyboardDTO> GetKeyboardsList(Guid userID)
         {
             IsUserExist(userID);
 
-            var keyboards = _keyboards.GetUserKeyboards(userID);
+            if (!_cache.TryGetKeyboardsList(userID, out List<KeyboardDTO> keyboards))
+            {
+                keyboards = _keyboards.GetUserKeyboards(userID);
+                _cache.SetKeyboardsList(userID, keyboards);
+            }
             return keyboards;
         }
 
