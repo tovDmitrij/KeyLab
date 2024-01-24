@@ -41,21 +41,15 @@ namespace api.v1.main.Services.User
             _validation.ValidatePassword(body.Password);
             _validation.ValidateNickname(body.Nickname);
 
-            if (_users.IsEmailBusy(body.Email))
-            {
-                throw new BadRequestException("Почта уже занята другим пользователем");
-            }
-
             if (body.Password != body.RepeatedPassword)
-            {
                 throw new BadRequestException("Пароли не совпадают");
-            }
+
+            if (_users.IsEmailBusy(body.Email))
+                throw new BadRequestException("Почта уже занята другим пользователем");
 
             var currentDate = _timestamp.GetCurrentUNIXTime();
             if (!_confirms.IsEmailCodeValid(body.Email, body.EmailCode, currentDate))
-            {
                 throw new BadRequestException("Код подтверждения почты не валидный. Повторите ещё раз");
-            }
 
             var salt = _security.GenerateRandomValue();
             var hashPassword = _security.HashPassword(salt, body.Password);
@@ -67,14 +61,14 @@ namespace api.v1.main.Services.User
             _validation.ValidateEmail(body.Email);
             _validation.ValidatePassword(body.Password);
 
-            var salt = _users.GetUserSaltByEmail(body.Email) ?? throw new BadRequestException("Пользователя с заданной почтой не существует");
-            var usedID = _users.GetUserIDByEmail(body.Email) ?? throw new BadRequestException("Пользователя с заданной почтой не существует");
+            var salt = _users.GetUserSaltByEmail(body.Email) ?? 
+                throw new BadRequestException("Пользователя с заданной почтой не существует");
+            var usedID = _users.GetUserIDByEmail(body.Email) ?? 
+                throw new BadRequestException("Пользователя с заданной почтой не существует");
 
             var hashPassword = _security.HashPassword(salt, body.Password);
             if (!_users.IsUserExist(body.Email, hashPassword))
-            {
                 throw new BadRequestException("Пользователя с заданной почтой и паролем не существует");
-            }
 
             var accessToken = _jwt.CreateAccessToken(usedID);
             var refreshToken = _jwt.CreateRefreshToken();
@@ -86,13 +80,12 @@ namespace api.v1.main.Services.User
 
         public string UpdateAccessToken(string refreshToken)
         {
-            var userID = _users.GetUserIDByRefreshToken(refreshToken) ?? throw new UnauthorizedException("Refresh токен повреждён либо не существует. Пройдите заново процесс авторизации");
+            var userID = _users.GetUserIDByRefreshToken(refreshToken) ?? 
+                throw new UnauthorizedException("Refresh токен повреждён либо не существует. Пройдите заново процесс авторизации");
 
             var currentDate = _timestamp.GetCurrentUNIXTime();
             if (!_users.IsRefreshTokenExpired(userID, refreshToken, currentDate))
-            {
                 throw new UnauthorizedException("Refresh токен просрочен. Пройдите заново процесс авторизации");
-            }
             
             var accessToken = _jwt.CreateAccessToken(userID);
             return accessToken;

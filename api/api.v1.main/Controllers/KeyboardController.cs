@@ -15,6 +15,8 @@ namespace api.v1.main.Controllers
 
         public KeyboardController(IKeyboardService keyboard) => _keyboard = keyboard;
 
+
+
         [HttpGet("default")]
         [AllowAnonymous]
         public IActionResult GetDefaultKeyboardsList()

@@ -22,13 +22,13 @@ namespace api.v1.main.Services.Keyboard
         private readonly ISwitchRepository _switches;
 
         private readonly IKeyboardValidationService _validation;
-        private readonly IKeyboardCacheService _cache;
+        private readonly ICacheService _cache;
         private readonly IFileConfigurationService _cfg;
         private readonly IFileService _file;
         private readonly ITimeService _time;
 
         public KeyboardService(IFileService file, ITimeService time, IKeyboardRepository keyboard, 
-            IUserRepository users, IKeyboardValidationService validation, IKeyboardCacheService cache,
+            IUserRepository users, IKeyboardValidationService validation, ICacheService cache,
             IFileConfigurationService cfg, IBoxRepository boxes, ISwitchRepository switches)
         {
             _file = file;
@@ -46,13 +46,9 @@ namespace api.v1.main.Services.Keyboard
 
         public void AddKeyboard(IFormFile? file, string title, string? description, Guid userID, Guid boxTypeID, Guid switchTypeID)
         {
-            if (file == null)
+            if (file == null || file.Length == 0)
                 throw new BadRequestException("Файл клавиатуры не был прикреплён");
-            if (file.Length == 0)
-                throw new BadRequestException("Файл клавиатуры не имеет размера");
 
-            if (title == null)
-                throw new BadRequestException("Пожалуйста, дайте клавиатуре наименование");
             _validation.ValidateKeyboardTitle(title);
 
             if (description != null)
@@ -62,11 +58,10 @@ namespace api.v1.main.Services.Keyboard
                 throw new BadRequestException("Такое наименование клавиатуры уже существует на Вашем аккаунте. Пожалуйста, выберите другое");
 
             if (!_boxes.IsBoxTypeExist(boxTypeID))
-                throw new BadRequestException("Такого типа боксов не существует");
+                throw new BadRequestException("Такого типа бокса не существует");
 
             if (!_switches.IsSwitchExist(switchTypeID))
                 throw new BadRequestException("Такого типа свитчей не существует");
-
 
             var creationDate = _time.GetCurrentUNIXTime();
 
@@ -80,9 +75,11 @@ namespace api.v1.main.Services.Keyboard
                 file.CopyTo(memoryStream);
                 var bytes = memoryStream.ToArray();
 
-                _file.AddFile(bytes, filePath);
+                var parentDirectory = _cfg.GetModelsParentDirectory();
+                var fullPath = Path.Combine(parentDirectory, filePath);
+                _file.AddFile(bytes, fullPath);
 
-                _cache.DeleteKeyboardsList(userID);
+                _cache.DeleteValue(userID);
             }
             catch
             {
@@ -96,45 +93,37 @@ namespace api.v1.main.Services.Keyboard
             var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? 
                 throw new BadRequestException("Такого файла не существует");
 
-            if (!_file.IsFileExist(keyboardPath))
-                throw new BadRequestException("Такого файла не существует");
+            var parentDirectory = _cfg.GetModelsParentDirectory();
+            var fullPath = Path.Combine(parentDirectory, keyboardPath);
 
-            if (!_cache.TryGetFile(keyboardID, out var file))
+            if (!_cache.TryGetValue(keyboardID, out byte[]? file))
             {
-                file = _file.GetFile(keyboardPath);
-                _cache.SetFile(keyboardID, file);
+                file = _file.GetFile(fullPath);
+                if (file.Length == 0)
+                    throw new BadRequestException("Такого файла не существует");
+
+                _cache.SetValue(keyboardID, file);
             }
-            return file;
+            return file!;
         }
 
 
 
-        public List<KeyboardInfoDTO> GetDefaultKeyboardsList()
-        {
-            var defaultUserID = _cfg.GetDefaultModelsUserID();
-            return GetKeyboardsList(defaultUserID);
-        }
+        public List<KeyboardInfoDTO> GetDefaultKeyboardsList() => GetKeyboardsList(_cfg.GetDefaultModelsUserID())!;
 
-        public List<KeyboardInfoDTO> GetUserKeyboardsList(Guid userID) => GetKeyboardsList(userID);
+        public List<KeyboardInfoDTO>? GetUserKeyboardsList(Guid userID) => GetKeyboardsList(userID);
 
-        private List<KeyboardInfoDTO> GetKeyboardsList(Guid userID)
-        {
-            IsUserExist(userID);
-
-            if (!_cache.TryGetKeyboardsList(userID, out List<KeyboardInfoDTO> keyboards))
-            {
-                keyboards = _keyboards.GetUserKeyboards(userID);
-                _cache.SetKeyboardsList(userID, keyboards);
-            }
-            return keyboards;
-        }
-
-
-
-        private void IsUserExist(Guid userID)
+        private List<KeyboardInfoDTO>? GetKeyboardsList(Guid userID)
         {
             if (!_users.IsUserExist(userID))
                 throw new BadRequestException("Пользователя с заданным идентификатором не существует");
+
+            if (!_cache.TryGetValue(userID, out List<KeyboardInfoDTO>? keyboards))
+            {
+                keyboards = _keyboards.GetUserKeyboards(userID);
+                _cache.SetValue(userID, keyboards);
+            }
+            return keyboards;
         }
     }
 }

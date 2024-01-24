@@ -37,9 +37,7 @@ namespace api.v1.main.Services.Verification
             _validation.ValidateEmail(body.Email);
 
             if (_users.IsUserExist(body.Email))
-            {
                 throw new BadRequestException("Почта уже занята другим пользователем");
-            }
 
             var securityCode = _security.GenerateEmailVerificationCode();
             _verification.InsertEmailCode(body.Email, securityCode.Value, securityCode.ExpireDate);

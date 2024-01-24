@@ -60,7 +60,7 @@ values(
     'MX Blue',
     'Свитч MX Blue',
     'mxblue.glb',
-    'mxblue.wav'
+    'mxblue.mp3'
 );
 insert into switches(id, title, description, file_path, sound_path)
 values(
@@ -68,7 +68,7 @@ values(
     'MX Brown',
     'Свитч MX Brown',
     'mxbrown.glb',
-    'mxbrown.wav'
+    'mxbrown.mp3'
 );
 
 

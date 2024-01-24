@@ -26,6 +26,7 @@ using api.v1.main.Services.Keyboard;
 using service.v1.cache;
 using db.v1.main.Repositories.Box;
 using db.v1.main.Repositories.Switch;
+using api.v1.main.Services.Switch;
 
 
 
@@ -87,7 +88,7 @@ void InitServices()
     builder.Services.AddSingleton<IFileConfigurationService, ConfigurationService>();
     builder.Services.AddSingleton<ICacheConfigurationService, ConfigurationService>();
 
-    builder.Services.AddSingleton<IKeyboardCacheService, MemoryCacheService>();
+    builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 
     builder.Services.AddSingleton<IUserValidationService, ValidationService>();
     builder.Services.AddSingleton<IVerificationValidationService, ValidationService>();
@@ -96,6 +97,7 @@ void InitServices()
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IVerificationService, VerificationService>();
     builder.Services.AddScoped<IKeyboardService, KeyboardService>();
+    builder.Services.AddScoped<ISwitchService, SwitchService>();
 
     builder.Services.AddSingleton<IEmailService, EmailService>();
     builder.Services.AddSingleton<IJWTService, JWTService>();
@@ -109,8 +111,8 @@ void InitRepositories()
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IVerificationRepository, VerificationRepository>();
     builder.Services.AddScoped<IKeyboardRepository, KeyboardRepository>();
-    builder.Services.AddScoped<IBoxRepository, BoxRepository>();
     builder.Services.AddScoped<ISwitchRepository, SwitchRepository>();
+    builder.Services.AddScoped<IBoxRepository, BoxRepository>();
 }
 
 void InitContexts()
@@ -119,8 +121,8 @@ void InitContexts()
     builder.Services.AddScoped<IUserContext, MainContext>();
     builder.Services.AddScoped<IVerificationContext, MainContext>();
     builder.Services.AddScoped<IKeyboardContext, MainContext>();
-    builder.Services.AddScoped<IBoxContext, MainContext>();
     builder.Services.AddScoped<ISwitchContext, MainContext>();
+    builder.Services.AddScoped<IBoxContext, MainContext>();
 }
 
 #endregion

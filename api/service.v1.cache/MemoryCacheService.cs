@@ -1,12 +1,10 @@
-﻿using db.v1.main.DTOs;
-
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 
 using service.v1.configuration.Interfaces;
 
 namespace service.v1.cache
 {
-    public sealed class MemoryCacheService : IKeyboardCacheService
+    public sealed class MemoryCacheService : ICacheService
     {
         private readonly IMemoryCache _cache;
         private readonly ICacheConfigurationService _cfg;
@@ -19,27 +17,16 @@ namespace service.v1.cache
 
 
 
-        public bool TryGetKeyboardsList(Guid key, out List<KeyboardInfoDTO>? keyboards) => _cache.TryGetValue(key, out keyboards);
-        public void SetKeyboardsList(Guid key, List<KeyboardInfoDTO> keyboards) => Set(key, keyboards);
-        public void DeleteKeyboardsList(Guid userID) => _cache.Remove(userID);
+        public bool TryGetValue<T>(object key, out T? value) => _cache.TryGetValue(key, out value);
 
+        public void DeleteValue(object key) => _cache.Remove(key);
 
-
-        public bool TryGetFile(Guid fileID, out byte[]? file) => _cache.TryGetValue(fileID, out file);
-        public void SetFile(Guid fileID, byte[] file) => Set(fileID, file);
-        public void DeleteFile(Guid fileID) => _cache.Remove(fileID);
-
-
-
-        private void Set(object key, object value)
+        public void SetValue<T>(object key, T value)
         {
-            var minutes = GetCacheExpirationTime();
+            var minutes = _cfg.GetCacheExpirationMinutes();
 
-            var expiration = GetExpirationTime(minutes);
+            var expiration = DateTimeOffset.UtcNow.AddMinutes(minutes);
             _cache.Set(key, value, expiration);
         }
-
-        private int GetCacheExpirationTime() => _cfg.GetCacheExpirationMinutes();
-        private static DateTimeOffset GetExpirationTime(int minutes) => DateTimeOffset.UtcNow.AddMinutes(minutes);
     }
 }
