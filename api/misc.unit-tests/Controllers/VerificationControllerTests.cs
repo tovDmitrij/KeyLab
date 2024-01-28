@@ -6,7 +6,7 @@ namespace misc.unit_tests.Controllers
 {
     public sealed class VerificationControllerTests
     {
-        [Fact]
+        [Fact(Skip = "Email spam")]
         public async void VerificationEmail_200()
         {
             var httpClient = new HttpClient();
@@ -21,7 +21,7 @@ namespace misc.unit_tests.Controllers
             Assert.Equal(excepted, actual);
         }
 
-        [Fact]
+        [Fact(Skip = "Email spam")]
         public async void VerificationEmail_400()
         {
             var httpClient = new HttpClient();

@@ -1,8 +1,9 @@
-﻿using component.v1.exceptions;
+﻿using db.v1.main.DTOs;
 
-using db.v1.main.DTOs;
+using misc.unit_tests.Responses;
 
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 using Xunit;
@@ -68,17 +69,28 @@ namespace misc.unit_tests.Controllers
 
 
 
-        [Fact(Skip = "Not realized")]
+        [Fact]
         public async void GetUserKeyboardsList_200()
         {
+            var httpClient = new HttpClient();
 
+            var signInUrl = "http://127.0.0.1:6005/api/v1/users/signIn";
+            var email = "admin@keyboard.ru";
+            var password = "11111111";
+
+            var signInResponse = await httpClient.PostAsJsonAsync(signInUrl, new { email, password });
+            var token = signInResponse.Content.ReadFromJsonAsync<AccessToken>().Result.accessToken;
+
+            var keyboardUrl = "http://127.0.0.1:6005/api/v1/keyboards/auth";
+
+            using (var request = new HttpRequestMessage(HttpMethod.Get, keyboardUrl))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var keyboardResponse = await httpClient.SendAsync(request);
+
+                var actual = keyboardResponse.Content.ReadFromJsonAsync<List<KeyboardInfoDTO>>().Result.Count;
+                Assert.NotEqual(0, actual);
+            }
         }
-
-        [Fact(Skip = "Not realized")]
-        public async void GetUserKeyboardsList_400()
-        {
-
-        }
-
     }
 }

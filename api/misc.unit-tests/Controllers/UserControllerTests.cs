@@ -39,30 +39,8 @@ namespace misc.unit_tests.Controllers
             Assert.Equal(expected, actual);
         }
 
-
-
-        [Fact(Skip = "Not realized")]
-        public async void SignUp_200()
-        {
-
-        }
-
         [Fact(Skip = "Not realized")]
         public async void SignUp_400()
-        {
-
-        }
-
-
-
-        [Fact(Skip = "Not realized")]
-        public async void UpdateAccessToken_200()
-        {
-
-        }
-
-        [Fact(Skip = "Not realized")]
-        public async void UpdateAccessToken_400()
         {
 
         }
