@@ -1,3 +1,4 @@
+drop table if exists kits;
 drop table if exists boxes;
 drop table if exists keyboards;
 drop table if exists box_types;

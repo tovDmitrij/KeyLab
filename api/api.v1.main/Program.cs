@@ -13,7 +13,6 @@ using Microsoft.IdentityModel.Tokens;
 
 using service.v1.configuration;
 using service.v1.configuration.Interfaces;
-using service.v1.email;
 using service.v1.jwt.Service;
 using service.v1.security.Service;
 using service.v1.time;
@@ -27,6 +26,7 @@ using service.v1.cache;
 using db.v1.main.Repositories.Box;
 using db.v1.main.Repositories.Switch;
 using api.v1.main.Services.Switch;
+using service.v1.email.DTOs;
 
 
 

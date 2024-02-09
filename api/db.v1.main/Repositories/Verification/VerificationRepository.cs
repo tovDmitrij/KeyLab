@@ -1,4 +1,5 @@
 ﻿using db.v1.main.Contexts.Interfaces;
+using db.v1.main.DTOs;
 using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.Verification
@@ -11,14 +12,16 @@ namespace db.v1.main.Repositories.Verification
 
 
 
-        public void InsertEmailCode(string email, string code, double expireDate)
+        public void InsertEmailCode(EmailVerificationDTO body)
         {
-            var entity = new EmailVerificationCodeEntity(email, code, expireDate);
+            var entity = new EmailVerificationCodeEntity(body.Email, body.Code, body.Date);
             _db.EmailCodes.Add(entity);
             _db.SaveChanges();
         }
 
-        public bool IsEmailCodeValid(string email, string code, double currentDate) =>
-            _db.EmailCodes.Any(x => x.Email == email && x.Code == code && x.ExpireDate > currentDate);
+        public bool IsEmailCodeValid(EmailVerificationDTO body) =>
+            _db.EmailCodes.Any(x => x.Email == body.Email && 
+                                    x.Code == body.Code && 
+                                    x.ExpireDate > body.Date);
     }
 }

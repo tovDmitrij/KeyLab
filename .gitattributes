@@ -2,8 +2,7 @@
 
 *.sql         linguist-language=PlpgSQL
 create.sql    linguist-detectable=true
-drop.sql      linguist-detectable=false
-insert.sql    linguist-detectable=false
+drop.sql      linguist-detectable=true
 
 Dockerfile.*  linguist-detectable=true
 Dockerfile.*  linguist-language=Dockerfile
