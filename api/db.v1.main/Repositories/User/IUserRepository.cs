@@ -19,5 +19,7 @@ namespace db.v1.main.Repositories.User
 
         public Guid? GetUserIDByEmail(string email);
         public Guid? GetUserIDByRefreshToken(string refreshToken);
+
+        public string? GetUserNicknameByID(Guid userID);
     }
 }

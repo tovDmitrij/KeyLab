@@ -67,6 +67,11 @@ namespace db.v1.main.Repositories.User
 
 
 
+        public string? GetUserNicknameByID(Guid userID) => _db.Users
+            .FirstOrDefault(user => user.ID == userID)?.Nickname;
+
+
+
         private void SaveChanges() => _db.SaveChanges();
     }
 }
