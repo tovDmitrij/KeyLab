@@ -1,4 +1,5 @@
 ﻿using db.v1.main.Contexts.Interfaces;
+using db.v1.main.DTOs.User;
 using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.User
@@ -11,20 +12,22 @@ namespace db.v1.main.Repositories.User
 
 
 
-        public void SignUp(string email, string salt, string hashPass, string nickname, double registrationDate)
+        public void SignUp(SignUpDTO body)
         {
-            var user = new UserEntity(email, salt, hashPass, nickname, registrationDate);
+            var user = new UserEntity(body.Email, body.Salt, body.HashPass, body.Nickname, body.RegistrationDate);
+
             _db.Users.Add(user);
-            _db.SaveChanges();
+            SaveChanges();
         }
 
-        public void UpdateRefreshToken(Guid userID, string refreshToken, double expireDate)
+        public void UpdateRefreshToken(RefreshTokenDTO body)
         {
-            var user = _db.Users.FirstOrDefault(user => user.ID == userID)!;
-            user.Token = refreshToken;
-            user.TokenExpireDate = expireDate;
+            var user = _db.Users.FirstOrDefault(user => user.ID == body.UserID)!;
+            user.Token = body.RefreshToken;
+            user.TokenExpireDate = body.Date;
+
             _db.Users.Update(user);
-            _db.SaveChanges();
+            SaveChanges();
         }
 
 
@@ -41,28 +44,34 @@ namespace db.v1.main.Repositories.User
             _db.Users.Any(user => user.Email == email);
 
         public bool IsUserExist(string email, string hashPass) =>
-            _db.Users.Any(user => user.Email == email && user.Password == hashPass);
+            _db.Users.Any(user => user.Email == email && 
+                          user.Password == hashPass);
 
-        public bool IsRefreshTokenExpired(Guid userID, string refreshToken, double currentDate) =>
-            _db.Users.Any(user => user.ID == userID && user.Token == refreshToken && user.TokenExpireDate > currentDate);
-
-
-
-        public string? GetUserSaltByEmail(string email) =>
-            _db.Users.Where(user => user.Email == email)
-                .Select(user => user.Salt)
-                    .FirstOrDefault();
+        public bool IsRefreshTokenExpired(RefreshTokenDTO body) =>
+            _db.Users.Any(user => user.ID == body.UserID && 
+                          user.Token == body.RefreshToken && 
+                          user.TokenExpireDate > body.Date);
 
 
 
-        public Guid? GetUserIDByEmail(string email) =>
-            _db.Users.Where(user => user.Email == email)
-                .Select(user => user.ID)
-                    .FirstOrDefault();
+        public string? GetUserSaltByEmail(string email) => _db.Users
+            .FirstOrDefault(user => user.Email == email)?.Salt;
 
-        public Guid? GetUserIDByRefreshToken(string refreshToken) =>
-            _db.Users.Where(user => user.Token == refreshToken)
-                .Select(user => user.ID)
-                    .FirstOrDefault();
+
+
+        public Guid? GetUserIDByEmail(string email) => _db.Users
+            .FirstOrDefault(user => user.Email == email)?.ID;
+
+        public Guid? GetUserIDByRefreshToken(string refreshToken) => _db.Users
+            .FirstOrDefault(user => user.Token == refreshToken)?.ID;
+
+
+
+        public string? GetUserNicknameByID(Guid userID) => _db.Users
+            .FirstOrDefault(user => user.ID == userID)?.Nickname;
+
+
+
+        private void SaveChanges() => _db.SaveChanges();
     }
 }

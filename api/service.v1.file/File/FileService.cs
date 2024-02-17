@@ -2,16 +2,24 @@
 {
     public sealed class FileService : IFileService
     {
-        public void AddFile(byte[] file, string filePath)
+        public void AddFile(byte[] file, string fullFilePath)
         {
-            Directory.CreateDirectory(filePath[..filePath.LastIndexOf('/')]);
+            Directory.CreateDirectory(fullFilePath[..fullFilePath.LastIndexOf('/')]);
 
-            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+            using var fileStream = new FileStream(fullFilePath, FileMode.Create, FileAccess.Write);
             fileStream.Write(file, 0, file.Length);
         }
 
-        public byte[] GetFile(string filePath) => System.IO.File.ReadAllBytes(filePath);
+        public void UpdateFile(byte[] file, string fullFilePath)
+        {
+            using var fileStream = new FileStream(fullFilePath, FileMode.CreateNew, FileAccess.Write);
+            fileStream.Write(file, 0, file.Length);
+        }
 
-        public bool IsFileExist(string filePath) => System.IO.File.Exists(filePath);
+        public void DeleteFile(string fullFilePath) => System.IO.File.Delete(fullFilePath);
+
+        public byte[] GetFile(string fullFilePath) => System.IO.File.ReadAllBytes(fullFilePath);
+
+        public bool IsFileExist(string fullFilePath) => System.IO.File.Exists(fullFilePath);
     }
 }

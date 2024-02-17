@@ -2,8 +2,10 @@
 {
     public interface IFileService
     {
-        public void AddFile(byte[] file, string filePath);
-        public byte[] GetFile(string filePath);
-        public bool IsFileExist(string filePath);
+        public void AddFile(byte[] file, string fullFilePath);
+        public void UpdateFile(byte[] file, string fullFilePath);
+        public void DeleteFile(string fullFilePath);
+        public byte[] GetFile(string fullFilePath);
+        public bool IsFileExist(string fullFilePath);
     }
 }

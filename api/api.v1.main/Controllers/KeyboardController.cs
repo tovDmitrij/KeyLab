@@ -1,6 +1,5 @@
-﻿using api.v1.main.Services.Keyboard;
-
-using component.v1.exceptions;
+﻿using api.v1.main.DTOs.Keyboard;
+using api.v1.main.Services.Keyboard;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,21 +44,63 @@ namespace api.v1.main.Controllers
             await Response.Body.WriteAsync(file);
         }
 
+
+
         [HttpPost, DisableRequestSizeLimit]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult AddKeyboard()
         {
-            var file = Request.Form.Files[0];
-            string title = Request.Form["title"];
-            string? description = Request.Form["description"];
-            Guid switchTypeID = Guid.Parse(Request.Form["switchTypeID"]);
-            Guid boxTypeID = Guid.Parse(Request.Form["boxTypeID"]);
+            var file = GetFormDataKeyboardFile();
+            var title = GetFormDataKeyboardTitle();
+            var description = GetFormDataKeyboardDescription();
+            var switchTypeID = GetFormDataSwitchType();
+            var boxTypeID = GetFormDataBoxType();
 
             var userID = GetUserIDFromAccessToken();
 
-            _keyboard.AddKeyboard(file, title, description, userID, boxTypeID, switchTypeID);
+            var body = new AddKeyboardDTO(file, title, description, userID, boxTypeID, switchTypeID);
+            _keyboard.AddKeyboard(body);
 
             return Ok("Клавиатура была успешно сохранена");
         }
+
+        [HttpPut, DisableRequestSizeLimit]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult UpdateKeyboard()
+        {
+            var file = GetFormDataKeyboardFile();
+            var title = GetFormDataKeyboardTitle();
+            var description = GetFormDataKeyboardDescription();
+            var switchTypeID = GetFormDataSwitchType();
+            var boxTypeID = GetFormDataBoxType();
+            var keyboardID = GetFormDataKeyboardID();
+
+            var userID = GetUserIDFromAccessToken();
+
+            var body = new UpdateKeyboardDTO(file, title, description, userID, keyboardID, boxTypeID, switchTypeID);
+            _keyboard.UpdateKeyboard(body);
+
+            return Ok("Клавиатура была успешно обновлена");
+        }
+
+        [HttpDelete]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult DeleteKeyboard([FromBody] KeyboardIDDTO body)
+        {
+            var userID = GetUserIDFromAccessToken();
+
+            _keyboard.DeleteKeyboard(body.keyboardID, userID);
+
+            return Ok("Клавиатура была успешно удалена");
+        }
+
+
+
+        private IFormFile? GetFormDataKeyboardFile() => Request.Form.Files[0];
+        private string? GetFormDataKeyboardTitle() => Request.Form["title"];
+        private string? GetFormDataKeyboardDescription() => Request.Form["description"];
+        private Guid GetFormDataSwitchType() => Guid.Parse(Request.Form["switchTypeID"]);
+        private Guid GetFormDataBoxType() => Guid.Parse(Request.Form["boxTypeID"]);
+        private Guid GetFormDataKeyboardID() => Guid.Parse(Request.Form["keyboardID"]);
     }
 }

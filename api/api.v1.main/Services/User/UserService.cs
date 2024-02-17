@@ -9,6 +9,8 @@ using service.v1.jwt.Service;
 using service.v1.security.Service;
 using service.v1.time;
 using service.v1.validation.Interfaces;
+using db.v1.main.DTOs.User;
+using db.v1.main.DTOs;
 
 namespace api.v1.main.Services.User
 {
@@ -48,12 +50,16 @@ namespace api.v1.main.Services.User
                 throw new BadRequestException("Почта уже занята другим пользователем");
 
             var currentDate = _timestamp.GetCurrentUNIXTime();
-            if (!_confirms.IsEmailCodeValid(body.Email, body.EmailCode, currentDate))
+
+            var emailCodeBody = new EmailVerificationDTO(body.Email, body.EmailCode, currentDate);
+            if (!_confirms.IsEmailCodeValid(emailCodeBody))
                 throw new BadRequestException("Код подтверждения почты не валидный. Повторите ещё раз");
 
             var salt = _security.GenerateRandomValue();
             var hashPassword = _security.HashPassword(salt, body.Password);
-            _users.SignUp(body.Email, salt, hashPassword, body.Nickname, currentDate);
+
+            var signUpBody = new SignUpDTO(body.Email, salt, hashPassword, body.Nickname, currentDate);
+            _users.SignUp(signUpBody);
         }
 
         public JWTTokensDTO SignIn(UserSignInDTO body)
@@ -73,7 +79,8 @@ namespace api.v1.main.Services.User
             var accessToken = _jwt.CreateAccessToken(usedID);
             var refreshToken = _jwt.CreateRefreshToken();
 
-            _users.UpdateRefreshToken(usedID, refreshToken.Value, refreshToken.ExpireDate);
+            var refreshTokenBody = new RefreshTokenDTO(usedID, refreshToken.Value, refreshToken.ExpireDate);
+            _users.UpdateRefreshToken(refreshTokenBody);
 
             return new(accessToken, refreshToken.Value);
         }
@@ -84,7 +91,8 @@ namespace api.v1.main.Services.User
                 throw new UnauthorizedException("Refresh токен повреждён либо не существует. Пройдите заново процесс авторизации");
 
             var currentDate = _timestamp.GetCurrentUNIXTime();
-            if (!_users.IsRefreshTokenExpired(userID, refreshToken, currentDate))
+            var body = new RefreshTokenDTO(userID, refreshToken, currentDate);
+            if (!_users.IsRefreshTokenExpired(body))
                 throw new UnauthorizedException("Refresh токен просрочен. Пройдите заново процесс авторизации");
             
             var accessToken = _jwt.CreateAccessToken(userID);

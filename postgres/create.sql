@@ -177,3 +177,13 @@ values(
 );
 
 
+
+create table if not exists kits(
+    id uuid default uuid_generate_v4() primary key,
+    owner_id uuid not null references users(id),
+    title text not null,
+    description text not null,
+    creation_date numeric not null
+);
+create index on kits(id);
+create index on kits(owner_id);

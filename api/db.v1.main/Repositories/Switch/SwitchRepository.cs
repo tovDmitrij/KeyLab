@@ -18,9 +18,9 @@ namespace db.v1.main.Repositories.Switch
             .Select(x => new SwitchInfoDTO(x.ID, x.Title, x.Description)).ToList();
 
         public string? GetSwitchModelPath(Guid switchID) => _db.Switches
-            .Where(x => x.ID == switchID).Select(x => x.FilePath).FirstOrDefault();
+            .FirstOrDefault(x => x.ID == switchID)?.FilePath;
 
         public string? GetSwitchSoundPath(Guid switchID) => _db.Switches
-            .Where(x => x.ID == switchID).Select(x => x.SoundPath).FirstOrDefault();
+            .FirstOrDefault(x => x.ID == switchID)?.SoundPath;
     }
 }
