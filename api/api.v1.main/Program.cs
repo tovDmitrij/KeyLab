@@ -28,6 +28,7 @@ using db.v1.main.Repositories.Switch;
 using api.v1.main.Services.Switch;
 using api.v1.main.Services.Profile;
 using service.v1.email.Service;
+using api.v1.main.Services.Box;
 
 
 
@@ -100,6 +101,7 @@ void InitServices()
     builder.Services.AddScoped<IKeyboardService, KeyboardService>();
     builder.Services.AddScoped<ISwitchService, SwitchService>();
     builder.Services.AddScoped<IProfileService, ProfileService>();
+    builder.Services.AddScoped<IBoxService, BoxService>();
 
     builder.Services.AddSingleton<IEmailService, EmailService>();
     builder.Services.AddSingleton<IJWTService, JWTService>();

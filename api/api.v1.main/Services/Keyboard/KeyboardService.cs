@@ -45,7 +45,7 @@ namespace api.v1.main.Services.Keyboard
 
 
 
-        public void AddKeyboard(AddKeyboardDTO body)
+        public void AddKeyboard(PostKeyboardDTO body)
         {
             ValidateUserID(body.UserID);
             ValidateKeyboardFile(body.File);
@@ -81,7 +81,7 @@ namespace api.v1.main.Services.Keyboard
             }
         }
 
-        public void UpdateKeyboard(DTOs.Keyboard.UpdateKeyboardDTO body)
+        public void UpdateKeyboard(PutKeyboardDTO body)
         {
             ValidateKeyboardFile(body.File);
             _validation.ValidateKeyboardTitle(body.Title);
@@ -94,7 +94,7 @@ namespace api.v1.main.Services.Keyboard
 
             var filePath = $"{body.UserID}/keyboards/{body.Title}.glb";
 
-            var updateKeyboardBody = new db.v1.main.DTOs.Keyboard.UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title, body.Description, filePath);
+            var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title, body.Description, filePath);
             _keyboards.UpdateKeyboardFileInfo(updateKeyboardBody);
 
             using var memoryStream = new MemoryStream();
@@ -109,23 +109,23 @@ namespace api.v1.main.Services.Keyboard
             _cache.DeleteValue($"{body.UserID}/keyboards");
         }
         
-        public void DeleteKeyboard(Guid keyboardID, Guid userID)
+        public void DeleteKeyboard(DeleteKeyboardDTO body)
         {
-            ValidateUserID(userID);
+            ValidateUserID(body.UserID);
 
-            if (!_keyboards.IsKeyboardExist(keyboardID))
+            if (!_keyboards.IsKeyboardExist(body.KeyboardID))
                 throw new BadRequestException("Такого файла не существует");
 
-            ValidateKeyboardOwner(keyboardID, userID);
+            ValidateKeyboardOwner(body.KeyboardID, body.UserID);
 
-            var filePath = _keyboards.GetKeyboardFilePath(keyboardID);
+            var filePath = _keyboards.GetKeyboardFilePath(body.KeyboardID);
             var parentDirectory = _cfg.GetModelsParentDirectory();
             var fullPath = Path.Combine(parentDirectory, filePath);
 
             _file.DeleteFile(fullPath);
-            _keyboards.DeleteKeyboardFileInfo(keyboardID);
-            _cache.DeleteValue(keyboardID);
-            _cache.DeleteValue($"{userID}/keyboards");
+            _keyboards.DeleteKeyboardFileInfo(body.KeyboardID);
+            _cache.DeleteValue(body.KeyboardID);
+            _cache.DeleteValue($"{body.UserID}/keyboards");
         }
 
         public byte[] GetKeyboardFile(Guid keyboardID)

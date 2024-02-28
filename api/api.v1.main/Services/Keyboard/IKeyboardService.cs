@@ -5,9 +5,9 @@ namespace api.v1.main.Services.Keyboard
 {
     public interface IKeyboardService
     {
-        public void AddKeyboard(AddKeyboardDTO body);
-        public void UpdateKeyboard(DTOs.Keyboard.UpdateKeyboardDTO body);
-        public void DeleteKeyboard(Guid keyboardID, Guid userID);
+        public void AddKeyboard(PostKeyboardDTO body);
+        public void UpdateKeyboard(PutKeyboardDTO body);
+        public void DeleteKeyboard(DeleteKeyboardDTO body);
         public byte[] GetKeyboardFile(Guid keyboardID);
 
         public List<KeyboardInfoDTO> GetDefaultKeyboardsList();

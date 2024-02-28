@@ -58,7 +58,7 @@ namespace api.v1.main.Controllers
 
             var userID = GetUserIDFromAccessToken();
 
-            var body = new AddKeyboardDTO(file, title, description, userID, boxTypeID, switchTypeID);
+            var body = new PostKeyboardDTO(file, title, description, userID, boxTypeID, switchTypeID);
             _keyboard.AddKeyboard(body);
 
             return Ok("Клавиатура была успешно сохранена");
@@ -77,7 +77,7 @@ namespace api.v1.main.Controllers
 
             var userID = GetUserIDFromAccessToken();
 
-            var body = new UpdateKeyboardDTO(file, title, description, userID, keyboardID, boxTypeID, switchTypeID);
+            var body = new PutKeyboardDTO(file, title, description, userID, keyboardID, boxTypeID, switchTypeID);
             _keyboard.UpdateKeyboard(body);
 
             return Ok("Клавиатура была успешно обновлена");
@@ -85,11 +85,11 @@ namespace api.v1.main.Controllers
 
         [HttpDelete]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult DeleteKeyboard([FromBody] KeyboardIDDTO body)
+        public IActionResult DeleteKeyboard([FromBody] Guid keyboardID)
         {
             var userID = GetUserIDFromAccessToken();
 
-            _keyboard.DeleteKeyboard(body.keyboardID, userID);
+            _keyboard.DeleteKeyboard(new(keyboardID, userID));
 
             return Ok("Клавиатура была успешно удалена");
         }
