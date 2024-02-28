@@ -11,6 +11,8 @@ namespace api.v1.main.Middlewares
 
         public ExceptionHandlerMiddleware(RequestDelegate request) => _request = request;
 
+
+
         public async Task InvokeAsync(HttpContext context)
         {
             try

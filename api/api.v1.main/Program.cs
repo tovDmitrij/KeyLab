@@ -26,8 +26,8 @@ using service.v1.cache;
 using db.v1.main.Repositories.Box;
 using db.v1.main.Repositories.Switch;
 using api.v1.main.Services.Switch;
-using service.v1.email.DTOs;
 using api.v1.main.Services.Profile;
+using service.v1.email.Service;
 
 
 

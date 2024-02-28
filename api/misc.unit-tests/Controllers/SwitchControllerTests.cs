@@ -43,7 +43,7 @@ namespace misc.unit_tests.Controllers
         }
 
         [Fact]
-        public async void GetSwitchModelFile_400()
+        public async void GetSwitchModelFile_400_id()
         {
             var httpClient = new HttpClient();
             var switchID = "b0ac9399-8eb1-4920-9366-82cbf7904eb2";
@@ -84,7 +84,7 @@ namespace misc.unit_tests.Controllers
         }
 
         [Fact]
-        public async void GetSwitchSoundFile_400()
+        public async void GetSwitchSoundFile_400_id()
         {
             var httpClient = new HttpClient();
             var switchID = "b0ac9399-8eb1-4920-9366-82cbf7904eb2";

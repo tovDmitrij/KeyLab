@@ -6,9 +6,6 @@ namespace component.v1.exceptions
     {
         public readonly HttpStatusCode StatusCode;
 
-        public APIException(HttpStatusCode statusCode, string msg) : base(msg)
-        {
-            StatusCode = statusCode;
-        }
+        public APIException(HttpStatusCode statusCode, string msg) : base(msg) => StatusCode = statusCode;
     }
 }

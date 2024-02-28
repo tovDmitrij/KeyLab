@@ -58,9 +58,7 @@ namespace service.v1.validation
         private void Validate(Regex rgx, string value, string txtError)
         {
             if (!rgx.IsMatch(value))
-            {
                 throw new BadRequestException(txtError);
-            }
         }
     }
 }

@@ -72,7 +72,7 @@ namespace api.v1.main.Services.Keyboard
                 var fullPath = Path.Combine(parentDirectory, filePath);
                 _file.AddFile(bytes, fullPath);
 
-                _cache.DeleteValue(body.UserID);
+                _cache.DeleteValue($"{body.UserID}/keyboards");
             }
             catch
             {
@@ -103,9 +103,10 @@ namespace api.v1.main.Services.Keyboard
 
             var parentDirectory = _cfg.GetModelsParentDirectory();
             var fullPath = Path.Combine(parentDirectory, filePath);
+
             _file.UpdateFile(bytes, fullPath);
 
-            _cache.DeleteValue(body.UserID);
+            _cache.DeleteValue($"{body.UserID}/keyboards");
         }
         
         public void DeleteKeyboard(Guid keyboardID, Guid userID)
@@ -123,7 +124,8 @@ namespace api.v1.main.Services.Keyboard
 
             _file.DeleteFile(fullPath);
             _keyboards.DeleteKeyboardFileInfo(keyboardID);
-            _cache.DeleteValue(userID);
+            _cache.DeleteValue(keyboardID);
+            _cache.DeleteValue($"{userID}/keyboards");
         }
 
         public byte[] GetKeyboardFile(Guid keyboardID)
@@ -152,17 +154,19 @@ namespace api.v1.main.Services.Keyboard
 
 
 
-        private List<KeyboardInfoDTO>? GetKeyboardsList(Guid userID)
+        private List<KeyboardInfoDTO> GetKeyboardsList(Guid userID)
         {
             ValidateUserID(userID);
 
-            if (!_cache.TryGetValue(userID, out List<KeyboardInfoDTO>? keyboards))
+            if (!_cache.TryGetValue($"{userID}/keyboards", out List<KeyboardInfoDTO>? keyboards))
             {
                 keyboards = _keyboards.GetUserKeyboards(userID);
-                _cache.SetValue(userID, keyboards);
+                _cache.SetValue($"{userID}/keyboards", keyboards);
             }
-            return keyboards;
+            return keyboards!;
         }
+
+
 
         private void ValidateUserID(Guid userID)
         {

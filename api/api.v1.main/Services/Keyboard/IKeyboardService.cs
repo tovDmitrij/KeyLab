@@ -11,6 +11,6 @@ namespace api.v1.main.Services.Keyboard
         public byte[] GetKeyboardFile(Guid keyboardID);
 
         public List<KeyboardInfoDTO> GetDefaultKeyboardsList();
-        public List<KeyboardInfoDTO>? GetUserKeyboardsList(Guid userID);
+        public List<KeyboardInfoDTO> GetUserKeyboardsList(Guid userID);
     }
 }

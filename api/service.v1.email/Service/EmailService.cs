@@ -3,9 +3,9 @@ using MailKit.Security;
 
 using MimeKit;
 using service.v1.configuration.Interfaces;
-using service.v1.email.Service;
+using service.v1.email.DTOs;
 
-namespace service.v1.email.DTOs
+namespace service.v1.email.Service
 {
     public sealed class EmailService : IEmailService
     {

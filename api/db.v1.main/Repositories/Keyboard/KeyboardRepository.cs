@@ -62,14 +62,15 @@ namespace db.v1.main.Repositories.Keyboard
         public string? GetKeyboardFilePath(Guid keyboardID) => _db.Keyboards
             .FirstOrDefault(x => x.ID == keyboardID)?.FilePath;
 
-        public List<KeyboardInfoDTO> GetUserKeyboards(Guid userID)
+        public List<KeyboardInfoDTO>? GetUserKeyboards(Guid userID)
         {
-            var result = from x in _db.Keyboards
-                         join y in _db.BoxTypes
-                             on x.BoxTypeID equals y.ID
-                         join z in _db.Switches
-                             on x.SwitchTypeID equals z.ID
-                         select new KeyboardInfoDTO(x.ID, x.BoxTypeID, y.Title, x.SwitchTypeID, z.Title, x.Title, x.Description, x.CreationDate);
+            var result = from keyboard in _db.Keyboards
+                         join box in _db.BoxTypes
+                             on keyboard.BoxTypeID equals box.ID
+                         join @switch in _db.Switches
+                             on keyboard.SwitchTypeID equals @switch.ID
+                         select new KeyboardInfoDTO(keyboard.ID, keyboard.BoxTypeID, box.Title, keyboard.SwitchTypeID, 
+                                                    @switch.Title, keyboard.Title, keyboard.Description, keyboard.CreationDate);
             return result.ToList();
         }
 
