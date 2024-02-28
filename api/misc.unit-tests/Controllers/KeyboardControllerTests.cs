@@ -40,7 +40,7 @@ namespace misc.unit_tests.Controllers
         }
 
         [Fact]
-        public async void GetKeyboardFile_400()
+        public async void GetKeyboardFile_400_id()
         {
             var keyboardID = Guid.Parse("d296c943-4894-484a-b0c3-9b3783accba2");
 
@@ -50,20 +50,6 @@ namespace misc.unit_tests.Controllers
             var response = await httpClient.GetAsync(keyboardUrl);
             var excepted = HttpStatusCode.BadRequest;
             Assert.Equal(excepted, response.StatusCode);
-        }
-
-
-
-        [Fact(Skip = "Not realized")]
-        public async void AddKeyboard_200()
-        {
-
-        }
-
-        [Fact(Skip = "Not realized")]
-        public async void AddKeyboard_400()
-        {
-
         }
 
 
