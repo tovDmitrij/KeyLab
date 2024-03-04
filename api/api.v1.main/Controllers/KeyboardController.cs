@@ -1,6 +1,8 @@
 ﻿using api.v1.main.DTOs.Keyboard;
 using api.v1.main.Services.Keyboard;
 
+using helper.v1.localization.Helper;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +14,8 @@ namespace api.v1.main.Controllers
     {
         private readonly IKeyboardService _keyboard;
 
-        public KeyboardController(IKeyboardService keyboard) => _keyboard = keyboard;
+        public KeyboardController(IKeyboardService keyboard, ILocalizationHelper localization) : base(localization) => 
+            _keyboard = keyboard;
 
 
 
@@ -61,7 +64,7 @@ namespace api.v1.main.Controllers
             var body = new PostKeyboardDTO(file, title, description, userID, boxTypeID, switchTypeID);
             _keyboard.AddKeyboard(body);
 
-            return Ok("Клавиатура была успешно сохранена");
+            return Ok(_localization.FileIsSuccessfullUploaded());
         }
 
         [HttpPut, DisableRequestSizeLimit]
@@ -80,7 +83,7 @@ namespace api.v1.main.Controllers
             var body = new PutKeyboardDTO(file, title, description, userID, keyboardID, boxTypeID, switchTypeID);
             _keyboard.UpdateKeyboard(body);
 
-            return Ok("Клавиатура была успешно обновлена");
+            return Ok(_localization.FileIsSuccessfullUpdated());
         }
 
         [HttpDelete]
@@ -91,7 +94,7 @@ namespace api.v1.main.Controllers
 
             _keyboard.DeleteKeyboard(new(keyboardID, userID));
 
-            return Ok("Клавиатура была успешно удалена");
+            return Ok(_localization.FileIsSuccessfullDeleted());
         }
 
 

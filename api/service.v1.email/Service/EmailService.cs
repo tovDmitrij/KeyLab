@@ -2,17 +2,17 @@
 using MailKit.Security;
 
 using MimeKit;
-using service.v1.configuration.Interfaces;
-using service.v1.email.DTOs;
+using helper.v1.email.DTOs;
+using helper.v1.configuration.Interfaces;
 
-namespace service.v1.email.Service
+namespace helper.v1.email.Service
 {
     public sealed class EmailService : IEmailService
     {
         private readonly SmtpClient _smptClient;
         private readonly MailboxAddress _admin;
 
-        public EmailService(IEmailConfigurationService cfg)
+        public EmailService(IEmailConfigurationHelper cfg)
         {
             _smptClient = new SmtpClient();
 

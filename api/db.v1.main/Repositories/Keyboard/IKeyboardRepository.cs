@@ -4,16 +4,16 @@ namespace db.v1.main.Repositories.Keyboard
 {
     public interface IKeyboardRepository
     {
-        public Guid InsertKeyboardFileInfo(InsertKeyboardDTO body);
-        public void UpdateKeyboardFileInfo(UpdateKeyboardDTO body);
-        public void DeleteKeyboardFileInfo(Guid keyboardID);
+        public Guid InsertKeyboardInfo(InsertKeyboardDTO body);
+        public void UpdateKeyboardInfo(UpdateKeyboardDTO body);
+        public void DeleteKeyboardInfo(Guid keyboardID);
 
-        public bool IsKeyboardTitleBusy(Guid ownerID, string title);
+        public bool IsKeyboardTitleBusy(Guid userID, string title);
         public bool IsKeyboardExist(Guid keyboardID);
-        public bool IsKeyboardOwner(Guid keyboardID, Guid ownerID);
+        public bool IsKeyboardOwner(Guid keyboardID, Guid userID);
 
-        public string? GetKeyboardFilePath(Guid keyboardID);
+        public string? SelectKeyboardFilePath(Guid keyboardID);
 
-        public List<KeyboardInfoDTO>? GetUserKeyboards(Guid userID);
+        public List<SelectKeyboardDTO> SelectUserKeyboards(Guid userID);
     }
 }

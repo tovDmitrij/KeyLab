@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BoxDescription_IsNotValid" xml:space="preserve">
+    <value>Описание бокса клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
+  </data>
+  <data name="BoxTitle_IsBusy" xml:space="preserve">
+    <value>Бокс клавиатуры с заданным именем уже существует на текущем аккаунте</value>
+  </data>
+  <data name="BoxTitle_IsNotValid" xml:space="preserve">
+    <value>Наименование бокса клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
+  </data>
+  <data name="BoxType_IsNotExist" xml:space="preserve">
+    <value>Типа бокса клавиатуры с заданными параметрами не существует</value>
+  </data>
+  <data name="EmailCode_IsNotExist" xml:space="preserve">
+    <value>Кода подтверждения регистрации с заданными параметрами не существует</value>
+  </data>
+  <data name="EmailCode_IsSuccessfullSend" xml:space="preserve">
+    <value>Код подтверждения регистрации был успешно отправлен на указанную почту</value>
+  </data>
+  <data name="File_IsNotAttached" xml:space="preserve">
+    <value>Файл повреждён или не был прикреплён</value>
+  </data>
+  <data name="File_IsNotExist" xml:space="preserve">
+    <value>Файла с заданными параметрами не существует</value>
+  </data>
+  <data name="File_IsSuccessfullDeleted" xml:space="preserve">
+    <value>Файл был успешно удалён</value>
+  </data>
+  <data name="File_IsSuccessfullUpdated" xml:space="preserve">
+    <value>Файл был успешно обновлён</value>
+  </data>
+  <data name="File_IsSuccessfullUploaded" xml:space="preserve">
+    <value>Файл был успешно сохранён</value>
+  </data>
+  <data name="KeyboardDescription_IsNotValid" xml:space="preserve">
+    <value>Описание клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
+  </data>
+  <data name="KeyboardTitle_IsBusy" xml:space="preserve">
+    <value>Клавиатура с заданным именем уже существует на текущем аккаунте</value>
+  </data>
+  <data name="KeyboardTitle_IsNotValid" xml:space="preserve">
+    <value>Наименование клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
+  </data>
+  <data name="SwitchType_IsNotExist" xml:space="preserve">
+    <value>Типа переключателя с заданными параметрами не существует</value>
+  </data>
+  <data name="UserAccessToken_IsExpired" xml:space="preserve">
+    <value>Access токен просрочен или повреждён. Пройдите заново процесс авторизации</value>
+  </data>
+  <data name="UserEmail_IsBusy" xml:space="preserve">
+    <value>Заданная почта уже занята другим пользователем</value>
+  </data>
+  <data name="UserEmail_IsNotValid" xml:space="preserve">
+    <value>Почта не валидная. Пример: ivanov@mail.ru</value>
+  </data>
+  <data name="UserNickname_IsNotValid" xml:space="preserve">
+    <value>Никнейм не валидный. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
+  </data>
+  <data name="UserPasswords_IsNotEqual" xml:space="preserve">
+    <value>Переданные значения паролей не совпадают</value>
+  </data>
+  <data name="UserPassword_IsNotValid" xml:space="preserve">
+    <value>Пароль не валидный. Разрешённые символы: буквы, цифры. Мин. длина 8 символов</value>
+  </data>
+  <data name="UserRefreshToken_IsExpired" xml:space="preserve">
+    <value>Refresh токен просрочен или повреждён. Пройдите заново процесс авторизации</value>
+  </data>
+  <data name="UserSignUp_IsSuccessfull" xml:space="preserve">
+    <value>Новый аккаунт был успешно зарегистрирован</value>
+  </data>
+  <data name="User_IsNotExist" xml:space="preserve">
+    <value>Пользователя с заданными параметрами не существует</value>
+  </data>
+  <data name="User_IsNotKeyboardOwner" xml:space="preserve">
+    <value>Текущему пользователю не принадлежит клавиатура с указанными параметрами</value>
+  </data>
+</root>

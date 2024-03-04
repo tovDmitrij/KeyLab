@@ -1,5 +1,4 @@
-﻿using db.v1.main.DTOs;
-
+﻿using db.v1.main.DTOs.Switch;
 using Microsoft.AspNetCore.WebUtilities;
 
 using System.Net;
@@ -17,7 +16,7 @@ namespace misc.unit_tests.Controllers
             var httpClient = new HttpClient();
             var switchUrl = "http://127.0.0.1:6005/api/v1/switches/models/default";
 
-            var response = await httpClient.GetFromJsonAsync<List<SwitchInfoDTO>>(switchUrl);
+            var response = await httpClient.GetFromJsonAsync<List<SelectSwitchDTO>>(switchUrl);
             Assert.NotNull(response);
         }
 

@@ -1,5 +1,7 @@
 ﻿using component.v1.exceptions;
 
+using helper.v1.localization.Helper;
+
 using Microsoft.AspNetCore.Mvc;
 
 using System.IdentityModel.Tokens.Jwt;
@@ -9,12 +11,18 @@ namespace api.v1.main.Controllers
 {
     public abstract class APIController : ControllerBase
     {
+        protected readonly ILocalizationHelper _localization;
+
+        public APIController(ILocalizationHelper localization) => _localization = localization;
+
+
+
         protected Guid GetUserIDFromAccessToken()
         {
             var accessToken = GetAccessToken();
             var claims = GetClaimsFromAccessToken(accessToken);
             var userID = claims.First(claim => claim.Type == JwtRegisteredClaimNames.Name).Value ?? 
-                throw new UnauthorizedException("Access токен повреждён или отсутствует. Пожалуйста, пройдите заново процесс авторизации");
+                throw new UnauthorizedException(_localization.UserAccessTokenIsExpired());
 
             return Guid.Parse(userID);
         }
@@ -24,7 +32,7 @@ namespace api.v1.main.Controllers
         private string GetAccessToken()
         {
             var accessToken = HttpContext.Request.Headers.Authorization.ToString().Split(' ')[1] ??
-                throw new UnauthorizedException("Access токен повреждён или отсутствует. Пожалуйста, пройдите заново процесс авторизации");
+                throw new UnauthorizedException(_localization.UserAccessTokenIsExpired());
             return accessToken;
         }
 

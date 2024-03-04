@@ -1,6 +1,6 @@
-﻿using service.v1.email.DTOs;
+﻿using helper.v1.email.DTOs;
 
-namespace service.v1.email.Service
+namespace helper.v1.email.Service
 {
     public interface IEmailService
     {

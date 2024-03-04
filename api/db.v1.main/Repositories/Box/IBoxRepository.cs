@@ -4,8 +4,14 @@ namespace db.v1.main.Repositories.Box
 {
     public interface IBoxRepository
     {
-        public bool IsBoxTypeExist(Guid boxTypeID);
+        public Guid InsertBoxInfo(InsertBoxDTO body);
+        public void DeleteBoxInfo(Guid boxID);
 
-        public List<BoxInfoDTO>? GetUserBoxes(Guid userID);
+        public bool IsBoxTypeExist(Guid boxTypeID);
+        public bool IsBoxTitleBusy(Guid userID, string title);
+
+        public string? SelectBoxFilePath(Guid boxID);
+
+        public List<SelectBoxDTO> SelectUserBoxes(Guid userID);
     }
 }

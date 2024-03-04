@@ -1,4 +1,7 @@
-﻿using api.v1.main.Services.Box;
+﻿using api.v1.main.DTOs.Box;
+using api.v1.main.Services.Box;
+
+using helper.v1.localization.Helper;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +14,8 @@ namespace api.v1.main.Controllers
     {
         private readonly IBoxService _box;
 
-        public BoxController(IBoxService box) => _box = box;
+        public BoxController(IBoxService box, ILocalizationHelper localization) : base(localization) => 
+            _box = box;
 
 
 
@@ -35,9 +39,34 @@ namespace api.v1.main.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetBoxFile(Guid boxID)
+        public async Task GetBoxFile(Guid boxID)
         {
-
+            var file = _box.GetBoxFile(boxID);
+            await Response.Body.WriteAsync(file);
         }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult AddBoxFile()
+        {
+            var file = GetFormDataBoxFile();
+            var title = GetFormDataBoxTitle();
+            var description = GetFormDataBoxDescription();
+            var typeID = GetFormDataBoxTypeID();
+            var userID = GetUserIDFromAccessToken();
+
+            var body = new PostBoxDTO(file, title, description, typeID, userID);
+
+            _box.AddBox(body);
+
+            return Ok(_localization.FileIsSuccessfullUploaded());
+        }
+
+
+
+        private IFormFile? GetFormDataBoxFile() => Request.Form.Files[0];
+        private string GetFormDataBoxTitle() => Request.Form["title"];
+        private string? GetFormDataBoxDescription() => Request.Form["description"];
+        public Guid GetFormDataBoxTypeID() => Guid.Parse(Request.Form["typeID"]);
     }
 }

@@ -12,7 +12,7 @@ namespace db.v1.main.Repositories.User
 
 
 
-        public void SignUp(SignUpDTO body)
+        public void InsertUserInfo(InsertUserDTO body)
         {
             var user = new UserEntity(body.Email, body.Salt, body.HashPass, body.Nickname, body.RegistrationDate);
 
@@ -35,8 +35,6 @@ namespace db.v1.main.Repositories.User
         public bool IsEmailBusy(string email) =>
             _db.Users.Any(user => user.Email == email);
 
-
-
         public bool IsUserExist(Guid userID) =>
             _db.Users.Any(user => user.ID == userID);
 
@@ -54,20 +52,16 @@ namespace db.v1.main.Repositories.User
 
 
 
-        public string? GetUserSaltByEmail(string email) => _db.Users
+        public string? SelectUserSalt(string email) => _db.Users
             .FirstOrDefault(user => user.Email == email)?.Salt;
 
-
-
-        public Guid? GetUserIDByEmail(string email) => _db.Users
+        public Guid? SelectUserIDByEmail(string email) => _db.Users
             .FirstOrDefault(user => user.Email == email)?.ID;
 
-        public Guid? GetUserIDByRefreshToken(string refreshToken) => _db.Users
+        public Guid? SelectUserIDByRefreshToken(string refreshToken) => _db.Users
             .FirstOrDefault(user => user.Token == refreshToken)?.ID;
 
-
-
-        public string? GetUserNicknameByID(Guid userID) => _db.Users
+        public string? SelectUserNickname(Guid userID) => _db.Users
             .FirstOrDefault(user => user.ID == userID)?.Nickname;
 
 

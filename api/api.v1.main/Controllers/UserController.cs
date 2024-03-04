@@ -3,6 +3,8 @@ using api.v1.main.Services.User;
 
 using component.v1.exceptions;
 
+using helper.v1.localization.Helper;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,23 +13,23 @@ namespace api.v1.main.Controllers
     [ApiController]
     [AllowAnonymous]
     [Route("api/v1/users")]
-    public sealed class UserController : ControllerBase
+    public sealed class UserController : APIController
     {
         private readonly IUserService _user;
 
-        public UserController(IUserService user) => _user = user;
+        public UserController(IUserService user, ILocalizationHelper localization) : base(localization) => _user = user;
 
 
 
         [HttpPost("signUp")]
-        public IActionResult SignUp([FromBody] UserSignUpDTO body)
+        public IActionResult SignUp([FromBody] PostSignUpDTO body)
         {
             _user.SignUp(body);
-            return Ok("Пользователь был успешно зарегистрирован");
+            return Ok(_localization.UserSignUpIsSuccessfull());
         }
 
         [HttpPost("signIn")]
-        public IActionResult SignIn([FromBody] UserSignInDTO body)
+        public IActionResult SignIn([FromBody] PostSignInDTO body)
         {
             var tokens = _user.SignIn(body);
             SetRefreshTokenInCookie(tokens.RefreshToken);
@@ -48,7 +50,7 @@ namespace api.v1.main.Controllers
         private string GetRefreshTokenFromCookies()
         {
             var refreshToken = Request.Cookies["refresh_token"] ??
-                throw new UnauthorizedException("Отсутствует refresh токен. Пройдите заново процесс авторизации");
+                throw new UnauthorizedException(_localization.UserRefreshTokenIsExpired());
             return refreshToken;
         }
 

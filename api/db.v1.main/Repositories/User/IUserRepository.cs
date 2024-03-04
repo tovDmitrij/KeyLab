@@ -4,22 +4,18 @@ namespace db.v1.main.Repositories.User
 {
     public interface IUserRepository
     {
-        public void SignUp(SignUpDTO body);
+        public void InsertUserInfo(InsertUserDTO body);
         public void UpdateRefreshToken(RefreshTokenDTO body);
 
         public bool IsEmailBusy(string email);
-
         public bool IsUserExist(Guid userID);
         public bool IsUserExist(string email);
         public bool IsUserExist(string email, string hashPass);
-
         public bool IsRefreshTokenExpired(RefreshTokenDTO body);
 
-        public string? GetUserSaltByEmail(string email);
-
-        public Guid? GetUserIDByEmail(string email);
-        public Guid? GetUserIDByRefreshToken(string refreshToken);
-
-        public string? GetUserNicknameByID(Guid userID);
+        public string? SelectUserSalt(string email);
+        public string? SelectUserNickname(Guid userID);
+        public Guid? SelectUserIDByEmail(string email);
+        public Guid? SelectUserIDByRefreshToken(string refreshToken);
     }
 }
