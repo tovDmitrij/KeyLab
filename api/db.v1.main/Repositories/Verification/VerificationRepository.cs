@@ -1,5 +1,5 @@
 ﻿using db.v1.main.Contexts.Interfaces;
-using db.v1.main.DTOs;
+using db.v1.main.DTOs.Verification;
 using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.Verification
@@ -20,8 +20,6 @@ namespace db.v1.main.Repositories.Verification
         }
 
         public bool IsEmailCodeValid(EmailVerificationDTO body) =>
-            _db.EmailCodes.Any(x => x.Email == body.Email && 
-                                    x.Code == body.Code && 
-                                    x.ExpireDate > body.Date);
+            _db.EmailCodes.Any(code => code.Email == body.Email && code.Code == body.Code && code.ExpireDate > body.Date);
     }
 }

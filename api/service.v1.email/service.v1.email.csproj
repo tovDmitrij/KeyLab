@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\service.v1.configuration\service.v1.configuration.csproj" />
+    <ProjectReference Include="..\helper.v1.configuration\helper.v1.configuration.csproj" />
   </ItemGroup>
 
 </Project>

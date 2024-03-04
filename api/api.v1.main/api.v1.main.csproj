@@ -14,14 +14,15 @@
   <ItemGroup>
     <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />
     <ProjectReference Include="..\db.v1.main\db.v1.main.csproj" />
-    <ProjectReference Include="..\service.v1.cache\service.v1.cache.csproj" />
-    <ProjectReference Include="..\service.v1.configuration\service.v1.configuration.csproj" />
+    <ProjectReference Include="..\helper.v1.cache\helper.v1.cache.csproj" />
+    <ProjectReference Include="..\helper.v1.configuration\helper.v1.configuration.csproj" />
+    <ProjectReference Include="..\helper.v1.file\helper.v1.file.csproj" />
+    <ProjectReference Include="..\helper.v1.jwt\helper.v1.jwt.csproj" />
+    <ProjectReference Include="..\helper.v1.localization\helper.v1.localization.csproj" />
+    <ProjectReference Include="..\helper.v1.regex\helper.v1.regex.csproj" />
+    <ProjectReference Include="..\helper.v1.security\helper.v1.security.csproj" />
+    <ProjectReference Include="..\helper.v1.time\helper.v1.time.csproj" />
     <ProjectReference Include="..\service.v1.email\service.v1.email.csproj" />
-    <ProjectReference Include="..\service.v1.file\service.v1.file.csproj" />
-    <ProjectReference Include="..\service.v1.jwt\service.v1.jwt.csproj" />
-    <ProjectReference Include="..\service.v1.security\service.v1.security.csproj" />
-    <ProjectReference Include="..\service.v1.time\service.v1.time.csproj" />
-    <ProjectReference Include="..\service.v1.validation\service.v1.validation.csproj" />
   </ItemGroup>
 
 </Project>

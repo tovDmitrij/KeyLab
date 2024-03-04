@@ -2,51 +2,61 @@
 
 using component.v1.exceptions;
 
-using db.v1.main.DTOs;
+using db.v1.main.DTOs.Verification;
 using db.v1.main.Repositories.User;
 using db.v1.main.Repositories.Verification;
 
-using service.v1.email.DTOs;
-using service.v1.email.Service;
-using service.v1.security.Service;
-using service.v1.validation.Interfaces;
+using helper.v1.email.DTOs;
+using helper.v1.email.Service;
+using helper.v1.localization.Helper;
+using helper.v1.regex.Interfaces;
+using helper.v1.security.Helper;
+using helper.v1.time;
 
 namespace api.v1.main.Services.Verification
 {
     public sealed class VerificationService : IVerificationService
     {
         private readonly IVerificationRepository _verification;
-        private readonly IUserRepository _users;
+        private readonly IUserRepository _user;
 
-        private readonly IVerificationValidationService _validation;
+        private readonly IVerificationRegexHelper _rgx;
         private readonly IEmailService _email;
-        private readonly ISecurityService _security;
+        private readonly ISecurityHelper _security;
+        private readonly ILocalizationHelper _localization;
+        private readonly ITimeHelper _time;
 
-        public VerificationService(IVerificationRepository verigication, IVerificationValidationService validation,
-                              IEmailService email, ISecurityService security, IUserRepository users)
+        public VerificationService(IVerificationRepository verigication, IVerificationRegexHelper rgx,
+                                   IEmailService email, ISecurityHelper security, IUserRepository user,
+                                   ILocalizationHelper localization, ITimeHelper time)
         {
             _verification = verigication;
-            _validation = validation;
+            _rgx = rgx;
             _email = email;
             _security = security;
-            _users = users;
+            _user = user;
+            _localization = localization;
+            _time = time;
         }
 
 
 
         public void SendVerificationEmailCode(ConfirmEmailDTO body)
         {
-            _validation.ValidateEmail(body.Email);
+            _rgx.ValidateUserEmail(body.Email);
 
-            if (_users.IsUserExist(body.Email))
-                throw new BadRequestException("Почта уже занята другим пользователем");
+            if (_user.IsUserExist(body.Email))
+                throw new BadRequestException(_localization.UserEmailIsBusy());
 
-            var securityCode = _security.GenerateEmailVerificationCode();
+            var expireDate = _time.GetCurrentUNIXTime() + 300;
+
+            var securityCode = _security.GenerateEmailVerificationCode(expireDate);
             var insertEmailBody = new EmailVerificationDTO(body.Email, securityCode.Value, securityCode.ExpireDate);
             _verification.InsertEmailCode(insertEmailBody);
 
+            var msgTitle = "Код подтверждения почты";
             var msgText = GenerateConfirmEmailMsgText(securityCode.Value);
-            var sendEmailBody = new SendEmailDTO(body.Email, "Код подтверждения почты", msgText);
+            var sendEmailBody = new SendEmailDTO(body.Email, msgTitle, msgText);
             _email.SendEmail(sendEmailBody);
         }
 

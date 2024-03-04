@@ -7,49 +7,54 @@ using db.v1.main.Repositories.Keyboard;
 using db.v1.main.Repositories.Switch;
 using db.v1.main.Repositories.User;
 
-using service.v1.cache;
-using service.v1.configuration.Interfaces;
-using service.v1.file.File;
-using service.v1.time;
-using service.v1.validation.Interfaces;
+using helper.v1.cache;
+using helper.v1.configuration.Interfaces;
+using helper.v1.file;
+using helper.v1.localization.Helper;
+using helper.v1.regex.Interfaces;
+using helper.v1.time;
 
 namespace api.v1.main.Services.Keyboard
 {
     public sealed class KeyboardService : IKeyboardService
     {
-        private readonly IKeyboardRepository _keyboards;
-        private readonly IUserRepository _users;
-        private readonly IBoxRepository _boxes;
-        private readonly ISwitchRepository _switches;
+        private readonly IKeyboardRepository _keyboard;
+        private readonly IUserRepository _user;
+        private readonly IBoxRepository _box;
+        private readonly ISwitchRepository _switch;
 
-        private readonly IKeyboardValidationService _validation;
-        private readonly ICacheService _cache;
-        private readonly IFileConfigurationService _cfg;
-        private readonly IFileService _file;
-        private readonly ITimeService _time;
+        private readonly IFileConfigurationHelper _fileCfg;
+        private readonly IKeyboardRegexHelper _rgx;
+        private readonly ICacheHelper _cache;
+        private readonly IFileHelper _file;
+        private readonly ITimeHelper _time;
+        private readonly ILocalizationHelper _localization;
+        private readonly ICacheConfigurationHelper _cacheCfg;
 
-        public KeyboardService(IFileService file, ITimeService time, IKeyboardRepository keyboard, 
-            IUserRepository users, IKeyboardValidationService validation, ICacheService cache,
-            IFileConfigurationService cfg, IBoxRepository boxes, ISwitchRepository switches)
+        public KeyboardService(IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, 
+                               IUserRepository user, IKeyboardRegexHelper rgx, ICacheHelper cache,
+                               IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
+                               ILocalizationHelper localization, ICacheConfigurationHelper cacheCfg)
         {
             _file = file;
             _time = time;
-            _keyboards = keyboard;
-            _users = users;
-            _validation = validation;
+            _keyboard = keyboard;
+            _user = user;
+            _rgx = rgx;
             _cache = cache;
-            _cfg = cfg;
-            _boxes = boxes;
-            _switches = switches;
+            _fileCfg = fileCfg;
+            _box = box;
+            _switch = @switch;
+            _localization = localization;
+            _cacheCfg = cacheCfg;
         }
 
 
 
-        public void AddKeyboard(AddKeyboardDTO body)
+        public void AddKeyboard(PostKeyboardDTO body)
         {
             ValidateUserID(body.UserID);
             ValidateKeyboardFile(body.File);
-            _validation.ValidateKeyboardTitle(body.Title);
             ValidateKeyboardTitle(body.UserID, body.Title);
             ValidateKeyboardDescription(body.Description);
             ValidateBoxType(body.BoxTypeID);
@@ -62,13 +67,13 @@ namespace api.v1.main.Services.Keyboard
             {
                 var filePath = $"{body.UserID}/keyboards/{body.Title}.glb";
                 var insertKeyboardBody = new InsertKeyboardDTO(body.UserID, body.SwitchTypeID, body.BoxTypeID, body.Title, body.Description, filePath, creationDate);
-                keyboardID = _keyboards.InsertKeyboardFileInfo(insertKeyboardBody);
+                keyboardID = _keyboard.InsertKeyboardInfo(insertKeyboardBody);
 
                 using var memoryStream = new MemoryStream();
                 body.File!.CopyTo(memoryStream);
                 var bytes = memoryStream.ToArray();
 
-                var parentDirectory = _cfg.GetModelsParentDirectory();
+                var parentDirectory = _fileCfg.GetModelsParentDirectory();
                 var fullPath = Path.Combine(parentDirectory, filePath);
                 _file.AddFile(bytes, fullPath);
 
@@ -76,15 +81,14 @@ namespace api.v1.main.Services.Keyboard
             }
             catch
             {
-                _keyboards.DeleteKeyboardFileInfo(keyboardID);
+                _keyboard.DeleteKeyboardInfo(keyboardID);
                 throw;
             }
         }
 
-        public void UpdateKeyboard(DTOs.Keyboard.UpdateKeyboardDTO body)
+        public void UpdateKeyboard(PutKeyboardDTO body)
         {
             ValidateKeyboardFile(body.File);
-            _validation.ValidateKeyboardTitle(body.Title);
             ValidateKeyboardTitle(body.UserID, body.Title);
             ValidateKeyboardDescription(body.Description);
             ValidateBoxType(body.BoxTypeID);
@@ -94,14 +98,14 @@ namespace api.v1.main.Services.Keyboard
 
             var filePath = $"{body.UserID}/keyboards/{body.Title}.glb";
 
-            var updateKeyboardBody = new db.v1.main.DTOs.Keyboard.UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title, body.Description, filePath);
-            _keyboards.UpdateKeyboardFileInfo(updateKeyboardBody);
+            var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title, body.Description, filePath);
+            _keyboard.UpdateKeyboardInfo(updateKeyboardBody);
 
             using var memoryStream = new MemoryStream();
             body.File!.CopyTo(memoryStream);
             var bytes = memoryStream.ToArray();
 
-            var parentDirectory = _cfg.GetModelsParentDirectory();
+            var parentDirectory = _fileCfg.GetModelsParentDirectory();
             var fullPath = Path.Combine(parentDirectory, filePath);
 
             _file.UpdateFile(bytes, fullPath);
@@ -109,59 +113,62 @@ namespace api.v1.main.Services.Keyboard
             _cache.DeleteValue($"{body.UserID}/keyboards");
         }
         
-        public void DeleteKeyboard(Guid keyboardID, Guid userID)
+        public void DeleteKeyboard(DeleteKeyboardDTO body)
         {
-            ValidateUserID(userID);
+            ValidateUserID(body.UserID);
 
-            if (!_keyboards.IsKeyboardExist(keyboardID))
-                throw new BadRequestException("Такого файла не существует");
+            if (!_keyboard.IsKeyboardExist(body.KeyboardID))
+                throw new BadRequestException(_localization.FileIsNotExist());
 
-            ValidateKeyboardOwner(keyboardID, userID);
+            ValidateKeyboardOwner(body.KeyboardID, body.UserID);
 
-            var filePath = _keyboards.GetKeyboardFilePath(keyboardID);
-            var parentDirectory = _cfg.GetModelsParentDirectory();
+            var filePath = _keyboard.SelectKeyboardFilePath(body.KeyboardID);
+            var parentDirectory = _fileCfg.GetModelsParentDirectory();
             var fullPath = Path.Combine(parentDirectory, filePath);
 
             _file.DeleteFile(fullPath);
-            _keyboards.DeleteKeyboardFileInfo(keyboardID);
-            _cache.DeleteValue(keyboardID);
-            _cache.DeleteValue($"{userID}/keyboards");
+            _keyboard.DeleteKeyboardInfo(body.KeyboardID);
+            _cache.DeleteValue(body.KeyboardID);
+            _cache.DeleteValue($"{body.UserID}/keyboards");
         }
 
         public byte[] GetKeyboardFile(Guid keyboardID)
         {
-            var keyboardPath = _keyboards.GetKeyboardFilePath(keyboardID) ?? 
-                throw new BadRequestException("Такого файла не существует");
+            var keyboardPath = _keyboard.SelectKeyboardFilePath(keyboardID) ?? 
+                throw new BadRequestException(_localization.FileIsNotExist());
 
-            var parentDirectory = _cfg.GetModelsParentDirectory();
+            var parentDirectory = _fileCfg.GetModelsParentDirectory();
             var fullPath = Path.Combine(parentDirectory, keyboardPath);
 
             if (!_cache.TryGetValue(keyboardID, out byte[]? file))
             {
                 file = _file.GetFile(fullPath);
                 if (file.Length == 0)
-                    throw new BadRequestException("Такого файла не существует");
+                    throw new BadRequestException(_localization.FileIsNotExist());
 
-                _cache.SetValue(keyboardID, file);
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(keyboardID, file, minutes);
             }
             return file!;
         }
 
 
 
-        public List<KeyboardInfoDTO> GetDefaultKeyboardsList() => GetKeyboardsList(_cfg.GetDefaultModelsUserID())!;
-        public List<KeyboardInfoDTO>? GetUserKeyboardsList(Guid userID) => GetKeyboardsList(userID);
+        public List<SelectKeyboardDTO> GetDefaultKeyboardsList() => GetKeyboardsList(_fileCfg.GetDefaultModelsUserID())!;
+        public List<SelectKeyboardDTO>? GetUserKeyboardsList(Guid userID) => GetKeyboardsList(userID);
 
 
 
-        private List<KeyboardInfoDTO> GetKeyboardsList(Guid userID)
+        private List<SelectKeyboardDTO> GetKeyboardsList(Guid userID)
         {
             ValidateUserID(userID);
 
-            if (!_cache.TryGetValue($"{userID}/keyboards", out List<KeyboardInfoDTO>? keyboards))
+            if (!_cache.TryGetValue($"{userID}/keyboards", out List<SelectKeyboardDTO>? keyboards))
             {
-                keyboards = _keyboards.GetUserKeyboards(userID);
-                _cache.SetValue($"{userID}/keyboards", keyboards);
+                keyboards = _keyboard.SelectUserKeyboards(userID);
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue($"{userID}/keyboards", keyboards, minutes);
             }
             return keyboards!;
         }
@@ -170,38 +177,45 @@ namespace api.v1.main.Services.Keyboard
 
         private void ValidateUserID(Guid userID)
         {
-            if (!_users.IsUserExist(userID))
-                throw new BadRequestException("Заданного пользователя не существует");
+            if (!_user.IsUserExist(userID))
+                throw new BadRequestException(_localization.UserIsNotExist());
         }
+
         private void ValidateKeyboardFile(IFormFile? file)
         {
             if (file == null || file.Length == 0)
-                throw new BadRequestException("Файл клавиатуры не был прикреплён");
+                throw new BadRequestException(_localization.FileIsNotAttached());
         }
+
         private void ValidateKeyboardDescription(string? description)
         {
             if (description != null)
-                _validation.ValidateKeyboardDescription(description);
+                _rgx.ValidateKeyboardDescription(description);
         }
+
         private void ValidateKeyboardTitle(Guid userID, string title)
         {
-            if (_keyboards.IsKeyboardTitleBusy(userID, title))
-                throw new BadRequestException("Заданное наименование клавиатуры уже существует на текущем аккаунте");
+            if (_keyboard.IsKeyboardTitleBusy(userID, title))
+                throw new BadRequestException(_localization.KeyboardTitleIsBusy());
+            _rgx.ValidateKeyboardTitle(title);
         }
+
         private void ValidateBoxType(Guid boxTypeID)
         {
-            if (!_boxes.IsBoxTypeExist(boxTypeID))
-                throw new BadRequestException("Заданного типа основания не существует");
+            if (!_box.IsBoxTypeExist(boxTypeID))
+                throw new BadRequestException(_localization.BoxTypeIsNotExist());
         }
+
         private void ValidateSwitchType(Guid switchTypeID)
         {
-            if (!_switches.IsSwitchExist(switchTypeID))
-                throw new BadRequestException("Заданного типа свитча не существует");
+            if (!_switch.IsSwitchExist(switchTypeID))
+                throw new BadRequestException(_localization.SwitchTypeIsNotExist());
         }
+
         private void ValidateKeyboardOwner(Guid keyboardID, Guid userID)
         {
-            if (!_keyboards.IsKeyboardOwner(keyboardID, userID))
-                throw new BadRequestException("Клавиатура не принадлежит текущему пользователю");
+            if (!_keyboard.IsKeyboardOwner(keyboardID, userID))
+                throw new BadRequestException(_localization.UserIsNotKeyboardOwner());
         }   
     }
 }

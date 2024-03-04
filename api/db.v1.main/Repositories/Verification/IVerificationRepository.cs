@@ -1,4 +1,4 @@
-﻿using db.v1.main.DTOs;
+﻿using db.v1.main.DTOs.Verification;
 
 namespace db.v1.main.Repositories.Verification
 {

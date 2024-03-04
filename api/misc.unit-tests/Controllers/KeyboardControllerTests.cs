@@ -19,7 +19,7 @@ namespace misc.unit_tests.Controllers
 
             var response = await httpClient.GetAsync(keyboardUrl);
 
-            var actual = response.Content.ReadFromJsonAsync<List<KeyboardInfoDTO>>().Result.Count;
+            var actual = response.Content.ReadFromJsonAsync<List<SelectKeyboardDTO>>().Result.Count;
             Assert.NotEqual(0, actual);
         }
 
@@ -73,7 +73,7 @@ namespace misc.unit_tests.Controllers
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var keyboardResponse = await httpClient.SendAsync(request);
 
-                var actual = keyboardResponse.Content.ReadFromJsonAsync<List<KeyboardInfoDTO>>().Result.Count;
+                var actual = keyboardResponse.Content.ReadFromJsonAsync<List<SelectKeyboardDTO>>().Result.Count;
                 Assert.NotEqual(0, actual);
             }
         }

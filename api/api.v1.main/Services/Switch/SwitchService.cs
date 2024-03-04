@@ -1,78 +1,85 @@
 ﻿using component.v1.exceptions;
-
-using db.v1.main.DTOs;
+using db.v1.main.DTOs.Switch;
 using db.v1.main.Repositories.Switch;
 
-using service.v1.cache;
-using service.v1.configuration.Interfaces;
-using service.v1.file.File;
+using helper.v1.cache;
+using helper.v1.configuration.Interfaces;
+using helper.v1.file;
+using helper.v1.localization.Helper;
 
 namespace api.v1.main.Services.Switch
 {
     public sealed class SwitchService : ISwitchService
     {
-        private readonly ISwitchRepository _switches;
+        private readonly ISwitchRepository _switch;
 
-        private readonly IFileConfigurationService _cfg;
-        private readonly IFileService _files;
-        private readonly ICacheService _cache;
+        private readonly IFileConfigurationHelper _fileCfg;
+        private readonly IFileHelper _file;
+        private readonly ICacheHelper _cache;
+        private readonly ICacheConfigurationHelper _cacheCfg;
+        private readonly ILocalizationHelper _localization;
 
-        public SwitchService(ISwitchRepository switches, IFileService files, IFileConfigurationService cfg,
-            ICacheService cache)
+        public SwitchService(ISwitchRepository switches, IFileHelper file, IFileConfigurationHelper fileCfg,
+                             ICacheHelper cache, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization)
         {
-            _switches = switches;
-            _files = files;
-            _cfg = cfg;
+            _switch = switches;
+            _file = file;
+            _fileCfg = fileCfg;
             _cache = cache;
+            _cacheCfg = cacheCfg;
+            _localization = localization;
         }
 
-
-
-        public List<SwitchInfoDTO> GetSwitches()
-        {
-            var switches = _switches.GetSwitches();
-            return switches;
-        }
+        
 
         public byte[] GetSwitchModelFile(Guid switchID)
         {
-            var modelPath = _switches.GetSwitchModelPath(switchID) ?? 
-                throw new BadRequestException("Такого типа свитча не существует");
+            var modelPath = _switch.SelectSwitchModelPath(switchID) ?? 
+                throw new BadRequestException(_localization.FileIsNotExist());
 
-            var parentDirectory = _cfg.GetSwitchModelsDirectory();
+            var parentDirectory = _fileCfg.GetSwitchModelsDirectory();
             var fullPath = Path.Combine(parentDirectory, modelPath);
 
             if (!_cache.TryGetValue(fullPath, out byte[]? file))
             {
-                file = _files.GetFile(fullPath);
+                file = _file.GetFile(fullPath);
                 if (file.Length == 0)
-                    throw new BadRequestException("Такого файла не существует");
+                    throw new BadRequestException(_localization.FileIsNotExist());
 
-                _cache.SetValue(fullPath, file);
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(fullPath, file, minutes);
             }
             return file!;
         }
 
         public string GetSwitchSoundBase64(Guid switchID)
         {
-            var soundPath = _switches.GetSwitchSoundPath(switchID) ?? 
-                throw new BadRequestException("Такого типа свитча не существует");
+            var soundPath = _switch.SelectSwitchSoundPath(switchID) ?? 
+                throw new BadRequestException(_localization.FileIsNotExist());
 
-            var parentDirectory = _cfg.GetSwitchSoundsDirectory();
+            var parentDirectory = _fileCfg.GetSwitchSoundsDirectory();
             var fullPath = Path.Combine(parentDirectory, soundPath);
 
             if (!_cache.TryGetValue(fullPath, out byte[]? file))
             {
-                file = _files.GetFile(fullPath);
+                file = _file.GetFile(fullPath);
                 if (file.Length == 0)
-                    throw new BadRequestException("Такого файла не существует");
+                    throw new BadRequestException(_localization.FileIsNotExist());
 
-                _cache.SetValue(fullPath, file);
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(fullPath, file, minutes);
             }
 
             var base64File = "data:audio/mp3;base64," + Convert.ToBase64String(file!);
-
             return base64File;
+        }
+
+
+
+        public List<SelectSwitchDTO> GetSwitches()
+        {
+            var switches = _switch.SelectSwitches();
+            return switches;
         }
     }
 }

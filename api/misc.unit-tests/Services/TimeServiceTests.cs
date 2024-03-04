@@ -1,4 +1,4 @@
-﻿using service.v1.time;
+﻿using helper.v1.time;
 
 using Xunit;
 
@@ -9,7 +9,7 @@ namespace misc.unit_tests.Services
         [Fact]
         public void GetUNIXTime()
         {
-            var time = new TimeService();
+            var time = new TimeHelper();
             var data = new DateTime(2024, 1, 13, 23, 40, 26); //DateTime будет конвертироваться в UTC
 
             var excepted = 1705178426;
@@ -21,7 +21,7 @@ namespace misc.unit_tests.Services
         [Fact]
         public void GetCurrentUNIXTime()
         {
-            var time = new TimeService();
+            var time = new TimeHelper();
             var epoch = DateTime.UnixEpoch;
 
             var excepted = DateTime.UtcNow.Subtract(epoch).TotalSeconds;
@@ -34,7 +34,7 @@ namespace misc.unit_tests.Services
         [Fact]
         public void GetCurrentDateTimeWithAddedSeconds()
         {
-            var time = new TimeService();
+            var time = new TimeHelper();
             var seconds = 146;
 
             var excepted = DateTime.UtcNow.AddSeconds(seconds);

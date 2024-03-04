@@ -1,33 +1,38 @@
+using System.Text;
+using System.Globalization;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Localization;
+
 using api.v1.main.Middlewares;
 using api.v1.main.Services.Verification;
 using api.v1.main.Services.User;
+using api.v1.main.Services.Keyboard;
+using api.v1.main.Services.Switch;
+using api.v1.main.Services.Profile;
+using api.v1.main.Services.Box;
 
 using db.v1.main.Contexts;
 using db.v1.main.Contexts.Interfaces;
 using db.v1.main.Repositories.Verification;
 using db.v1.main.Repositories.User;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-
-using service.v1.configuration;
-using service.v1.configuration.Interfaces;
-using service.v1.jwt.Service;
-using service.v1.security.Service;
-using service.v1.time;
-using service.v1.validation;
-using service.v1.validation.Interfaces;
-using System.Text;
-using service.v1.file.File;
 using db.v1.main.Repositories.Keyboard;
-using api.v1.main.Services.Keyboard;
-using service.v1.cache;
 using db.v1.main.Repositories.Box;
 using db.v1.main.Repositories.Switch;
-using api.v1.main.Services.Switch;
-using api.v1.main.Services.Profile;
-using service.v1.email.Service;
+
+using helper.v1.jwt.Helper;
+using helper.v1.security.Helper;
+using helper.v1.time;
+using helper.v1.cache;
+using helper.v1.email.Service;
+using helper.v1.configuration.Interfaces;
+using helper.v1.configuration;
+using helper.v1.regex.Interfaces;
+using helper.v1.regex;
+using helper.v1.localization.Helper;
+using helper.v1.file;
 
 
 
@@ -67,6 +72,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
+builder.Services.AddLocalization();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var cultures = new List<CultureInfo>
+    {
+        new("ru-RU")
+    };
+    options.DefaultRequestCulture = new RequestCulture("ru-RU", "ru-RU");
+    options.SupportedCultures = cultures;
+    options.SupportedUICultures = cultures;
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -77,35 +94,19 @@ builder.Services.AddCors(options =>
         policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(origin => true));
 });
 
-InitServices();
-InitRepositories();
 InitContexts();
+InitRepositories();
+InitHelpers();
+InitServices();
 
-void InitServices()
+void InitContexts()
 {
-    builder.Services.AddSingleton<IEmailConfigurationService, ConfigurationService>();
-    builder.Services.AddSingleton<IJWTConfigurationService, ConfigurationService>();
-    builder.Services.AddSingleton<IMinioConfigurationService, ConfigurationService>();
-    builder.Services.AddSingleton<IFileConfigurationService, ConfigurationService>();
-    builder.Services.AddSingleton<ICacheConfigurationService, ConfigurationService>();
-
-    builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
-
-    builder.Services.AddSingleton<IUserValidationService, ValidationService>();
-    builder.Services.AddSingleton<IVerificationValidationService, ValidationService>();
-    builder.Services.AddSingleton<IKeyboardValidationService, ValidationService>();
-
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IVerificationService, VerificationService>();
-    builder.Services.AddScoped<IKeyboardService, KeyboardService>();
-    builder.Services.AddScoped<ISwitchService, SwitchService>();
-    builder.Services.AddScoped<IProfileService, ProfileService>();
-
-    builder.Services.AddSingleton<IEmailService, EmailService>();
-    builder.Services.AddSingleton<IJWTService, JWTService>();
-    builder.Services.AddSingleton<IFileService, FileService>();
-    builder.Services.AddSingleton<ISecurityService, SecurityService>();
-    builder.Services.AddSingleton<ITimeService, TimeService>();
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Scoped);
+    builder.Services.AddScoped<IUserContext, MainContext>();
+    builder.Services.AddScoped<IVerificationContext, MainContext>();
+    builder.Services.AddScoped<IKeyboardContext, MainContext>();
+    builder.Services.AddScoped<ISwitchContext, MainContext>();
+    builder.Services.AddScoped<IBoxContext, MainContext>();
 }
 
 void InitRepositories()
@@ -117,14 +118,37 @@ void InitRepositories()
     builder.Services.AddScoped<IBoxRepository, BoxRepository>();
 }
 
-void InitContexts()
+void InitHelpers()
 {
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Scoped);
-    builder.Services.AddScoped<IUserContext, MainContext>();
-    builder.Services.AddScoped<IVerificationContext, MainContext>();
-    builder.Services.AddScoped<IKeyboardContext, MainContext>();
-    builder.Services.AddScoped<ISwitchContext, MainContext>();
-    builder.Services.AddScoped<IBoxContext, MainContext>();
+    builder.Services.AddSingleton<IJWTHelper, JWTHelper>();
+    builder.Services.AddSingleton<IFileHelper, FileHelper>();
+    builder.Services.AddSingleton<ISecurityHelper, SecurityHelper>();
+    builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
+    builder.Services.AddSingleton<ICacheHelper, MemoryCacheHelper>();
+    builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
+
+    builder.Services.AddSingleton<IEmailConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<IMinioConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
+
+    builder.Services.AddSingleton<IUserRegexHelper, RegexHelper>();
+    builder.Services.AddSingleton<IVerificationRegexHelper, RegexHelper>();
+    builder.Services.AddSingleton<IKeyboardRegexHelper, RegexHelper>();
+    builder.Services.AddSingleton<IBoxRegexHelper, RegexHelper>();
+}
+
+void InitServices()
+{
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IVerificationService, VerificationService>();
+    builder.Services.AddScoped<IKeyboardService, KeyboardService>();
+    builder.Services.AddScoped<ISwitchService, SwitchService>();
+    builder.Services.AddScoped<IProfileService, ProfileService>();
+    builder.Services.AddScoped<IBoxService, BoxService>();
+
+    builder.Services.AddSingleton<IEmailService, EmailService>();
 }
 
 #endregion
