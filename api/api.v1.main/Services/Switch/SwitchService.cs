@@ -4,7 +4,7 @@ using db.v1.main.Repositories.Switch;
 
 using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
-using helper.v1.file.File;
+using helper.v1.file;
 using helper.v1.localization.Helper;
 
 namespace api.v1.main.Services.Switch

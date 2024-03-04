@@ -9,7 +9,7 @@ using db.v1.main.Repositories.User;
 
 using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
-using helper.v1.file.File;
+using helper.v1.file;
 using helper.v1.localization.Helper;
 using helper.v1.regex.Interfaces;
 using helper.v1.time;

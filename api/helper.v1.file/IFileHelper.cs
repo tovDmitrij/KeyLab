@@ -1,4 +1,4 @@
-﻿namespace helper.v1.file.File
+﻿namespace helper.v1.file
 {
     public interface IFileHelper
     {

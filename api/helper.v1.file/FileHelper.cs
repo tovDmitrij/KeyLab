@@ -1,4 +1,4 @@
-﻿namespace helper.v1.file.File
+﻿namespace helper.v1.file
 {
     public sealed class FileHelper : IFileHelper
     {
@@ -16,10 +16,10 @@
             fileStream.Write(file, 0, file.Length);
         }
 
-        public void DeleteFile(string fullFilePath) => System.IO.File.Delete(fullFilePath);
+        public void DeleteFile(string fullFilePath) => File.Delete(fullFilePath);
 
-        public byte[] GetFile(string fullFilePath) => System.IO.File.ReadAllBytes(fullFilePath);
+        public byte[] GetFile(string fullFilePath) => File.ReadAllBytes(fullFilePath);
 
-        public bool IsFileExist(string fullFilePath) => System.IO.File.Exists(fullFilePath);
+        public bool IsFileExist(string fullFilePath) => File.Exists(fullFilePath);
     }
 }
