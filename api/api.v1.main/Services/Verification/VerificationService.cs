@@ -54,21 +54,10 @@ namespace api.v1.main.Services.Verification
             var insertEmailBody = new EmailVerificationDTO(body.Email, securityCode.Value, securityCode.ExpireDate);
             _verification.InsertEmailCode(insertEmailBody);
 
-            var msgTitle = "Код подтверждения почты";
-            var msgText = GenerateConfirmEmailMsgText(securityCode.Value);
+            var msgTitle = _localization.EmailVerificationEmailLabel();
+            var msgText = _localization.EmailVerificationEmailText(securityCode.Value);
             var sendEmailBody = new SendEmailDTO(body.Email, msgTitle, msgText);
             _email.SendEmail(sendEmailBody);
-        }
-
-
-
-        private static string GenerateConfirmEmailMsgText(string securityCode)
-        {
-            return 
-                $"<h3>Код подтверждения почты для регистрации на платформе</h3> " +
-                $"<b>{securityCode}</b> " +
-                $"<p>Код будет активен в течение 5 минут.</p>" +
-                $"<p>Это письмо было создано автоматически. На него отвечать не нужно.</p>";
         }
     }
 }

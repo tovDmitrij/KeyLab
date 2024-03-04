@@ -20,6 +20,8 @@ namespace helper.v1.localization.Helper
 
         public string EmailCodeIsNotExist() => _localization["EmailCode_IsNotExist"];
         public string EmailCodeIsSuccessfullSend() => _localization["EmailCode_IsSuccessfullSend"];
+        public string EmailVerificationEmailLabel() => _localization["EmailVerification_EmailLabel"];
+        public string EmailVerificationEmailText(string securityCode) => String.Format(_localization["EmailVerification_EmailText"], securityCode);
 
         public string UserIsNotExist() => _localization["User_IsNotExist"];
         public string UserSignUpIsSuccessfull() => _localization["UserSignUp_IsSuccessfull"];
@@ -31,6 +33,9 @@ namespace helper.v1.localization.Helper
         public string UserEmailIsNotValid() => _localization["UserEmail_IsNotValid"];
         public string UserPasswordIsNotValid() => _localization["UserPassword_IsNotValid"];
         public string UserNicknameIsNotValid() => _localization["UserNickname_IsNotValid"];
+
+        public string UserSignInEmailLabel() => _localization["UserSignIn_EmailLabel"];
+        public string UserSignInEmailText() => _localization["UserSignIn_EmailText"];
 
         public string KeyboardTitleIsBusy() => _localization["KeyboardTitle_IsBusy"];
         public string KeyboardTitleIsNotValid() => _localization["KeyboardTitle_IsNotValid"];

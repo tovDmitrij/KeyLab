@@ -13,6 +13,7 @@ using helper.v1.time;
 using helper.v1.localization.Helper;
 using helper.v1.regex.Interfaces;
 using helper.v1.configuration.Interfaces;
+using helper.v1.email.Service;
 
 namespace api.v1.main.Services.User
 {
@@ -27,10 +28,12 @@ namespace api.v1.main.Services.User
         private readonly IJWTHelper _jwt;
         private readonly ILocalizationHelper _localization;
         private readonly IJWTConfigurationHelper _cfgJWT;
+        private readonly IEmailService _email;
+        private readonly IFileConfigurationHelper _cfgFile;
 
         public UserService(IUserRepository user, IVerificationRepository verification, IUserRegexHelper rgx, 
                            ISecurityHelper security, ITimeHelper time, IJWTHelper jwt, ILocalizationHelper localization,
-                           IJWTConfigurationHelper cfgJWT)
+                           IJWTConfigurationHelper cfgJWT, IEmailService email, IFileConfigurationHelper cfgFile)
         {
             _user = user;
             _verification = verification;
@@ -40,6 +43,8 @@ namespace api.v1.main.Services.User
             _jwt = jwt;
             _localization = localization;
             _cfgJWT = cfgJWT;
+            _email = email;
+            _cfgFile = cfgFile;
         }
 
 
@@ -69,7 +74,7 @@ namespace api.v1.main.Services.User
             _user.InsertUserInfo(signUpBody);
         }
 
-        public JWTTokensDTO SignIn(PostSignInDTO body)
+        public SignInDTO SignIn(PostSignInDTO body)
         {
             _rgx.ValidateUserEmail(body.Email);
             _rgx.ValidateUserPassword(body.Password);
@@ -102,12 +107,16 @@ namespace api.v1.main.Services.User
 
             var refreshToken = _jwt.CreateRefreshToken(rndValue, creationDate, refreshExpireDate);
 
-
+            var isAdmin = false;
+            if (userID == _cfgFile.GetDefaultModelsUserID())
+                isAdmin = true;
 
             var refreshTokenBody = new RefreshTokenDTO(userID, refreshToken.Value, refreshToken.ExpireDate);
             _user.UpdateRefreshToken(refreshTokenBody);
 
-            return new(accessToken, refreshToken.Value);
+            _email.SendEmail(new(body.Email, _localization.UserSignInEmailLabel(), _localization.UserSignInEmailText()));
+
+            return new(accessToken, refreshToken.Value, isAdmin);
         }
 
         public string UpdateAccessToken(string refreshToken)

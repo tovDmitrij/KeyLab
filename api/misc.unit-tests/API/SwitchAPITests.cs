@@ -1,6 +1,8 @@
 ﻿using db.v1.main.DTOs.Switch;
 using Microsoft.AspNetCore.WebUtilities;
 
+using misc.unit_tests.API;
+
 using System.Net;
 using System.Net.Http.Json;
 
@@ -8,7 +10,7 @@ using Xunit;
 
 namespace misc.unit_tests.Controllers
 {
-    public sealed class SwitchControllerTests
+    public sealed class SwitchAPITests : APITest
     {
         [Fact]
         public async void GetSwitchList_200()

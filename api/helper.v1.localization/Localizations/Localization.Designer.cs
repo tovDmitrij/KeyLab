@@ -97,6 +97,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Код подтверждения аккаунта был успешно отправлен на указанную почту.
+        /// </summary>
+        public static string Email_SendVerificationCode {
+            get {
+                return ResourceManager.GetString("Email_SendVerificationCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Кода подтверждения регистрации с заданными параметрами не существует.
         /// </summary>
         public static string EmailCode_IsNotExist {
@@ -111,6 +120,24 @@ namespace helper.v1.localization.Localizations {
         public static string EmailCode_IsSuccessfullSend {
             get {
                 return ResourceManager.GetString("EmailCode_IsSuccessfullSend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Код подтверждения почты.
+        /// </summary>
+        public static string EmailVerification_EmailLabel {
+            get {
+                return ResourceManager.GetString("EmailVerification_EmailLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на &lt;h3&gt;Код подтверждения почты для регистрации на платформе&lt;/h3&gt;&lt;b&gt;{0}&lt;/b&gt;&lt;p&gt;Код будет активен в течение 5 минут.&lt;/p&gt;&lt;p&gt;Это письмо было создано автоматически. На него отвечать не нужно.&lt;/p&gt;.
+        /// </summary>
+        public static string EmailVerification_EmailText {
+            get {
+                return ResourceManager.GetString("EmailVerification_EmailText", resourceCulture);
             }
         }
         
@@ -273,6 +300,24 @@ namespace helper.v1.localization.Localizations {
         public static string UserRefreshToken_IsExpired {
             get {
                 return ResourceManager.GetString("UserRefreshToken_IsExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Был совершён вход в аккаунт.
+        /// </summary>
+        public static string UserSignIn_EmailLabel {
+            get {
+                return ResourceManager.GetString("UserSignIn_EmailLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Был совершён вход в аккаунт на платформе KeyLab. Если это были не вы, то смените пароль.
+        /// </summary>
+        public static string UserSignIn_EmailText {
+            get {
+                return ResourceManager.GetString("UserSignIn_EmailText", resourceCulture);
             }
         }
         

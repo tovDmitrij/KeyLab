@@ -11,6 +11,9 @@
         public string EmailCodeIsNotExist();
         public string EmailCodeIsSuccessfullSend();
 
+        public string EmailVerificationEmailLabel();
+        public string EmailVerificationEmailText(string securityCode);
+
         public string UserIsNotExist();
         public string UserSignUpIsSuccessfull();
         public string UserRefreshTokenIsExpired();
@@ -21,6 +24,9 @@
         public string UserEmailIsNotValid();
         public string UserPasswordIsNotValid();
         public string UserNicknameIsNotValid();
+
+        public string UserSignInEmailLabel();
+        public string UserSignInEmailText();
 
         public string KeyboardTitleIsBusy();
         public string KeyboardTitleIsNotValid();
