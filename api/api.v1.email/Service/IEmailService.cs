@@ -1,6 +1,6 @@
-﻿using helper.v1.email.DTOs;
+﻿using component.v1.email;
 
-namespace helper.v1.email.Service
+namespace api.v1.email.Service
 {
     public interface IEmailService
     {

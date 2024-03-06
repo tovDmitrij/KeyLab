@@ -1,9 +1,9 @@
 #!/bin/sh
 
-cd ../
 docker compose stop;
 docker compose down;
-docker image rm keyboards-api;
+docker image rm keyboards-api_mail;
+docker image rm keyboards-api_email;
 docker compose build;
 docker compose up -d;
 echo Complete!;

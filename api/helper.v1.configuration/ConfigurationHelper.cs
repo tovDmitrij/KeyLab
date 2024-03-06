@@ -3,7 +3,7 @@ using helper.v1.configuration.Interfaces;
 
 namespace helper.v1.configuration
 {
-    public sealed class ConfigurationHelper : IEmailConfigurationHelper, IJWTConfigurationHelper, IMinioConfigurationHelper, 
+    public sealed class ConfigurationHelper : IEmailConfigurationHelper, IJWTConfigurationHelper, 
                                               IFileConfigurationHelper, ICacheConfigurationHelper
     {
         private readonly IConfiguration _cfg;
@@ -22,17 +22,6 @@ namespace helper.v1.configuration
             throw new ArgumentNullException("JWT:Issuer отсутствует в конфигурационном файле");
         public string GetJWTAudience() => _cfg["JWT:Audience"] ?? 
             throw new ArgumentNullException("JWT:Audience отсутствует в конфигурационном файле");
-
-
-
-        public string GetMinioEndpoint() => _cfg["Minio:Endpoint"] ?? 
-            throw new ArgumentNullException("Minio:Endpoint отсутствует в конфигурационном файле");
-        public int GetMinioPort() => Convert.ToInt32(_cfg["Minio:Port"] ?? 
-            throw new ArgumentNullException("Minio:Port отсутствует в конфигурационном файле"));
-        public string GetMinioAccessKey() => _cfg["Minio:AccessKey"] ?? 
-            throw new ArgumentNullException("Minio:AccessKey отсутствует в конфигурационном файле");
-        public string GetMinioSecretKey() => _cfg["Minio:SecretKey"] ?? 
-            throw new ArgumentNullException("Minio:SecretKey отсутствует в конфигурационном файле");
 
 
 

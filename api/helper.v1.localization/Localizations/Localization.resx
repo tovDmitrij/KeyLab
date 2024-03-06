@@ -135,6 +135,15 @@
   <data name="EmailCode_IsSuccessfullSend" xml:space="preserve">
     <value>Код подтверждения регистрации был успешно отправлен на указанную почту</value>
   </data>
+  <data name="EmailVerification_EmailLabel" xml:space="preserve">
+    <value>KeyLab. Код подтверждения почты</value>
+  </data>
+  <data name="EmailVerification_EmailText" xml:space="preserve">
+    <value>&lt;h3&gt;Код подтверждения почты для регистрации на платформе&lt;/h3&gt;&lt;b&gt;{0}&lt;/b&gt;&lt;p&gt;Код будет активен в течение 5 минут.&lt;/p&gt;&lt;p&gt;Это письмо было создано автоматически. На него отвечать не нужно.&lt;/p&gt;</value>
+  </data>
+  <data name="Email_SendVerificationCode" xml:space="preserve">
+    <value>Код подтверждения аккаунта был успешно отправлен на указанную почту</value>
+  </data>
   <data name="File_IsNotAttached" xml:space="preserve">
     <value>Файл повреждён или не был прикреплён</value>
   </data>
@@ -182,6 +191,12 @@
   </data>
   <data name="UserRefreshToken_IsExpired" xml:space="preserve">
     <value>Refresh токен просрочен или повреждён. Пройдите заново процесс авторизации</value>
+  </data>
+  <data name="UserSignIn_EmailLabel" xml:space="preserve">
+    <value>Был совершён вход в аккаунт</value>
+  </data>
+  <data name="UserSignIn_EmailText" xml:space="preserve">
+    <value>Был совершён вход в аккаунт на платформе KeyLab. Если это были не вы, то смените пароль</value>
   </data>
   <data name="UserSignUp_IsSuccessfull" xml:space="preserve">
     <value>Новый аккаунт был успешно зарегистрирован</value>

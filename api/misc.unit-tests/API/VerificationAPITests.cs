@@ -1,20 +1,19 @@
-﻿using System.Net;
+﻿using misc.unit_tests.API;
+
+using System.Net;
 using System.Net.Http.Json;
 using Xunit;
 
 namespace misc.unit_tests.Controllers
 {
-    public sealed class VerificationControllerTests
+    public sealed class VerificationAPITests : APITest
     {
         [Fact(Skip = "Email spam")]
         public async void VerificationEmail_200()
         {
-            var httpClient = new HttpClient();
-
-            var verificationUrl = "http://127.0.0.1:6005/api/v1/verifications/email"; //Docker!
             var email = "dmxikka@gmail.com";
-
-            var response = await httpClient.PostAsJsonAsync(verificationUrl, new { email });
+            var verificationUrl = "http://127.0.0.1:6005/api/v1/verifications/email"; //Docker!
+            var response = await PostAsJsonAsync(verificationUrl, new { email });
 
             var actual = response.StatusCode;
             var excepted = HttpStatusCode.OK;

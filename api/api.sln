@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "db.v1.main", "db.v1.main\db
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.configuration", "helper.v1.configuration\helper.v1.configuration.csproj", "{7E9311C0-1615-4973-B48C-A678DC3BEAE0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "service.v1.email", "service.v1.email\service.v1.email.csproj", "{19F07C22-9341-4501-AA2D-D0D21DFD4B31}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.jwt", "helper.v1.jwt\helper.v1.jwt.csproj", "{06081C17-46A1-4CD9-93F8-52F607B24910}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.file", "helper.v1.file\helper.v1.file.csproj", "{DADD83B6-D16C-4B3F-83EB-023AD63887E2}"
@@ -29,7 +27,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "misc.benchmarks", "misc.ben
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.cache", "helper.v1.cache\helper.v1.cache.csproj", "{6E3F3E37-1A19-4A7B-B568-EC16EFDC4C58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helper.v1.localization", "helper.v1.localization\helper.v1.localization.csproj", "{DD44C45A-502E-4ED0-BC8A-4A1506DAC04D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.localization", "helper.v1.localization\helper.v1.localization.csproj", "{DD44C45A-502E-4ED0-BC8A-4A1506DAC04D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api.v1.email", "api.v1.email\api.v1.email.csproj", "{0DC44A51-C850-4FDB-8737-E97B4E61B3EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helper.v1.messageBroker", "helper.v1.messageBroker\helper.v1.messageBroker.csproj", "{33060194-9E42-421A-86EE-CE4D80D5389B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "component.v1.email", "component.v1.email\component.v1.email.csproj", "{9D82830C-F76E-4583-A297-17BA836DCCAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +57,6 @@ Global
 		{7E9311C0-1615-4973-B48C-A678DC3BEAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E9311C0-1615-4973-B48C-A678DC3BEAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E9311C0-1615-4973-B48C-A678DC3BEAE0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19F07C22-9341-4501-AA2D-D0D21DFD4B31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19F07C22-9341-4501-AA2D-D0D21DFD4B31}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19F07C22-9341-4501-AA2D-D0D21DFD4B31}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19F07C22-9341-4501-AA2D-D0D21DFD4B31}.Release|Any CPU.Build.0 = Release|Any CPU
 		{06081C17-46A1-4CD9-93F8-52F607B24910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{06081C17-46A1-4CD9-93F8-52F607B24910}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06081C17-46A1-4CD9-93F8-52F607B24910}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -93,6 +93,18 @@ Global
 		{DD44C45A-502E-4ED0-BC8A-4A1506DAC04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD44C45A-502E-4ED0-BC8A-4A1506DAC04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD44C45A-502E-4ED0-BC8A-4A1506DAC04D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DC44A51-C850-4FDB-8737-E97B4E61B3EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DC44A51-C850-4FDB-8737-E97B4E61B3EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DC44A51-C850-4FDB-8737-E97B4E61B3EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DC44A51-C850-4FDB-8737-E97B4E61B3EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33060194-9E42-421A-86EE-CE4D80D5389B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33060194-9E42-421A-86EE-CE4D80D5389B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33060194-9E42-421A-86EE-CE4D80D5389B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33060194-9E42-421A-86EE-CE4D80D5389B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D82830C-F76E-4583-A297-17BA836DCCAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D82830C-F76E-4583-A297-17BA836DCCAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D82830C-F76E-4583-A297-17BA836DCCAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D82830C-F76E-4583-A297-17BA836DCCAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

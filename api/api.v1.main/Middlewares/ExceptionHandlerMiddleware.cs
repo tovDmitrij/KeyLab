@@ -38,7 +38,7 @@ namespace api.v1.main.Middlewares
         private static void WriteTXTLogs(Exception ex, HttpRequest req)
         {
             var currentTime = GetCurrentUTCTimeFormat();
-            var logPath = $"/logs/{currentTime}.txt";
+            var logPath = $"/logs/main/{currentTime}.txt";
             using var writer = new StreamWriter(logPath);
 
 

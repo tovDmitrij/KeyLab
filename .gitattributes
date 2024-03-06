@@ -1,10 +1,15 @@
 *text=auto
 
-*.sql         linguist-language=PlpgSQL
-create.sql    linguist-detectable=true
-drop.sql      linguist-detectable=true
+*.sql           linguist-language=PlpgSQL
+create.sql      linguist-detectable=true
+drop.sql        linguist-detectable=false
 
-Dockerfile.*  linguist-detectable=true
-Dockerfile.*  linguist-language=Dockerfile
-*.yaml        linguist-detectable=true
-*.yaml        linguist-language=Dockerfile
+Dockerfile.*    linguist-detectable=true
+Dockerfile.*    linguist-language=Dockerfile
+*.yaml          linguist-detectable=true
+*.yaml          linguist-language=Dockerfile
+
+.css            linguist-detectable=false
+.scss           linguist-detectable=false
+.sass           linguist-detectable=false
+.html           linguist-detectable=false

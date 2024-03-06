@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\component.v1.email\component.v1.email.csproj" />
     <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />
     <ProjectReference Include="..\db.v1.main\db.v1.main.csproj" />
     <ProjectReference Include="..\helper.v1.cache\helper.v1.cache.csproj" />
@@ -19,10 +21,10 @@
     <ProjectReference Include="..\helper.v1.file\helper.v1.file.csproj" />
     <ProjectReference Include="..\helper.v1.jwt\helper.v1.jwt.csproj" />
     <ProjectReference Include="..\helper.v1.localization\helper.v1.localization.csproj" />
+    <ProjectReference Include="..\helper.v1.messageBroker\helper.v1.messageBroker.csproj" />
     <ProjectReference Include="..\helper.v1.regex\helper.v1.regex.csproj" />
     <ProjectReference Include="..\helper.v1.security\helper.v1.security.csproj" />
     <ProjectReference Include="..\helper.v1.time\helper.v1.time.csproj" />
-    <ProjectReference Include="..\service.v1.email\service.v1.email.csproj" />
   </ItemGroup>
 
 </Project>

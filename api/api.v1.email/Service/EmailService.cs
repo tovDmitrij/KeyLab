@@ -1,11 +1,13 @@
-﻿using MailKit.Net.Smtp;
+﻿using component.v1.email;
+
+using helper.v1.configuration.Interfaces;
+
+using MailKit.Net.Smtp;
 using MailKit.Security;
 
 using MimeKit;
-using helper.v1.email.DTOs;
-using helper.v1.configuration.Interfaces;
 
-namespace helper.v1.email.Service
+namespace api.v1.email.Service
 {
     public sealed class EmailService : IEmailService
     {
@@ -24,7 +26,7 @@ namespace helper.v1.email.Service
             var password = cfg.GetEmailPassword();
             _smptClient.Authenticate(login, password);
 
-            _admin = new MailboxAddress("Keyboard administration", login);
+            _admin = new MailboxAddress("KeyLab administration", login);
         }
 
 

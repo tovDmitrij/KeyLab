@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Localization;
 
+using MassTransit;
+
 using api.v1.main.Middlewares;
 using api.v1.main.Services.Verification;
 using api.v1.main.Services.User;
@@ -26,13 +28,13 @@ using helper.v1.jwt.Helper;
 using helper.v1.security.Helper;
 using helper.v1.time;
 using helper.v1.cache;
-using helper.v1.email.Service;
 using helper.v1.configuration.Interfaces;
 using helper.v1.configuration;
 using helper.v1.regex.Interfaces;
 using helper.v1.regex;
 using helper.v1.localization.Helper;
 using helper.v1.file;
+using helper.v1.messageBroker;
 
 
 
@@ -44,8 +46,20 @@ var cfg = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
-builder.Services.AddHealthChecks();
 builder.Services.AddMemoryCache();
+
+builder.Services.AddMassTransit(options =>
+{
+    options.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbitmq://rabbitmq:5672", host =>
+        {
+            host.Username("guest");
+            host.Password("guest");
+        });
+    });
+
+});
 
 builder.Services.AddAntiforgery(options =>
 {
@@ -126,10 +140,9 @@ void InitHelpers()
     builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
     builder.Services.AddSingleton<ICacheHelper, MemoryCacheHelper>();
     builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
+    builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
 
-    builder.Services.AddSingleton<IEmailConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
-    builder.Services.AddSingleton<IMinioConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
 
@@ -147,8 +160,6 @@ void InitServices()
     builder.Services.AddScoped<ISwitchService, SwitchService>();
     builder.Services.AddScoped<IProfileService, ProfileService>();
     builder.Services.AddScoped<IBoxService, BoxService>();
-
-    builder.Services.AddSingleton<IEmailService, EmailService>();
 }
 
 #endregion
@@ -164,7 +175,6 @@ app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
-app.MapHealthChecks("/health");
 app.MapControllers();
 app.Run();
 
