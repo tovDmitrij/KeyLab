@@ -7,6 +7,6 @@ namespace api.v1.main.Services.Verification
     public interface IVerificationService
     {
         /// <exception cref="BadRequestException"></exception>
-        public void SendVerificationEmailCode(ConfirmEmailDTO body);
+        public Task SendVerificationEmailCode(ConfirmEmailDTO body);
     }
 }

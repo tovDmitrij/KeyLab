@@ -29,7 +29,6 @@
     <ProjectReference Include="..\helper.v1.security\helper.v1.security.csproj" />
     <ProjectReference Include="..\helper.v1.time\helper.v1.time.csproj" />
     <ProjectReference Include="..\misc.benchmarks\misc.benchmarks.csproj" />
-    <ProjectReference Include="..\service.v1.email\service.v1.email.csproj" />
   </ItemGroup>
 
 </Project>

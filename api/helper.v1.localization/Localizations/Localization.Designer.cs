@@ -124,7 +124,7 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Код подтверждения почты.
+        ///   Ищет локализованную строку, похожую на KeyLab. Код подтверждения почты.
         /// </summary>
         public static string EmailVerification_EmailLabel {
             get {
