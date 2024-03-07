@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.2" />
   </ItemGroup>
 
 </Project>

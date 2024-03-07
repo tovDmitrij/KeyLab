@@ -35,6 +35,7 @@ using helper.v1.regex;
 using helper.v1.localization.Helper;
 using helper.v1.file;
 using helper.v1.messageBroker;
+using helper.v1.cache.Implements;
 
 
 
@@ -49,7 +50,10 @@ var cfg = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
-builder.Services.AddMemoryCache();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = cfg["Redis:Configuration"];
+});
 
 var rabbitHost = cfg["RabbitMQ:Host"];
 var rabbitUsername = cfg["RabbitMQ:Username"];
@@ -143,7 +147,7 @@ void InitHelpers()
     builder.Services.AddSingleton<IFileHelper, FileHelper>();
     builder.Services.AddSingleton<ISecurityHelper, SecurityHelper>();
     builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
-    builder.Services.AddSingleton<ICacheHelper, MemoryCacheHelper>();
+    builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
     builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
     builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
 

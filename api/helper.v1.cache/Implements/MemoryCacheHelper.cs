@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
-namespace helper.v1.cache
+namespace helper.v1.cache.Implements
 {
     public sealed class MemoryCacheHelper : ICacheHelper
     {

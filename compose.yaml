@@ -8,6 +8,8 @@ services:
         condition: service_started
       db_main:
         condition: service_started
+      redis:
+        condition: service_started
     build:
       context: .
       dockerfile: Dockerfile.api
@@ -51,6 +53,20 @@ services:
     restart: always
     ports:
       - 6021:8080
+
+  redis:
+    container_name: redis
+    image: redis:7.2.4
+    restart: always
+    environment:
+      - REDIS_PASSWORD=admin
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis/data:/root/redis
+      - ./redis/redis.conf:/usr/local/ets/redis/redis.conf
 
   rabbitmq:
     container_name: rabbitmq
