@@ -12,15 +12,22 @@ using api.v1.email.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("config_email.json");
+
+var cfg = builder.Configuration;
+
+var rabbitHost = cfg["RabbitMQ:Host"];
+var rabbitUsername = cfg["RabbitMQ:Username"];
+var rabbitPassword = cfg["RabbitMQ:Password"];
 builder.Services.AddMassTransit(options =>
 {
     options.AddConsumer<EmailConsumer>();
     options.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("rabbitmq://rabbitmq:5672", host =>
+        cfg.Host(rabbitHost, host =>
         {
-            host.Username("guest");
-            host.Password("guest");
+            host.Username(rabbitUsername);
+            host.Password(rabbitPassword);
         });
         cfg.ReceiveEndpoint("email",e =>
         {

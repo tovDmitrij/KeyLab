@@ -115,8 +115,9 @@ namespace api.v1.main.Services.User
             var refreshTokenBody = new RefreshTokenDTO(userID, refreshToken.Value, refreshToken.ExpireDate);
             _user.UpdateRefreshToken(refreshTokenBody);
 
-            var sendEmailBody = new SendEmailDTO(body.Email, _localization.UserSignInEmailLabel(), _localization.UserSignInEmailText());
-            await _broker.SendData(sendEmailBody);
+            //Спам почты
+            //var sendEmailBody = new SendEmailDTO(body.Email, _localization.UserSignInEmailLabel(), _localization.UserSignInEmailText());
+            //await _broker.SendData(sendEmailBody);
 
             return new(accessToken, refreshToken.Value, isAdmin);
         }
