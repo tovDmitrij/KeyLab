@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace misc.benchmarks
 {
     [MemoryDiagnoser]
-    public partial class ValidationServiceBenchmark
+    public partial class RegexHelperBenchmark
     {
         //https://youtu.be/WosEhlHATOk
         //Заранее создаём regex, что в разы улучшает производительность (Source generator)
@@ -14,7 +14,7 @@ namespace misc.benchmarks
 
         private readonly Regex _emailRgx;
 
-        public ValidationServiceBenchmark() => _emailRgx = EmailRgx();
+        public RegexHelperBenchmark() => _emailRgx = EmailRgx();
 
 
 

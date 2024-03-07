@@ -8,7 +8,7 @@ using System.Text;
 namespace misc.benchmarks
 {
     [MemoryDiagnoser]
-    public class SecurityServiceBenchmark
+    public class SecurityHelperBenchmark
     {
         [Benchmark]
         public string HashPassword_OLD()

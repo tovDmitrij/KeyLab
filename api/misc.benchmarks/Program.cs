@@ -4,9 +4,9 @@ using BenchmarkDotNet.Running;
 using misc.benchmarks;
 
 #if valid
-BenchmarkRunner.Run<ValidationServiceBenchmark>();
+BenchmarkRunner.Run<RegexHelperBenchmark>();
 
 #elif sec
-BenchmarkRunner.Run<SecurityServiceBenchmark>();
+BenchmarkRunner.Run<SecurityHelperBenchmark>();
 
 #endif
