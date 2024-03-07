@@ -1,0 +1,26 @@
+{
+  "ConnectionStrings": {
+    "main": "Host=db_main;Database=main;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300"
+  },
+  "JWT": {
+    "SecretKey": "nemu6eTh2Uf9gOELJnemu6eTh2Uf9gOELJnemu6eTh2Uf9gOELJnemu6eTh2Uf9gOELJ",
+    "AccessExpireDate": 60,
+    "RefreshExpireDate": 1814400,
+    "Issuer": "AO Keyboard",
+    "Audience": "Some user"
+  },
+  "File": {
+    "ModelsParentDirectory": "/files",
+    "SwitchModelDirectory": "/files/switches/models",
+    "SwitchSoundDirectory": "/files/switches/sounds",
+    "DefaultModelsUserID": "dced1acd-b907-47e0-9659-77cb2c95e0aa"
+  },
+  "Cache": {
+    "ExpirationMinutes": 5
+  },
+  "RabbitMQ": {
+    "Host": "rabbitmq://rabbitmq:5672",
+    "Username": "guest",
+    "Password": "guest"
+  }
+}

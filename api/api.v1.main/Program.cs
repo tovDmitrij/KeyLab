@@ -41,6 +41,9 @@ using helper.v1.messageBroker;
 #region Builder
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("config_main.json");
+
 var cfg = builder.Configuration;
 
 builder.Services.AddControllers();
@@ -48,17 +51,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
 builder.Services.AddMemoryCache();
 
+var rabbitHost = cfg["RabbitMQ:Host"];
+var rabbitUsername = cfg["RabbitMQ:Username"];
+var rabbitPassword = cfg["RabbitMQ:Password"];
 builder.Services.AddMassTransit(options =>
 {
     options.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("rabbitmq://rabbitmq:5672", host =>
+        cfg.Host(rabbitHost, host =>
         {
-            host.Username("guest");
-            host.Password("guest");
+            host.Username(rabbitUsername);
+            host.Password(rabbitPassword);
         });
     });
-
 });
 
 builder.Services.AddAntiforgery(options =>

@@ -1,107 +1,87 @@
 ﻿using db.v1.main.DTOs.Switch;
+
 using Microsoft.AspNetCore.WebUtilities;
-
-using misc.unit_tests.API;
-
-using System.Net;
-using System.Net.Http.Json;
 
 using Xunit;
 
-namespace misc.unit_tests.Controllers
+namespace misc.unit_tests.API
 {
     public sealed class SwitchAPITests : APITest
     {
-        [Fact]
-        public async void GetSwitchList_200()
+        [Theory]
+        [InlineData(0)]
+        public async void PositiveDefaultSwitchesTest(int excepted)
         {
-            var httpClient = new HttpClient();
-            var switchUrl = "http://127.0.0.1:6005/api/v1/switches/models/default";
+            var switchUrl = $"{MainServiceAddress}/switches/models/default";
+            var response = await GetAsync(switchUrl);
+            var json = await ReadFromJsonAsync<List<SelectSwitchDTO>>(response);
+            var actual = json.Count;
 
-            var response = await httpClient.GetFromJsonAsync<List<SelectSwitchDTO>>(switchUrl);
-            Assert.NotNull(response);
+            Assert.True(actual != excepted, $"Список свитчей пустой: {actual}");
         }
 
 
 
-        [Fact]
-        public async void GetSwitchModelFile_200()
+        [Theory]
+        [InlineData("b0ac9399-8eb1-4920-9366-82cbf7904eb1", 1_024)]
+        public async void PositiveSwitchModelTest(Guid switchID, int excepted)
         {
-            var httpClient = new HttpClient();
-            var switchID = "b0ac9399-8eb1-4920-9366-82cbf7904eb1";
-            var switchUrl = "http://127.0.0.1:6005/api/v1/switches/models";
-
-            var queryParams = new Dictionary<string, string>()
-            {
-                ["switchID"] = switchID
-            };
+            var switchUrl = $"{MainServiceAddress}/switches/models";
+            var queryParams = new Dictionary<string, string>() { ["switchID"] = switchID.ToString() };
             var uri = QueryHelpers.AddQueryString(switchUrl, queryParams);
 
-            var response = await httpClient.GetAsync(uri);
+            var response = await GetAsync(uri);
+            var file = await ReadAsStreamAsync(response);
+            var actual = file.Length;
 
-            var file = await response.Content.ReadAsStreamAsync();
-            Assert.InRange(file.Length, 10_000, 999_999);
+            Assert.True(actual > excepted, $"Размер файла меньше 10 килобайт: {actual}");
         }
 
-        [Fact]
-        public async void GetSwitchModelFile_400_id()
+        [Theory]
+        [InlineData("b0ac9399-8eb1-4920-9366-82cbf7904eb2", 1_024)]
+        public async void NegativeSwitchModelTest(Guid switchID, int excepted)
         {
-            var httpClient = new HttpClient();
-            var switchID = "b0ac9399-8eb1-4920-9366-82cbf7904eb2";
-            var switchUrl = "http://127.0.0.1:6005/api/v1/switches/models";
-
-            var queryParams = new Dictionary<string, string>()
-            {
-                ["switchID"] = switchID
-            };
+            var switchUrl = $"{MainServiceAddress}/switches/models";
+            var queryParams = new Dictionary<string, string>() { ["switchID"] = switchID.ToString() };
             var uri = QueryHelpers.AddQueryString(switchUrl, queryParams);
 
-            var response = await httpClient.GetAsync(uri);
+            var response = await GetAsync(uri);
+            var file = await ReadAsStreamAsync(response);
+            var actual = file.Length;
 
-            var actual = response.StatusCode;
-            var expected = HttpStatusCode.BadRequest;
-            Assert.Equal(expected, actual);
+            Assert.True(actual < excepted, $"Несуществующий файл оказался существующим: {actual}");
         }
 
 
 
-        [Fact]
-        public async void GetSwitchSoundFile_200()
+        [Theory]
+        [InlineData("b0ac9399-8eb1-4920-9366-82cbf7904eb1", 1_024)]
+        public async void PositiveSwitchSoundTest(Guid switchID, int excepted)
         {
-            var httpClient = new HttpClient();
-            var switchID = "b0ac9399-8eb1-4920-9366-82cbf7904eb1";
-            var soundUrl = "http://127.0.0.1:6005/api/v1/switches/sounds";
-
-            var queryParams = new Dictionary<string, string>()
-            {
-                ["switchID"] = switchID
-            };
+            var soundUrl = $"{MainServiceAddress}/switches/sounds";
+            var queryParams = new Dictionary<string, string>() { ["switchID"] = switchID.ToString() };
             var uri = QueryHelpers.AddQueryString(soundUrl, queryParams);
 
-            var response = await httpClient.GetAsync(uri);
+            var response = await GetAsync(uri);
+            var file = await ReadAsStreamAsync(response);
+            var actual = file.Length;
 
-            var file = await response.Content.ReadAsStreamAsync();
-            Assert.InRange(file.Length, 1_000, 999_999);
+            Assert.True(actual > excepted, $"Размер файла меньше 10 килобайт: {actual}");
         }
 
-        [Fact]
-        public async void GetSwitchSoundFile_400_id()
+        [Theory]
+        [InlineData("b0ac9399-8eb1-4920-9366-82cbf7904eb2", 1_024)]
+        public async void NegativeSwitchSoundTest(Guid switchID, int excepted)
         {
-            var httpClient = new HttpClient();
-            var switchID = "b0ac9399-8eb1-4920-9366-82cbf7904eb2";
-            var soundUrl = "http://127.0.0.1:6005/api/v1/switches/sounds";
-
-            var queryParams = new Dictionary<string, string>()
-            {
-                ["switchID"] = switchID
-            };
+            var soundUrl = $"{MainServiceAddress}/switches/sounds";
+            var queryParams = new Dictionary<string, string>() { ["switchID"] = switchID.ToString() };
             var uri = QueryHelpers.AddQueryString(soundUrl, queryParams);
 
-            var response = await httpClient.GetAsync(uri);
+            var response = await GetAsync(uri);
+            var file = await ReadAsStreamAsync(response);
+            var actual = file.Length;
 
-            var actual = response.StatusCode;
-            var expected = HttpStatusCode.BadRequest;
-            Assert.Equal(expected, actual);
+            Assert.True(actual < excepted, $"Несуществующий файл оказался существующим: {actual}");
         }
     }
 }

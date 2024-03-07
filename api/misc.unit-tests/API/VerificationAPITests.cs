@@ -1,38 +1,31 @@
-﻿using misc.unit_tests.API;
+﻿using System.Net;
 
-using System.Net;
-using System.Net.Http.Json;
 using Xunit;
 
-namespace misc.unit_tests.Controllers
+namespace misc.unit_tests.API
 {
     public sealed class VerificationAPITests : APITest
     {
-        [Fact(Skip = "Email spam")]
-        public async void VerificationEmail_200()
+        [Theory(Skip = "Email spam")]
+        [InlineData("dmxikka@gmail.com", HttpStatusCode.OK)]
+        public async void PositiveEmailTest(string email, HttpStatusCode excepted)
         {
-            var email = "dmxikka@gmail.com";
-            var verificationUrl = "http://127.0.0.1:6005/api/v1/verifications/email"; //Docker!
+            var verificationUrl = $"{MainServiceAddress}/verifications/email";
             var response = await PostAsJsonAsync(verificationUrl, new { email });
-
             var actual = response.StatusCode;
-            var excepted = HttpStatusCode.OK;
-            Assert.Equal(excepted, actual);
+
+            Assert.True(excepted == actual, $"Произошла ошибка при отправке письма: {email} - {actual}");
         }
 
-        [Fact(Skip = "Email spam")]
-        public async void VerificationEmail_400()
+        [Theory(Skip = "Email spam")]
+        [InlineData("admin@keyboard.ru", HttpStatusCode.BadRequest)]
+        public async void NegativeEmailTest(string email, HttpStatusCode excepted)
         {
-            var httpClient = new HttpClient();
-
-            var verificationUrl = "http://127.0.0.1:6005/api/v1/verifications/email"; //Docker!
-            var email = "admin@keyboard.ru";
-
-            var response = await httpClient.PostAsJsonAsync(verificationUrl, new { email });
-
+            var verificationUrl = $"{MainServiceAddress}/verifications/email";
+            var response = await PostAsJsonAsync(verificationUrl, new { email });
             var actual = response.StatusCode;
-            var excepted = HttpStatusCode.BadRequest;
-            Assert.Equal(excepted, actual);
+
+            Assert.True(excepted == actual, $"Произошла ошибка при отправке письма уже зарегистрированному пользователю: {email} - {actual}");
         }
 
     }
