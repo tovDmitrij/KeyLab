@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.162.0/examples/jsm/"
+          }
+        }
+    </script>
+
+    <script type="module" src="GLTFCanvas.js"></script>
+    
+    <script type="module">
+        import { GLTFCanvas } from './GLTFCanvas.js';
+        import { DownloadService } from './DownloadService.js'
+
+
+
+        const cameraKeyboard = { x: 0, y: 0.25, z: 0.45 };
+        const modelKeyboard = { x: -0.135, y: 0.115, z: 0.16 };
+
+        const modelSwitch = { x: -0.0025, y: 0.225, z: 0.4 };
+        const modelKeycap = { x: -0.01, y: 0.125, z: 0.2 };
+
+        const cameraPosition = cameraKeyboard;
+        const modelPosition = modelKeyboard;
+
+
+
+        const canvas = new GLTFCanvas(cameraPosition);
+
+        document.body.appendChild(canvas.getRendererDom());
+        canvas.loadModel(modelKeyboard, '60percent.glb');
+
+        
+        function foo() {
+            canvas.loadModel(modelKeyboard, 'buster_drone.glb');
+            //sleep
+            downloadService.downloadImg()
+        }
+
+
+
+        const downloadService = new DownloadService();
+
+        document.getElementById("btn").onclick = downloadService.downloadImg;
+        //document.getElementById("btn").onclick = foo;
+    </script>
+
+</head>
+<body>
+    <button id="btn">Send msg</button>
+</body>
+</html>

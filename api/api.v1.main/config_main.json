@@ -15,12 +15,15 @@
     "SwitchSoundDirectory": "/files/switches/sounds",
     "DefaultModelsUserID": "dced1acd-b907-47e0-9659-77cb2c95e0aa"
   },
-  "Cache": {
-    "ExpirationMinutes": 5
-  },
   "RabbitMQ": {
     "Host": "rabbitmq://rabbitmq:5672",
     "Username": "guest",
     "Password": "guest"
+  },
+  "Cache": {
+    "ExpirationMinutes": 5
+  },
+  "Redis": {
+    "Configuration": "redis:6379"
   }
 }

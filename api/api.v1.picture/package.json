@@ -1,0 +1,26 @@
+{
+  "name": "api.v1.picture",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "description": "api.v1.picture",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "debug": "^2.2.0",
+    "express": "^4.14.0",
+    "http": "^0.0.1-security",
+    "morgan": "^1.7.0",
+    "pug": "^2.0.0-beta6",
+    "socket.io": "^4.7.4",
+    "three": "^0.162.0",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.21.0"
+  },
+  "eslintConfig": {}
+}

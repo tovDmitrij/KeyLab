@@ -1,0 +1,7 @@
+FROM node:20.11
+WORKDIR /api
+COPY api/api.v1.picture/package.json ./package.json
+RUN npm install
+
+COPY api/api.v1.picture .
+EXPOSE 3000
