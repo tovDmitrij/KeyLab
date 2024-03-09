@@ -33,6 +33,19 @@ services:
     ports:
       - 6002:8080
 
+  api_picture:
+    container_name: api_picture
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: Dockerfile.api.picture
+    entrypoint: [ "npm", "start"]
+    ports:
+      - 6003:3000
+
   db_main:
     container_name: db_main
     image: postgres:16.0

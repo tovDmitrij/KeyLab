@@ -35,8 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.messageBroker", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "component.v1.email", "component.v1.email\component.v1.email.csproj", "{9D82830C-F76E-4583-A297-17BA836DCCAD}"
 EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "api.v1.picture", "api.v1.picture\api.v1.picture.njsproj", "{1FFF78D8-664E-4F9A-B2D7-510E76551265}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
