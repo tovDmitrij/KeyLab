@@ -31,9 +31,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.localization", "h
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api.v1.email", "api.v1.email\api.v1.email.csproj", "{0DC44A51-C850-4FDB-8737-E97B4E61B3EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helper.v1.messageBroker", "helper.v1.messageBroker\helper.v1.messageBroker.csproj", "{33060194-9E42-421A-86EE-CE4D80D5389B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "helper.v1.messageBroker", "helper.v1.messageBroker\helper.v1.messageBroker.csproj", "{33060194-9E42-421A-86EE-CE4D80D5389B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "component.v1.email", "component.v1.email\component.v1.email.csproj", "{9D82830C-F76E-4583-A297-17BA836DCCAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "component.v1.email", "component.v1.email\component.v1.email.csproj", "{9D82830C-F76E-4583-A297-17BA836DCCAD}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "api.v1.picture", "api.v1.picture\api.v1.picture.njsproj", "{1FFF78D8-664E-4F9A-B2D7-510E76551265}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{9D82830C-F76E-4583-A297-17BA836DCCAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D82830C-F76E-4583-A297-17BA836DCCAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D82830C-F76E-4583-A297-17BA836DCCAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FFF78D8-664E-4F9A-B2D7-510E76551265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FFF78D8-664E-4F9A-B2D7-510E76551265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FFF78D8-664E-4F9A-B2D7-510E76551265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FFF78D8-664E-4F9A-B2D7-510E76551265}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.162.0/examples/jsm/"
+          }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.162.0/build/three.module.js'
+        import { OrbitControls } from 'https://unpkg.com/three@0.162.0/examples/jsm/controls/OrbitControls.js'
+        import { GLTFLoader } from 'https://unpkg.com/three@0.162.0/examples/jsm/loaders/GLTFLoader.js'
+
+
+        //Надо будет все модели отцентровать!
+        const cameraKeyboard = { x: 0, y: 0.25, z: 0.45 }
+        const modelKeyboard = { x: -0.135, y: 0.115, z: 0.16 }
+
+        const modelSwitch = { x: -0.0025, y: 0.225, z: 0.4 }
+        const modelKeycap = { x: -0.01, y: 0.125, z: 0.2 }
+
+        let cameraPosition = cameraKeyboard
+        let modelPosition = modelKeyboard
+
+
+
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+        renderer.setSize(1280, 720)
+        document.body.appendChild(renderer.domElement)
+
+        const scene = new THREE.Scene()
+
+
+
+        //#region Освещение
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1)
+        scene.add(ambientLight)
+
+        const dl = new THREE.DirectionalLight(0xffffff, 1);
+        dl.position.set(0, 0, 2);
+        scene.add(dl)
+        //#endregion
+
+
+
+        //#region Задний фон
+        var geometry = new THREE.SphereGeometry(10, 10, 10)
+        geometry.scale(- 1, 1, 1)
+        var material = new THREE.MeshBasicMaterial({
+            map: new THREE.TextureLoader().load('textures/background_3.jpg')
+        })
+        var mesh = new THREE.Mesh(geometry, material)
+        scene.add(mesh)
+        //#endregion
+
+
+
+        //#region Камера
+        const camera = new THREE.PerspectiveCamera(75, 16 / 9, 0.01, 1000)
+        camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
+
+        const controls = new OrbitControls(camera, renderer.domElement)
+        controls.update()
+        //#endregion
+
+
+
+        //#region Загрузка модели
+        const loader = new GLTFLoader()
+
+        loader.load('models/space.glb',
+            function (gltf) {
+                const model = gltf.scene
+                model.position.setX(modelPosition.x)
+                model.position.setY(modelPosition.y)
+                model.position.setZ(modelPosition.z)
+                model.rotation.x = 0.975
+
+                scene.add(gltf.scene)
+
+                gltf.animations
+                gltf.scene
+                gltf.scenes
+                gltf.cameras
+                gltf.asset
+            },
+            async function (xhr) {
+                var stage = xhr.loaded / xhr.total * 100
+                console.log(stage + '% loaded')
+                if (stage === 100) {
+                    console.log("Completed!")
+                }
+            },
+            function (error) {
+                console.log('An error happened' + error)
+            }
+        )
+        //#endregion
+
+
+
+        function animate() {
+            requestAnimationFrame(animate)
+            controls.update()
+            renderer.render(scene, camera)
+        }
+        animate()
+
+
+
+        function downloadImg() {
+            const img = renderer.domElement.toDataURL()
+
+            var a = document.createElement("a");
+            a.href = img
+            a.download = "Image.png";
+            a.click();
+        }
+
+        document.getElementById("btn").onclick = downloadImg;
+    </script>
+
+    <script>
+        const connection = new WebSocket("ws://localhost:3000/")
+
+        connection.onopen = () => {
+            console.log(">>>OnOpen")
+        }
+
+        connection.onclose = () => {
+            console.log(">>>OnClose")
+        }
+
+        connection.onmessage = (e) => {
+            console.log(">>>OnMessage")
+            //var json = JSON.parse(e.data)
+        }
+
+        function sendMsg() {
+            const userName = "Dmitrij"
+            const message = "Hello!"
+
+            const json = JSON.stringify({
+                event: "chat-message",
+                payload: {
+                    userName, message
+                }
+            })
+
+            connection.send(json)
+            console.log(">>>SendMsg")
+        }
+    </script>
+</head>
+<body>
+    <button id="btn">Send msg</button>
+</body>
+</html>
