@@ -1,0 +1,16 @@
+export class ImageService {
+    link;
+
+    constructor() {
+        this.link = document.createElement('a');
+        this.link.setAttribute('download', 'img.png');
+    }
+
+    download(source) {
+        source.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            this.link.setAttribute('href', url);
+            this.link.click();
+        });
+    }
+}
