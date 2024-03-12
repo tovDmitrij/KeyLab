@@ -17,7 +17,7 @@ services:
     ports:
       - 6001:8080
     volumes:
-      - ./api/main/logs:/logs/main
+      - ./api/logs/main:/logs/main
       - ./files:/files
 
   api_email:

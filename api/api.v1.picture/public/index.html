@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-
     <script type="importmap">
         {
           "imports": {
@@ -11,48 +10,37 @@
           }
         }
     </script>
-
-    <script type="module" src="GLTFCanvas.js"></script>
-    
+    <script type="module" src="./js/GLTFCanvas.js"></script>
     <script type="module">
-        import { GLTFCanvas } from './GLTFCanvas.js';
-        import { DownloadService } from './DownloadService.js'
+        import { GLTFCanvas } from './js/GLTFCanvas.js';
+        import { ImageService } from './js/ImageService.js'
 
 
 
-        const cameraKeyboard = { x: 0, y: 0.25, z: 0.45 };
-        const modelKeyboard = { x: -0.135, y: 0.115, z: 0.16 };
+        const cameraPosition = { x: 0, y: 0.25, z: 0.45 };
+        const modelPosition = { x: -0.135, y: 0.115, z: 0.16 };
 
-        const modelSwitch = { x: -0.0025, y: 0.225, z: 0.4 };
-        const modelKeycap = { x: -0.01, y: 0.125, z: 0.2 };
-
-        const cameraPosition = cameraKeyboard;
-        const modelPosition = modelKeyboard;
-
-
-
-        const canvas = new GLTFCanvas(cameraPosition);
-
+        const canvas = new GLTFCanvas(cameraPosition, './assets/background.jpg');
         document.body.appendChild(canvas.getRendererDom());
-        canvas.loadModel(modelKeyboard, '60percent.glb');
 
-        
+        const imgService = new ImageService();
         function foo() {
-            canvas.loadModel(modelKeyboard, 'buster_drone.glb');
+            canvas.loadModel(modelPosition, 'buster_drone.glb');
             //sleep
-            downloadService.downloadImg()
+            imgService.download(document.getElementsByTagName('canvas')[0])
         }
 
+        const connection = new WebSocket("ws://localhost:3000/")
+        connection.onmessage = async (e) => {
+            var urlData = URL.createObjectURL(new Blob([e.data]))
+            canvas.loadModel(modelPosition, urlData);
 
+            await new Promise(r => setTimeout(r, 2000));
 
-        const downloadService = new DownloadService();
-
-        document.getElementById("btn").onclick = downloadService.downloadImg;
-        //document.getElementById("btn").onclick = foo;
+            imgService.download(document.getElementsByTagName('canvas')[0])
+        }
     </script>
-
 </head>
 <body>
-    <button id="btn">Send msg</button>
 </body>
 </html>
