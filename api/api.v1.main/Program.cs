@@ -43,7 +43,11 @@ using helper.v1.cache.Implements;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("config_main.json");
+builder.Configuration.AddJsonFile("/configurations/db.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -52,7 +56,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = cfg["Redis:Configuration"];
+    options.Configuration = cfg["RedisMain:Configuration"];
 });
 
 var rabbitHost = cfg["RabbitMQ:Host"];
@@ -124,7 +128,7 @@ InitServices();
 
 void InitContexts()
 {
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg.GetConnectionString("main")), ServiceLifetime.Scoped);
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg["PostgreSQL:Main"]), ServiceLifetime.Scoped);
     builder.Services.AddScoped<IUserContext, MainContext>();
     builder.Services.AddScoped<IVerificationContext, MainContext>();
     builder.Services.AddScoped<IKeyboardContext, MainContext>();
@@ -181,7 +185,6 @@ var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 app.UseCors("PublicPolicy");
 app.UseMiddleware<ExceptionHandlerMiddleware>();
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();

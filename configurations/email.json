@@ -1,0 +1,8 @@
+{
+    "Email": {
+        "Host": "smtp.gmail.com",
+        "Port": 587,
+        "Login": "keyboardinfo24@gmail.com",
+        "Password": "buwqxlbqtrokhbdn"
+    }
+}   

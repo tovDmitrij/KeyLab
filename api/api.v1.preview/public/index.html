@@ -20,24 +20,23 @@
         const cameraPosition = { x: 0, y: 0.25, z: 0.45 };
         const modelPosition = { x: -0.135, y: 0.115, z: 0.16 };
 
-        const canvas = new GLTFCanvas(cameraPosition, './assets/background.jpg');
+        const canvas = new GLTFCanvas(cameraPosition, './assets/background.jpg', 1280, 720);
         document.body.appendChild(canvas.getRendererDom());
 
-        const imgService = new ImageService();
-        function foo() {
-            canvas.loadModel(modelPosition, 'buster_drone.glb');
-            //sleep
-            imgService.download(document.getElementsByTagName('canvas')[0])
-        }
+
 
         const connection = new WebSocket("ws://localhost:3000/")
         connection.onmessage = async (e) => {
-            var urlData = URL.createObjectURL(new Blob([e.data]))
+            let urlData = URL.createObjectURL(new Blob([e.data]))
             canvas.loadModel(modelPosition, urlData);
 
-            await new Promise(r => setTimeout(r, 2000));
+            while(!canvas.isCompleted) {
+                await new Promise(r => setTimeout(r, 1000));
+            }
 
-            imgService.download(document.getElementsByTagName('canvas')[0])
+            var img = imgService.get(document.getElementsByTagName('canvas')[0]);
+            connection.send(img)
+            //imgService.download(document.getElementsByTagName('canvas')[0])
         }
     </script>
 </head>
