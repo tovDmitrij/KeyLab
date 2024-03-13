@@ -8,7 +8,7 @@ services:
         condition: service_started
       db_main:
         condition: service_started
-      redis:
+      redis_main:
         condition: service_started
     build:
       context: .
@@ -19,6 +19,7 @@ services:
     volumes:
       - ./api/logs/main:/logs/main
       - ./files:/files
+      - ./configurations:/configurations
 
   api_email:
     container_name: api_email
@@ -32,19 +33,8 @@ services:
     entrypoint: [ "dotnet", "api.v1.email.dll" ]
     ports:
       - 6002:8080
-
-  api_picture:
-    container_name: api_picture
-    restart: always
-    depends_on:
-      rabbitmq:
-        condition: service_started
-    build:
-      context: .
-      dockerfile: Dockerfile.api.picture
-    entrypoint: [ "npm", "start"]
-    ports:
-      - 6003:3000
+    volumes:
+      - ./configurations:/configurations
 
   db_main:
     container_name: db_main
@@ -60,26 +50,23 @@ services:
       - ./postgres/main/data:/var/lib/postgresql/data
       - ./postgres/main/create.sql:/docker-entrypoint-initdb.d/create.sql
 
-  adminer:
-    container_name: adminer
-    image: adminer:4.8.1
-    restart: always
-    ports:
-      - 6021:8080
-
-  redis:
-    container_name: redis
+  redis_main:
+    container_name: redis_main
     image: redis:7.2.4
     restart: always
     environment:
       - REDIS_PASSWORD=admin
       - REDIS_PORT=6379
       - REDIS_DATABASES=16
+    command:
+      --port 6021
     ports:
-      - 6379:6379
+      - 6021:6021
+    expose:
+      - 6021
     volumes:
-      - ./redis/data:/root/redis
-      - ./redis/redis.conf:/usr/local/ets/redis/redis.conf
+      - ./redis/main/data:/root/redis
+      - ./redis/main/redis.conf:/usr/local/ets/redis/redis.conf
 
   rabbitmq:
     container_name: rabbitmq
@@ -94,3 +81,10 @@ services:
     volumes:
       - ./rabbitmq/data/:/var/lib/rabbitmq/
       - ./rabbitmq/log/:/var/log.rabbitmq/
+
+  adminer:
+    container_name: adminer
+    image: adminer:4.8.1
+    restart: always
+    ports:
+      - 6031:8080

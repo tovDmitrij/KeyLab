@@ -12,7 +12,8 @@ using api.v1.email.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("config_email.json");
+builder.Configuration.AddJsonFile("/configurations/email.json");
+builder.Configuration.AddJsonFile("/configurations/rabbitmq.json");
 
 var cfg = builder.Configuration;
 

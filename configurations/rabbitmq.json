@@ -1,0 +1,7 @@
+{
+    "RabbitMQ": {
+        "Host": "rabbitmq://rabbitmq:5672",
+        "Username": "guest",
+        "Password": "guest"
+    }
+  }

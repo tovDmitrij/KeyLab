@@ -15,8 +15,9 @@ export class GLTFCanvas {
     loader;
     animation = 0;
     currentModel;
+    isCompleted = false;
 
-    constructor(cameraPosition, background) {
+    constructor(cameraPosition, background, width, height) {
         this.scene = new THREE.Scene();
 
         this.renderer = new THREE.WebGLRenderer({ 
@@ -24,7 +25,7 @@ export class GLTFCanvas {
             alpha: true, 
             preserveDrawingBuffer: true
         });
-        this.renderer.setSize(1280, 720);
+        this.renderer.setSize(width, height);
 
         this.ambientLight = new THREE.AmbientLight(0xffffff, 1);
         this.scene.add(this.ambientLight);
@@ -60,25 +61,29 @@ export class GLTFCanvas {
         }
         
         this.scene.remove(this.currentModel);
+        this.isCompleted = false;
 
-        this.loader.load(file,
-            (gltf) => {
-                const model = gltf.scene
-                model.position.setX(modelPosition.x)
-                model.position.setY(modelPosition.y)
-                model.position.setZ(modelPosition.z)
-                model.rotation.x = 0.975
-                
-                this.currentModel = gltf.scene
-                
-                this.scene.add(gltf.scene)
-                
-                gltf.animations
-                gltf.scene
-                gltf.scenes
-                gltf.cameras
-                gltf.asset
-        })
+        this.loader.load(file, (gltf) => {
+            const model = gltf.scene;
+            model.position.setX(modelPosition.x);
+            model.position.setY(modelPosition.y);
+            model.position.setZ(modelPosition.z);
+            model.rotation.x = 0.975;
+
+            this.currentModel = gltf.scene;
+            this.scene.add(gltf.scene);
+            
+            gltf.animations;
+            gltf.scene;
+            gltf.scenes;
+            gltf.cameras;
+            gltf.asset;
+        }, (xhr) => {
+            const stage = xhr.loaded / xhr.total * 100;
+            if (stage === 100) {
+                this.isCompleted = true;
+            }
+        });
 
         const animate = () => {
             this.animation = requestAnimationFrame(animate);

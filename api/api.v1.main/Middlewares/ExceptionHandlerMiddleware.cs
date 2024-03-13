@@ -43,40 +43,68 @@ namespace api.v1.main.Middlewares
 
 
 
-            var requestPath = req.Path.Value;
-            if (requestPath != null) 
+            try
+            {
+                var requestPath = req.Path.Value;
                 writer.WriteLine(GetStreamWriterMsg("Path", requestPath));
+            } 
+            catch { }
 
-            var requestMethod = req.Method;
-            writer.WriteLine(GetStreamWriterMsg("Method", requestMethod));
+            try
+            {
+                var requestMethod = req.Method;
+                writer.WriteLine(GetStreamWriterMsg("Method", requestMethod));
+            } 
+            catch { }
 
-            var requestQueryParams = req.QueryString.ToString();
-            if (requestQueryParams.Length != 0) 
+            try
+            {
+                var requestQueryParams = req.QueryString.ToString();
                 writer.WriteLine(GetStreamWriterMsg("Query params", requestQueryParams));
+            }
+            catch { }
 
-            var requestFormData = GetFormData(req.Form);
-            if (requestFormData.Length != 0)
+            try
+            {
+                var requestFormData = GetFormData(req.Form);
                 writer.WriteLine(GetStreamWriterMsg("Form data", requestFormData));
+            } 
+            catch { }
 
-            var body = GetRawBodyAsync(req).Result;
-            if (body.Length != 0)
+            try
+            {
+                var body = GetRawBodyAsync(req).Result;
                 writer.WriteLine(GetStreamWriterMsg("Body", body));
+            }
+            catch { }
 
-            var exceptionMsg = ex.Message;
-            if (exceptionMsg.Length != 0) 
+            try
+            {
+                var exceptionMsg = ex.Message;
                 writer.WriteLine(GetStreamWriterMsg("Message", exceptionMsg));
+            }
+            catch { }
 
-            var exceptionSource = ex.Source;
-            if (exceptionSource != null) 
+            try
+            {
+                var exceptionSource = ex.Source;
                 writer.WriteLine(GetStreamWriterMsg("Source", exceptionSource));
+            }
+            catch { }
 
-            var exceptionTargetSite = ex.TargetSite;
-            if (exceptionTargetSite != null) 
+            try
+            {
+                var exceptionTargetSite = ex.TargetSite;
                 writer.WriteLine(GetStreamWriterMsg("TargetSite", exceptionTargetSite.ToString()!));
+            }
+            catch { }
 
-            var exceptionStackTrace = ex.StackTrace;
-            if (exceptionStackTrace != null) 
+            try
+            {
+                var exceptionStackTrace = ex.StackTrace;
                 writer.WriteLine(GetStreamWriterMsg("StackTrace", exceptionStackTrace));
+            }
+            catch { }
         }
 
 

@@ -1,0 +1,8 @@
+{
+    "Cache": {
+        "ExpirationMinutes": 5
+    },
+    "RedisMain": {
+        "Configuration": "redis_main:6021"
+    }
+}

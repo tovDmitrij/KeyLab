@@ -13,4 +13,10 @@ export class ImageService {
             this.link.click();
         });
     }
+
+    get(source) {
+        source.toBlob((blob) => {
+            return blob;
+        });
+    }
 }
