@@ -2,9 +2,11 @@
 
 docker compose stop;
 docker compose down;
-docker image rm keyboards-api_mail;
+docker image rm keyboards-api_main;
 docker image rm keyboards-api_email;
 docker image rm keyboards-api_preview;
+docker image rm keyboards-api_proxy;
 docker compose build;
 docker compose up -d;
-echo Complete!;
+#docker image prune -a -f;
+echo ~~uwu~~;

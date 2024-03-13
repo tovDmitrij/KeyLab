@@ -43,11 +43,11 @@ using helper.v1.cache.Implements;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("/configurations/db.json");
-builder.Configuration.AddJsonFile("/configurations/file.json");
-builder.Configuration.AddJsonFile("/configurations/redis.json");
-builder.Configuration.AddJsonFile("/configurations/rabbitmq.json");
-builder.Configuration.AddJsonFile("/configurations/jwt.json");
+builder.Configuration.AddJsonFile("/configurations/db.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -185,7 +185,6 @@ var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 app.UseCors("PublicPolicy");
 app.UseMiddleware<ExceptionHandlerMiddleware>();
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();

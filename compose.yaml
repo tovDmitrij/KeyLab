@@ -1,21 +1,32 @@
 version: "3.9"
 services:
+  api_proxy:
+    container_name: api_proxy
+    restart: always
+    depends_on:
+      - api_main
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.api.proxy
+    entrypoint: [ "dotnet", "api.v1.proxy.dll" ]
+    ports:
+      - 6001:8080
+    volumes:
+      - ./configurations:/configurations
+
   api_main:
     container_name: api_main
     restart: always
     depends_on:
-      rabbitmq:
-        condition: service_started
-      db_main:
-        condition: service_started
-      redis_main:
-        condition: service_started
+      - rabbitmq
+      - db_main
+      - redis_main
     build:
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: dockerfiles/Dockerfile.api.main
     entrypoint: [ "dotnet", "api.v1.main.dll" ]
     ports:
-      - 6001:8080
+      - 6002:8080
     volumes:
       - ./api/logs/main:/logs/main
       - ./files:/files
@@ -25,14 +36,13 @@ services:
     container_name: api_email
     restart: always
     depends_on:
-      rabbitmq:
-        condition: service_started
+      - rabbitmq
     build:
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: dockerfiles/Dockerfile.api.email
     entrypoint: [ "dotnet", "api.v1.email.dll" ]
     ports:
-      - 6002:8080
+      - 6003:8080
     volumes:
       - ./configurations:/configurations
 
@@ -76,15 +86,16 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 6031:6031
+      - 6032:6032
     volumes:
       - ./rabbitmq/data/:/var/lib/rabbitmq/
       - ./rabbitmq/log/:/var/log.rabbitmq/
+      - ./rabbitmq/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
 
   adminer:
     container_name: adminer
     image: adminer:4.8.1
     restart: always
     ports:
-      - 6031:8080
+      - 6041:8080

@@ -12,8 +12,8 @@ using api.v1.email.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("/configurations/email.json");
-builder.Configuration.AddJsonFile("/configurations/rabbitmq.json");
+builder.Configuration.AddJsonFile("/configurations/email.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -65,7 +65,6 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 
 var app = builder.Build();
 app.UseCors("PublicPolicy");
-app.UseHttpsRedirection();
 app.Run();
 
 #endregion

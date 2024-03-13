@@ -5,7 +5,8 @@ logs
 files/*
 !files/dced1acd-b907-47e0-9659-77cb2c95e0aa
 !files/switches
-rabbitmq
+rabbitmq/data
+rabbitmq/log
 redis
 
 
