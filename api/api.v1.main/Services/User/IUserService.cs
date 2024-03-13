@@ -10,7 +10,7 @@ namespace api.v1.main.Services.User
         public void SignUp(PostSignUpDTO body);
 
         /// <exception cref="BadRequestException"></exception>
-        public Task<SignInDTO> SignIn(PostSignInDTO body);
+        public SignInDTO SignIn(PostSignInDTO body);
 
         /// <exception cref="BadRequestException"></exception>
         public string UpdateAccessToken(string refreshToken);
