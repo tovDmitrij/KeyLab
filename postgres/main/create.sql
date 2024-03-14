@@ -7,7 +7,6 @@ create or replace function GetDefaultUserID() returns uuid as
     end; $$ language plpgsql;
 
 
-
 create table if not exists users(
     id uuid default uuid_generate_v4() primary key,
     email text not null,
@@ -22,17 +21,6 @@ create index on users(id);
 create index on users(email);
 create index on users(email, password);
 create index on users(token, token_expire_date);
---password: 11111111
-insert into users(id, email, salt, password, nickname, registration_date)
-values(
-    GetDefaultUserID(), 
-    'admin@keyboard.ru', 
-    'hL36LBnKvP8whM0QFhuFQn82GSBJbPXT',
-    '72653061b3aefd326e2e71f7affc9ccd1d1473fc6e35d5b4936d87c587b96dcff1729b65a57e7aaf95b964ac325fac56d7ef626cb9ea4fcad0287045176ed96e',
-    'admin1',
-    1705443770.40067
-);
-
 
 
 create table if not exists email_codes(
@@ -45,7 +33,6 @@ create index on email_codes(id);
 create index on email_codes(email, code, expire_date);
 
 
-
 create table if not exists switches(
     id uuid default uuid_generate_v4() primary key,
     title text not null,
@@ -54,6 +41,78 @@ create table if not exists switches(
     sound_path text not null
 );
 create index on switches(id);
+
+
+create table if not exists box_types(
+    id uuid default uuid_generate_v4() primary key,
+    title text not null,
+    description text not null
+);
+create index on box_types(id);
+
+
+create table if not exists keyboards(
+    id uuid default uuid_generate_v4() primary key,
+    owner_id uuid not null references users(id),
+    switch_type_id uuid not null references switches(id),
+    box_type_id uuid not null references box_types(id),
+    title text not null,
+    description text,
+    file_path text not null,
+    creation_date numeric not null
+);
+create index on keyboards(id);
+create index on keyboards(owner_id);
+
+
+create table if not exists boxes(
+    id uuid default uuid_generate_v4() primary key,
+    owner_id uuid not null references users(id),
+    type_id uuid not null references box_types(id),
+    title text not null,
+    description text,
+    file_path text not null,
+    creation_date numeric not null
+);
+create index on boxes(id);
+create index on boxes(owner_id);
+create index on boxes(type_id);
+
+
+create table if not exists kits(
+    id uuid default uuid_generate_v4() primary key,
+    owner_id uuid not null references users(id),
+    title text not null,
+    description text not null,
+    creation_date numeric not null
+);
+create index on kits(id);
+create index on kits(owner_id);
+
+
+
+
+
+--password: 11111111
+insert into users(id, email, salt, password, nickname, registration_date)
+values(
+    GetDefaultUserID(), 
+    'admin@keyboard.ru', 
+    'hL36LBnKvP8whM0QFhuFQn82GSBJbPXT',
+    '72653061b3aefd326e2e71f7affc9ccd1d1473fc6e35d5b4936d87c587b96dcff1729b65a57e7aaf95b964ac325fac56d7ef626cb9ea4fcad0287045176ed96e',
+    'admin1',
+    1705443770.40067
+);
+
+
+insert into switches(id, title, description, file_path, sound_path)
+values(
+    '0abbfce9-8dfa-419a-8407-aca20ae26b3c',
+    'MX Black',
+    'Свитч MX Black',
+    'mxblack.glb',
+    'mxblack.mp3'
+);
 insert into switches(id, title, description, file_path, sound_path)
 values(
     'b0ac9399-8eb1-4920-9366-82cbf7904eb1',
@@ -70,15 +129,16 @@ values(
     'mxbrown.glb',
     'mxbrown.mp3'
 );
-
-
-
-create table if not exists box_types(
-    id uuid default uuid_generate_v4() primary key,
-    title text not null,
-    description text not null
+insert into switches(id, title, description, file_path, sound_path)
+values(
+    '556eaccc-d524-4343-a4a2-6202f00f4b4d',
+    'MX Red',
+    'Свитч MX Red',
+    'mxred.glb',
+    'mxred.mp3'
 );
-create index on box_types(id);
+
+
 insert into box_types(id, title, description)
 values(
     'f27d815d-8702-4853-9df8-482a95bd6aaa',
@@ -105,19 +165,6 @@ values(
 );
 
 
-
-create table if not exists keyboards(
-    id uuid default uuid_generate_v4() primary key,
-    owner_id uuid not null references users(id),
-    switch_type_id uuid not null references switches(id),
-    box_type_id uuid not null references box_types(id),
-    title text not null,
-    description text,
-    file_path text not null,
-    creation_date numeric not null
-);
-create index on keyboards(id);
-create index on keyboards(owner_id);
 insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_path, creation_date)
 values(
     'd296c943-4894-484a-b0c3-9b3783accbaa',
@@ -138,23 +185,21 @@ values(
     'Клавиатура по умолчанию №2',
     'Описание...',
     GetDefaultUserID() || '/keyboards/nonkeyboard.glb',
-    1706026855
+    1706022855
+);
+insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_path, creation_date)
+values(
+    'a37bca53-4b00-4bb7-a494-2935f9665b97',
+    GetDefaultUserID(),
+    'f876e294-c56b-40d3-9ac2-9f85eb532de6',
+    '782f1e2b-5eaa-4452-ae82-0427fbecaefd',
+    'Клавиатура по умолчанию №3',
+    'Описание...',
+    GetDefaultUserID() || '/keyboards/anotherKeyboard.glb',
+    1706016455
 );
 
 
-
-create table if not exists boxes(
-    id uuid default uuid_generate_v4() primary key,
-    owner_id uuid not null references users(id),
-    type_id uuid not null references box_types(id),
-    title text not null,
-    description text,
-    file_path text not null,
-    creation_date numeric not null
-);
-create index on boxes(id);
-create index on boxes(owner_id);
-create index on boxes(type_id);
 insert into boxes(id, owner_id, type_id, title, description, file_path, creation_date)
 values(
     'df1c24c4-7212-4651-bff6-793ab9c4e34f',
@@ -175,15 +220,3 @@ values(
     GetDefaultUserID() || '/boxes/60percentswitches.glb',
     1706026855
 );
-
-
-
-create table if not exists kits(
-    id uuid default uuid_generate_v4() primary key,
-    owner_id uuid not null references users(id),
-    title text not null,
-    description text not null,
-    creation_date numeric not null
-);
-create index on kits(id);
-create index on kits(owner_id);
