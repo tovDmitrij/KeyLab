@@ -21,20 +21,37 @@ namespace api.v1.main.Controllers
 
         [HttpGet("default")]
         [AllowAnonymous]
-        public IActionResult GetDefaultBoxesList()
+        public IActionResult GetDefaultBoxesList(int page, int pageSize)
         {
-            var boxes = _box.GetDefaultBoxesList();
+            var boxes = _box.GetDefaultBoxesList(new(page, pageSize));
             return Ok(boxes);
         }
 
         [HttpGet("auth")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GetUserBoxesList()
+        public IActionResult GetUserBoxesList(int page, int pageSize)
         {
             var userID = GetUserIDFromAccessToken();
 
-            var boxes = _box.GetUserBoxesList(userID);
+            var boxes = _box.GetUserBoxesList(new(page, pageSize), userID);
             return Ok(boxes);
+        }
+
+        [HttpGet("default/totalPages")]
+        [AllowAnonymous]
+        public IActionResult GetDefaultBoxesTotalPages(int pageSize)
+        {
+            var totalPages = _box.GetDefaultBoxesTotalPages(pageSize);
+            return Ok(new { totalPages = totalPages });
+        }
+
+        [HttpGet("auth/totalPages")]
+        [AllowAnonymous]
+        public IActionResult GetUserBoxesTotalPages(int pageSize)
+        {
+            var userID = GetUserIDFromAccessToken();
+            var totalPages = _box.GetUserBoxesTotalPages(userID, pageSize);
+            return Ok(new { totalPages = totalPages });
         }
 
         [HttpGet]
@@ -62,11 +79,41 @@ namespace api.v1.main.Controllers
             return Ok(_localization.FileIsSuccessfullUploaded());
         }
 
+        [HttpPut]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult UpdateBoxFile()
+        {
+            var file = GetFormDataBoxFile();
+            var title = GetFormDataBoxTitle();
+            var description = GetFormDataBoxDescription();
+            var userID = GetUserIDFromAccessToken();
+            var boxID = GetFormDataBoxID();
 
+            var body = new PutBoxDTO(file, title, description, userID, boxID);
+            _box.UpdateBox(body);
+
+            return Ok(_localization.FileIsSuccessfullUpdated());
+        }
+
+        [HttpDelete]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult DeleteBoxFile()
+        {
+            var userID = GetUserIDFromAccessToken();
+            var boxID = GetFormDataBoxID();
+
+            var body = new DeleteBoxDTO(boxID, userID);
+            _box.DeleteBox(body);
+
+            return Ok(_localization.FileIsSuccessfullDeleted());
+        }
+
+       
 
         private IFormFile? GetFormDataBoxFile() => Request.Form.Files[0];
         private string GetFormDataBoxTitle() => Request.Form["title"];
         private string? GetFormDataBoxDescription() => Request.Form["description"];
         public Guid GetFormDataBoxTypeID() => Guid.Parse(Request.Form["typeID"]);
+        public Guid GetFormDataBoxID() => Guid.Parse(Request.Form["boxID"]);
     }
 }

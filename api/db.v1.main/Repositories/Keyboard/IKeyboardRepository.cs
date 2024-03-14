@@ -8,12 +8,15 @@ namespace db.v1.main.Repositories.Keyboard
         public void UpdateKeyboardInfo(UpdateKeyboardDTO body);
         public void DeleteKeyboardInfo(Guid keyboardID);
 
-        public bool IsKeyboardTitleBusy(Guid userID, string title);
         public bool IsKeyboardExist(Guid keyboardID);
         public bool IsKeyboardOwner(Guid keyboardID, Guid userID);
+        public bool IsKeyboardTitleBusy(Guid userID, string title);
 
-        public string? SelectKeyboardFilePath(Guid keyboardID);
+        public string? SelectKeyboardFileName(Guid keyboardID);
+        public string? SelectKeyboardPreviewName(Guid keyboardID);
+        public Guid? SelectKeyboardOwnerID(Guid keyboardID);
 
-        public List<SelectKeyboardDTO> SelectUserKeyboards(Guid userID);
+        public List<SelectKeyboardDTO> SelectUserKeyboards(int page, int pageSize, Guid userID);
+        public int SelectCountOfKeyboards(Guid userID);
     }
 }

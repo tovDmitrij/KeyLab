@@ -1,6 +1,5 @@
-﻿using api.v1.main.DTOs.Box;
-
-using db.v1.main.DTOs.Box;
+﻿using api.v1.main.DTOs;
+using api.v1.main.DTOs.Box;
 
 using component.v1.exceptions;
 
@@ -9,10 +8,10 @@ namespace api.v1.main.Services.Box
     public interface IBoxService
     {
         /// <exception cref="BadRequestException"></exception>
-        public void AddBox(PostBoxDTO body);
+        public Task AddBox(PostBoxDTO body);
 
         /// <exception cref="BadRequestException"></exception>
-        public void UpdateBox(PutBoxDTO body);
+        public Task UpdateBox(PutBoxDTO body);
 
         /// <exception cref="BadRequestException"></exception>
         public void DeleteBox(DeleteBoxDTO body);
@@ -21,9 +20,13 @@ namespace api.v1.main.Services.Box
         public byte[] GetBoxFile(Guid boxID);
 
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectBoxDTO> GetDefaultBoxesList();
+        public List<BoxListDTO> GetDefaultBoxesList(PaginationDTO body);
+
+        public int GetDefaultBoxesTotalPages(int pageSize);
 
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectBoxDTO> GetUserBoxesList(Guid userID);
+        public List<BoxListDTO> GetUserBoxesList(PaginationDTO body, Guid userID);
+
+        public int GetUserBoxesTotalPages(Guid userID, int pageSize);
     }
 }

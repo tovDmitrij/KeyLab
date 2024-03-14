@@ -12,6 +12,9 @@ using helper.v1.regex.Interfaces;
 using helper.v1.time;
 using helper.v1.localization.Helper;
 using helper.v1.file;
+using helper.v1.messageBroker;
+using component.v1.preview;
+using api.v1.main.DTOs;
 
 namespace api.v1.main.Services.Box
 {
@@ -27,14 +30,16 @@ namespace api.v1.main.Services.Box
         private readonly IBoxRegexHelper _rgx;
         private readonly ITimeHelper _time;
         private readonly ILocalizationHelper _localization;
+        private readonly IMessageBrokerHelper _broker;
 
-        public BoxService(IBoxRepository boxes, IUserRepository users, ICacheHelper cache,
+        public BoxService(IBoxRepository boxes, IUserRepository users, ICacheHelper cache, IMessageBrokerHelper broker,
                           IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx,
                           ITimeHelper time, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization)
         {
             _box = boxes;
             _user = users;
             _cache = cache;
+            _broker = broker;
             _fileCfg = fileCfg;
             _file = file;
             _rgx = rgx;
@@ -43,7 +48,9 @@ namespace api.v1.main.Services.Box
             _localization = localization;
         }
 
-        public void AddBox(PostBoxDTO body)
+
+
+        public async Task AddBox(PostBoxDTO body)
         {
             ValidateUserID(body.UserID);
             ValidateBoxFile(body.File);
@@ -51,33 +58,26 @@ namespace api.v1.main.Services.Box
             ValidateBoxTitle(body.UserID, body.Title);
             ValidateBoxDescription(body.Description);
 
+            var modelFileName = $"{body.Title}.glb";
+            var modelFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, modelFileName);
+
+            using var memoryStream = new MemoryStream();
+            body.File!.CopyTo(memoryStream);
+            var bytes = memoryStream.ToArray();
+
+            var imgFileName = $"{body.Title}.jpeg";
+            var imgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, imgFileName);
+            var previewBody = new PreviewDTO(imgFilePath, bytes);
+            await _broker.SendData(previewBody);
+
             var currentTime = _time.GetCurrentUNIXTime();
+            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title, body.Description, modelFileName, imgFileName, currentTime);
+            _box.InsertBoxInfo(insertBoxBody);
 
-            Guid boxID = default;
-            try
-            {
-                var filePath = $"{body.UserID}/boxes/{body.Title}.glb";
-                var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title, body.Description, filePath, currentTime);
-                _box.InsertBoxInfo(insertBoxBody);
-
-                using var memoryStream = new MemoryStream();
-                body.File!.CopyTo(memoryStream);
-                var bytes = memoryStream.ToArray();
-
-                var parentDirectory = _fileCfg.GetModelsParentDirectory();
-                var fullPath = Path.Combine(parentDirectory, filePath);
-                _file.AddFile(bytes, fullPath);
-
-                _cache.DeleteValue($"{body.UserID}/boxes");
-            }
-            catch
-            {
-                _box.DeleteBoxInfo(boxID);
-                throw;
-            }
+            _file.AddFile(bytes, modelFilePath);
         }
 
-        public void UpdateBox(PutBoxDTO body)
+        public async Task UpdateBox(PutBoxDTO body)
         {
             ValidateBoxExist(body.BoxID);
             ValidateUserID(body.UserID);
@@ -86,21 +86,38 @@ namespace api.v1.main.Services.Box
             ValidateBoxDescription(body.Description);
             ValidateBoxOwner(body.BoxID, body.UserID);
 
-            var filePath = $"{body.UserID}/boxes/{body.Title}.glb";
 
-            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, body.Description, filePath);
-            _box.UpdateBoxInfo(updateBoxBody);
+            var oldModelFileName = _box.SelectBoxFileName(body.BoxID)!;
+            var oldModelFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, oldModelFileName);
+
+            var newModelFileName = $"{body.Title}.glb";
+            var newModelFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, newModelFileName);
+
 
             using var memoryStream = new MemoryStream();
             body.File!.CopyTo(memoryStream);
             var bytes = memoryStream.ToArray();
 
-            var parentDirectory = _fileCfg.GetModelsParentDirectory();
-            var fullPath = Path.Combine(parentDirectory, filePath);
 
-            _file.UpdateFile(bytes, fullPath);
+            var oldImgFileName = _box.SelectBoxPreviewName(body.BoxID)!;
+            var oldImgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, oldImgFileName);
 
-            _cache.DeleteValue($"{body.UserID}/boxes");
+            var newImgFileName = $"{body.Title}.jpeg";
+            var newImgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, newImgFileName);
+
+
+            var previewBody = new PreviewDTO(newImgFilePath, bytes);
+            _file.DeleteFile(oldImgFilePath);
+            await _broker.SendData(previewBody);
+
+
+            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, body.Description, newModelFileName, newImgFileName);
+            _box.UpdateBoxInfo(updateBoxBody);
+
+
+            _file.UpdateFile(bytes, oldModelFilePath);
+            _file.MoveFile(oldModelFilePath, newModelFilePath);
+
         }
 
         public void DeleteBox(DeleteBoxDTO body)
@@ -109,27 +126,28 @@ namespace api.v1.main.Services.Box
             ValidateUserID(body.UserID);
             ValidateBoxOwner(body.BoxID, body.UserID);
 
-            var filePath = _box.SelectBoxFilePath(body.BoxID)!;
-            var parentDirectory = _fileCfg.GetModelsParentDirectory();
-            var fullPath = Path.Combine(parentDirectory, filePath);
+            var modelFileName = _box.SelectBoxFileName(body.BoxID)!;
+            var modelFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, modelFileName);
 
-            _file.DeleteFile(fullPath);
+            var imgFileName = _box.SelectBoxPreviewName(body.BoxID)!;
+            var imgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, imgFileName);
+
+            _file.DeleteFile(modelFilePath);
+            _file.DeleteFile(imgFilePath);
             _box.DeleteBoxInfo(body.BoxID);
             _cache.DeleteValue(body.BoxID);
-            _cache.DeleteValue($"{body.UserID}/boxes");
         }
 
         public byte[] GetBoxFile(Guid boxID)
         {
-            var boxPath = _box.SelectBoxFilePath(boxID) ??
-                throw new BadRequestException(_localization.FileIsNotExist());
+            var fileName = _box.SelectBoxFileName(boxID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var userID = _box.SelectBoxOwnerID(boxID) ?? throw new BadRequestException(_localization.FileIsNotExist());
 
-            var parentDirectory = _fileCfg.GetModelsParentDirectory();
-            var fullpath = Path.Combine(parentDirectory, boxPath);
+            var filePath = _fileCfg.GetBoxModelFilePath(userID, fileName);
 
             if (!_cache.TryGetValue(boxID, out byte[]? file))
             {
-                file = _file.GetFile(fullpath);
+                file = _file.GetFile(filePath);
                 if (file.Length == 0)
                     throw new BadRequestException(_localization.FileIsNotExist());
 
@@ -142,27 +160,59 @@ namespace api.v1.main.Services.Box
 
 
 
-        public List<SelectBoxDTO> GetDefaultBoxesList() => GetBoxesList(_fileCfg.GetDefaultModelsUserID());
+        public List<BoxListDTO> GetDefaultBoxesList(PaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
 
-        public List<SelectBoxDTO> GetUserBoxesList(Guid userID) => GetBoxesList(userID);
+        public List<BoxListDTO> GetUserBoxesList(PaginationDTO body, Guid userID) => GetBoxesList(body, userID);
 
-       
+        public int GetDefaultBoxesTotalPages(int pageSize)
+        {
+            var userID = _fileCfg.GetDefaultModelsUserID();
+            var count = _box.SelectCountOfBoxes(userID);
+            double totalPages = count / pageSize;
 
-        private List<SelectBoxDTO> GetBoxesList(Guid userID)
+            return (int)Math.Ceiling(totalPages);
+        }
+
+        public int GetUserBoxesTotalPages(Guid userID, int pageSize)
         {
             ValidateUserID(userID);
+            var count = _box.SelectCountOfBoxes(userID);
+            double totalPages = count / pageSize;
 
-            if (!_cache.TryGetValue($"{userID}/boxes", out List<SelectBoxDTO>? boxes))
-            {
-                boxes = _box.SelectUserBoxes(userID);
-
-                var cacheExpireTime = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue($"{userID}/boxes", boxes, cacheExpireTime);
-            }
-            return boxes!;
+            return (int)Math.Ceiling(totalPages);
         }
 
 
+
+        private List<BoxListDTO> GetBoxesList(PaginationDTO body, Guid userID)
+        {
+            ValidateUserID(userID);
+
+            var boxes = new List<BoxListDTO>();
+
+            var dbBoxes = _box.SelectUserBoxes(body.Page, body.PageSize, userID);
+            foreach (var dbBox in dbBoxes) 
+            {
+                var fileType = dbBox.PreviewName.Split('.')[1];
+                var filePath = _fileCfg.GetBoxModelFilePath(userID, dbBox.PreviewName);
+
+                byte[] bytes;
+                try
+                {
+                    bytes = _file.GetFile(filePath);
+                }
+                catch
+                {
+                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                    bytes = _file.GetFile(errorImgPath);
+                }
+                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+
+                boxes.Add(new(dbBox.ID, dbBox.TypeID, dbBox.TypeTitle, dbBox.Title, dbBox.Description, img, dbBox.CreationDate));
+            }
+
+            return boxes;
+        }
 
         private void ValidateUserID(Guid userID)
         {

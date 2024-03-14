@@ -1,7 +1,7 @@
 {
-    "ModelPreview": {
-        "Width": 1920,
-        "Height": 1080,
-        "ImageType": "png"
+    "FilePreview": {
+        "Width": 1280,
+        "Height": 720,
+        "ImageType": "jpeg"
     }
 }

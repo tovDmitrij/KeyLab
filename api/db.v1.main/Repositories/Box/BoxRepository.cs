@@ -14,7 +14,7 @@ namespace db.v1.main.Repositories.Box
 
         public Guid InsertBoxInfo(InsertBoxDTO body)
         {
-            var box = new BoxEntity(body.OwnerID, body.BoxTypeID, body.Title, body.Description, body.FilePath, body.CreationDate);
+            var box = new BoxEntity(body.OwnerID, body.BoxTypeID, body.Title, body.Description, body.FileName, body.PreviewName, body.CreationDate);
             _db.Boxes.Add(box);
             SaveChanges();
 
@@ -26,7 +26,6 @@ namespace db.v1.main.Repositories.Box
             var box = _db.Boxes.First(box => box.ID == body.BoxID);
             box.Title = body.Title;
             box.Description = body.Description;
-            box.FilePath = body.FilePath;
 
             _db.Boxes.Update(box);
             SaveChanges();
@@ -41,33 +40,42 @@ namespace db.v1.main.Repositories.Box
 
 
 
-        public bool IsBoxTypeExist(Guid boxTypeID) => _db.BoxTypes
-            .Any(box => box.ID == boxTypeID);
-
-        public bool IsBoxTitleBusy(Guid userID, string title) => _db.Boxes
-            .Any(box => box.OwnerID == userID && box.Title == title);
-
         public bool IsBoxExist(Guid boxID) => _db.Boxes
             .Any(box => box.ID == boxID);
 
         public bool IsBoxOwner(Guid boxID, Guid userID) => _db.Boxes
             .Any(box => box.ID == boxID && box.OwnerID == userID);
 
+        public bool IsBoxTitleBusy(Guid userID, string title) => _db.Boxes
+            .Any(box => box.OwnerID == userID && box.Title == title);
+
+        public bool IsBoxTypeExist(Guid boxTypeID) => _db.BoxTypes
+            .Any(box => box.ID == boxTypeID);
 
 
-        public string? SelectBoxFilePath(Guid boxID) => _db.Boxes
-            .FirstOrDefault(box => box.ID == boxID)?.FilePath;
+        public string? SelectBoxFileName(Guid boxID) => _db.Boxes
+            .FirstOrDefault(box => box.ID == boxID)?.FileName;
+
+        public string? SelectBoxPreviewName(Guid boxID) => _db.Boxes
+            .FirstOrDefault(box => box.ID == boxID)?.PreviewName;
+
+        public Guid? SelectBoxOwnerID(Guid boxID) => _db.Boxes
+            .FirstOrDefault(box => box.ID == boxID)?.OwnerID;
 
 
-
-        public List<SelectBoxDTO> SelectUserBoxes(Guid userID)
+        public List<SelectBoxDTO> SelectUserBoxes(int page, int pageSize, Guid userID)
         {
-            var boxes = from box in _db.Boxes
-                        join types in _db.BoxTypes
-                            on box.TypeID equals types.ID
-                        select new SelectBoxDTO(box.ID, box.TypeID, types.Title, box.Title, box.Description, box.CreationDate);
-            return boxes.ToList();
+            var boxes = 
+                from box in _db.Boxes
+                join types in _db.BoxTypes
+                    on box.TypeID equals types.ID
+                select new SelectBoxDTO(box.ID, box.TypeID, types.Title, box.Title, box.Description, box.PreviewName, box.CreationDate);
+
+            return boxes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
+
+        public int SelectCountOfBoxes(Guid userID) => _db.Boxes
+            .Count(box => box.OwnerID == userID);
 
 
 

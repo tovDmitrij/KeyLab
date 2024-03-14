@@ -16,15 +16,22 @@ namespace db.v1.main.Repositories.Switch
 
         
 
-        public string? SelectSwitchModelPath(Guid switchID) => _db.Switches
-            .FirstOrDefault(@switch => @switch.ID == switchID)?.FilePath;
+        public string? SelectSwitchModelName(Guid switchID) => _db.Switches
+            .FirstOrDefault(@switch => @switch.ID == switchID)?.FileName;
 
-        public string? SelectSwitchSoundPath(Guid switchID) => _db.Switches
-            .FirstOrDefault(@switch => @switch.ID == switchID)?.SoundPath;
+        public string? SelectSwitchSoundName(Guid switchID) => _db.Switches
+            .FirstOrDefault(@switch => @switch.ID == switchID)?.SoundName;
+
+        public string? SelectSwitchPreviewName(Guid switchID) => _db.Switches
+            .FirstOrDefault(@switch => @switch.ID == switchID)?.PreviewName;
 
 
 
-        public List<SelectSwitchDTO> SelectSwitches() => _db.Switches
-            .Select(@switch => new SelectSwitchDTO(@switch.ID, @switch.Title, @switch.Description)).ToList();
+        public List<SelectSwitchDTO> SelectSwitches(int page, int pageSize) => _db.Switches
+            .Select(@switch => new SelectSwitchDTO(@switch.ID, @switch.Title, @switch.Description, @switch.FileName))
+            .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        public int SelectCountOfSwitch() => _db.Switches
+            .Count();
     }
 }

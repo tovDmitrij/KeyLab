@@ -48,6 +48,7 @@ builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, 
 builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 

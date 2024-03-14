@@ -1,4 +1,7 @@
-﻿using component.v1.exceptions;
+﻿using api.v1.main.DTOs;
+using api.v1.main.DTOs.Switch;
+
+using component.v1.exceptions;
 using db.v1.main.DTOs.Switch;
 using db.v1.main.Repositories.Switch;
 
@@ -34,52 +37,77 @@ namespace api.v1.main.Services.Switch
 
         public byte[] GetSwitchModelFile(Guid switchID)
         {
-            var modelPath = _switch.SelectSwitchModelPath(switchID) ?? 
-                throw new BadRequestException(_localization.FileIsNotExist());
+            var fileName = _switch.SelectSwitchModelName(switchID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var filePath = _fileCfg.GetSwitchModelFilePath(fileName);
 
-            var parentDirectory = _fileCfg.GetSwitchModelsDirectory();
-            var fullPath = Path.Combine(parentDirectory, modelPath);
-
-            if (!_cache.TryGetValue(fullPath, out byte[]? file))
+            if (!_cache.TryGetValue(filePath, out byte[]? file))
             {
-                file = _file.GetFile(fullPath);
+                file = _file.GetFile(filePath);
                 if (file.Length == 0)
                     throw new BadRequestException(_localization.FileIsNotExist());
 
                 var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(fullPath, file, minutes);
+                _cache.SetValue(filePath, file, minutes);
             }
             return file!;
         }
 
         public string GetSwitchSoundBase64(Guid switchID)
         {
-            var soundPath = _switch.SelectSwitchSoundPath(switchID) ?? 
-                throw new BadRequestException(_localization.FileIsNotExist());
+            var fileName = _switch.SelectSwitchSoundName(switchID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var filePath = _fileCfg.GetSwitchModelFilePath(fileName);
 
-            var parentDirectory = _fileCfg.GetSwitchSoundsDirectory();
-            var fullPath = Path.Combine(parentDirectory, soundPath);
-
-            if (!_cache.TryGetValue(fullPath, out byte[]? file))
+            if (!_cache.TryGetValue(filePath, out byte[]? file))
             {
-                file = _file.GetFile(fullPath);
+                file = _file.GetFile(filePath);
                 if (file.Length == 0)
                     throw new BadRequestException(_localization.FileIsNotExist());
 
                 var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(fullPath, file, minutes);
+                _cache.SetValue(filePath, file, minutes);
             }
 
-            var base64File = "data:audio/mp3;base64," + Convert.ToBase64String(file!);
+            var fileType = fileName.Split('.')[1];
+            var base64File = $"data:audio/{fileType};base64," + Convert.ToBase64String(file!);
             return base64File;
         }
 
 
 
-        public List<SelectSwitchDTO> GetSwitches()
+        public List<SwitchListDTO> GetSwitches(PaginationDTO body)
         {
-            var switches = _switch.SelectSwitches();
+            var switches = new List<SwitchListDTO>();
+
+            var dbSwitches = _switch.SelectSwitches(body.Page, body.PageSize);
+            foreach (var sw in dbSwitches) 
+            {
+                var fileType = sw.PreviewName.Split(".")[1];
+                var filePath = _fileCfg.GetSwitchModelFilePath(sw.PreviewName);
+
+                byte[] bytes;
+                try
+                {
+                    bytes = _file.GetFile(filePath);
+                }
+                catch
+                {
+                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                    bytes = _file.GetFile(errorImgPath);
+                }
+                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+
+                switches.Add(new(sw.ID, sw.Title, sw.Description, img));
+            }
+
             return switches;
+        }
+
+        public int GetSwitchesTotalPages(int pageSize)
+        {
+            var count = _switch.SelectCountOfSwitch();
+            double totalPages = count / pageSize;
+
+            return (int)Math.Ceiling(totalPages);
         }
     }
 }

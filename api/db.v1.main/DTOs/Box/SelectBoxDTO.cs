@@ -2,5 +2,5 @@
 {
     public sealed record SelectBoxDTO(
         Guid ID, Guid TypeID, string TypeTitle,
-        string Title, string? Description, double CreationDate);
+        string Title, string? Description, string PreviewName, double CreationDate);
 }

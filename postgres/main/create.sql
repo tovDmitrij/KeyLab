@@ -37,8 +37,9 @@ create table if not exists switches(
     id uuid default uuid_generate_v4() primary key,
     title text not null,
     description text not null,
-    file_path text not null,
-    sound_path text not null
+    file_name text not null,
+    sound_name text not null,
+    preview_name text not null
 );
 create index on switches(id);
 
@@ -58,7 +59,8 @@ create table if not exists keyboards(
     box_type_id uuid not null references box_types(id),
     title text not null,
     description text,
-    file_path text not null,
+    file_name text not null,
+    preview_name text not null,
     creation_date numeric not null
 );
 create index on keyboards(id);
@@ -71,7 +73,8 @@ create table if not exists boxes(
     type_id uuid not null references box_types(id),
     title text not null,
     description text,
-    file_path text not null,
+    file_name text not null,
+    preview_name text not null,
     creation_date numeric not null
 );
 create index on boxes(id);
@@ -105,37 +108,41 @@ values(
 );
 
 
-insert into switches(id, title, description, file_path, sound_path)
+insert into switches(id, title, description, file_name, sound_name, preview_name)
 values(
     '0abbfce9-8dfa-419a-8407-aca20ae26b3c',
     'MX Black',
     'Свитч MX Black',
     'mxblack.glb',
-    'mxblack.mp3'
+    'mxblack.mp3',
+    'mxblack.jpeg'
 );
-insert into switches(id, title, description, file_path, sound_path)
+insert into switches(id, title, description, file_name, sound_name, preview_name)
 values(
     'b0ac9399-8eb1-4920-9366-82cbf7904eb1',
     'MX Blue',
     'Свитч MX Blue',
     'mxblue.glb',
-    'mxblue.mp3'
+    'mxblue.mp3',
+    'mxblue.jpeg'
 );
-insert into switches(id, title, description, file_path, sound_path)
+insert into switches(id, title, description, file_name, sound_name, preview_name)
 values(
     'f876e294-c56b-40d3-9ac2-9f85eb532de6',
     'MX Brown',
     'Свитч MX Brown',
     'mxbrown.glb',
-    'mxbrown.mp3'
+    'mxbrown.mp3',
+    'mxblue.jpeg'
 );
-insert into switches(id, title, description, file_path, sound_path)
+insert into switches(id, title, description, file_name, sound_name, preview_name)
 values(
     '556eaccc-d524-4343-a4a2-6202f00f4b4d',
     'MX Red',
     'Свитч MX Red',
     'mxred.glb',
-    'mxred.mp3'
+    'mxred.mp3',
+    'mxred.jpeg'
 );
 
 
@@ -165,7 +172,7 @@ values(
 );
 
 
-insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_path, creation_date)
+insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_name, preview_name, creation_date)
 values(
     'd296c943-4894-484a-b0c3-9b3783accbaa',
     GetDefaultUserID(),
@@ -173,10 +180,11 @@ values(
     '63a9640a-8763-4101-8294-5b37e796bb9b',
     'Клавиатура по умолчанию №1',
     'Клавиатура размерностью 60%',
-    GetDefaultUserID() || '/keyboards/60percent.glb',
+    '60percent.glb',
+    '60percent.jpeg',
     1706024855
 );
-insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_path, creation_date)
+insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_name, preview_name, creation_date)
 values(
     '6e8ac55c-d2de-47d2-8794-a864d14af1ce',
     GetDefaultUserID(),
@@ -184,10 +192,11 @@ values(
     '782f1e2b-5eaa-4452-ae82-0427fbecaefd',
     'Клавиатура по умолчанию №2',
     'Описание...',
-    GetDefaultUserID() || '/keyboards/nonkeyboard.glb',
+    'nonkeyboard.glb',
+    'nonkeyboard.jpeg',
     1706022855
 );
-insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_path, creation_date)
+insert into keyboards(id, owner_id, switch_type_id, box_type_id, title, description, file_name, preview_name, creation_date)
 values(
     'a37bca53-4b00-4bb7-a494-2935f9665b97',
     GetDefaultUserID(),
@@ -195,28 +204,31 @@ values(
     '782f1e2b-5eaa-4452-ae82-0427fbecaefd',
     'Клавиатура по умолчанию №3',
     'Описание...',
-    GetDefaultUserID() || '/keyboards/anotherKeyboard.glb',
+    'anotherKeyboard.glb',
+    'anotherKeyboard.jpeg',
     1706016455
 );
 
 
-insert into boxes(id, owner_id, type_id, title, description, file_path, creation_date)
+insert into boxes(id, owner_id, type_id, title, description, file_name, preview_name, creation_date)
 values(
     'df1c24c4-7212-4651-bff6-793ab9c4e34f',
     GetDefaultUserID(),
     '63a9640a-8763-4101-8294-5b37e796bb9b',
     'Бокс №1',
     'КоробОчка',
-    GetDefaultUserID() || '/boxes/60percent.glb',
+    '60percent.glb',
+    '60percent.jpeg',
     1706026855
 );
-insert into boxes(id, owner_id, type_id, title, description, file_path, creation_date)
+insert into boxes(id, owner_id, type_id, title, description, file_name, preview_name, creation_date)
 values(
     'd0a45e0a-ebe1-4190-82e6-c4563aacdd41',
     GetDefaultUserID(),
     '63a9640a-8763-4101-8294-5b37e796bb9b',
     'Бокс №2',
     'Основание со свитчами',
-    GetDefaultUserID() || '/boxes/60percentswitches.glb',
+    '60percentswitches.glb',
+    '60percentswitches.jpeg',
     1706026855
 );

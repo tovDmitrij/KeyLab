@@ -6,9 +6,11 @@ namespace db.v1.main.Repositories.Switch
     {
         public bool IsSwitchExist(Guid switchID);
 
-        public string? SelectSwitchModelPath(Guid switchID);
-        public string? SelectSwitchSoundPath(Guid switchID);
+        public string? SelectSwitchModelName(Guid switchID);
+        public string? SelectSwitchSoundName(Guid switchID);
+        public string? SelectSwitchPreviewName(Guid switchID);
 
-        public List<SelectSwitchDTO> SelectSwitches();
+        public List<SelectSwitchDTO> SelectSwitches(int page, int pageSize);
+        public int SelectCountOfSwitch();
     }
 }

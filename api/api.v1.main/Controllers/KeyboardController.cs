@@ -21,23 +21,42 @@ namespace api.v1.main.Controllers
 
         [HttpGet("default")]
         [AllowAnonymous]
-        public IActionResult GetDefaultKeyboardsList()
+        public IActionResult GetDefaultKeyboardsList(int page, int pageSize)
         {
-            var keyboards = _keyboard.GetDefaultKeyboardsList();
+            var keyboards = _keyboard.GetDefaultKeyboardsList(new(page, pageSize));
 
             return Ok(keyboards);
         }
 
         [HttpGet("auth")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GetUserKeyboardsList()
+        public IActionResult GetUserKeyboardsList(int page, int pageSize)
         {
             var userID = GetUserIDFromAccessToken();
 
-            var keyboards = _keyboard.GetUserKeyboardsList(userID);
+            var keyboards = _keyboard.GetUserKeyboardsList(new(page, pageSize), userID);
 
             return Ok(keyboards);
         }
+
+        [HttpGet("default/totalPages")]
+        [AllowAnonymous]
+        public IActionResult GetDefaultKeyboardsTotalPages(int pageSize)
+        {
+            var totalPages = _keyboard.GetDefaultKeyboardsTotalPages(pageSize);
+            return Ok(new { totalPages = totalPages });
+        }
+
+        [HttpGet("auth/totalPages")]
+        [AllowAnonymous]
+        public IActionResult GetUserKeyboardsTotalPages(int pageSize)
+        {
+            var userID = GetUserIDFromAccessToken();
+            var totalPages = _keyboard.GetUserKeyboardsTotalPages(userID, pageSize);
+            return Ok(new { totalPages = totalPages });
+        }
+
+
 
         [HttpGet]
         [AllowAnonymous]
