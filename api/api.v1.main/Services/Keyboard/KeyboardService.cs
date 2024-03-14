@@ -88,6 +88,7 @@ namespace api.v1.main.Services.Keyboard
 
         public void UpdateKeyboard(PutKeyboardDTO body)
         {
+            ValidateKeyboardExist(body.KeyboardID);
             ValidateKeyboardFile(body.File);
             ValidateKeyboardTitle(body.UserID, body.Title);
             ValidateKeyboardDescription(body.Description);
@@ -116,10 +117,7 @@ namespace api.v1.main.Services.Keyboard
         public void DeleteKeyboard(DeleteKeyboardDTO body)
         {
             ValidateUserID(body.UserID);
-
-            if (!_keyboard.IsKeyboardExist(body.KeyboardID))
-                throw new BadRequestException(_localization.FileIsNotExist());
-
+            ValidateKeyboardExist(body.KeyboardID);
             ValidateKeyboardOwner(body.KeyboardID, body.UserID);
 
             var filePath = _keyboard.SelectKeyboardFilePath(body.KeyboardID);
@@ -210,6 +208,12 @@ namespace api.v1.main.Services.Keyboard
         {
             if (!_switch.IsSwitchExist(switchTypeID))
                 throw new BadRequestException(_localization.SwitchTypeIsNotExist());
+        }
+
+        private void ValidateKeyboardExist(Guid keyboardID)
+        {
+            if (!_keyboard.IsKeyboardExist(keyboardID))
+                throw new BadRequestException(_localization.FileIsNotExist());
         }
 
         private void ValidateKeyboardOwner(Guid keyboardID, Guid userID)

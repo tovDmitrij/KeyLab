@@ -28,6 +28,7 @@ namespace helper.v1.localization.Helper
         public string UserRefreshTokenIsExpired() => _localization["UserRefreshToken_IsExpired"];
         public string UserAccessTokenIsExpired() => _localization["UserAccessToken_IsExpired"];
         public string UserIsNotKeyboardOwner() => _localization["User_IsNotKeyboardOwner"];
+        public string UserIsNotBoxOwner() => _localization["User_IsNoxBoxOwner"];
         public string UserPasswordsIsNotEqual() => _localization["UserPasswords_IsNotEqual"];
         public string UserEmailIsBusy() => _localization["UserEmail_IsBusy"];
         public string UserEmailIsNotValid() => _localization["UserEmail_IsNotValid"];

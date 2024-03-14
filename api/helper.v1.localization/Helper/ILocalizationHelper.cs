@@ -19,6 +19,7 @@
         public string UserRefreshTokenIsExpired();
         public string UserAccessTokenIsExpired();
         public string UserIsNotKeyboardOwner();
+        public string UserIsNotBoxOwner();
         public string UserPasswordsIsNotEqual();
         public string UserEmailIsBusy();
         public string UserEmailIsNotValid();

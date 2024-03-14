@@ -5,9 +5,12 @@ namespace db.v1.main.Repositories.Box
     public interface IBoxRepository
     {
         public Guid InsertBoxInfo(InsertBoxDTO body);
+        public void UpdateBoxInfo(UpdateBoxDTO body);
         public void DeleteBoxInfo(Guid boxID);
 
         public bool IsBoxTypeExist(Guid boxTypeID);
+        public bool IsBoxExist(Guid boxID);
+        public bool IsBoxOwner(Guid boxID, Guid userID);
         public bool IsBoxTitleBusy(Guid userID, string title);
 
         public string? SelectBoxFilePath(Guid boxID);

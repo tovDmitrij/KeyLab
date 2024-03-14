@@ -79,12 +79,44 @@ namespace api.v1.main.Services.Box
 
         public void UpdateBox(PutBoxDTO body)
         {
-            throw new NotImplementedException();
+            ValidateBoxExist(body.BoxID);
+            ValidateUserID(body.UserID);
+            ValidateBoxFile(body.File);
+            ValidateBoxTitle(body.UserID, body.Title);
+            ValidateBoxDescription(body.Description);
+            ValidateBoxOwner(body.BoxID, body.UserID);
+
+            var filePath = $"{body.UserID}/boxes/{body.Title}.glb";
+
+            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, body.Description, filePath);
+            _box.UpdateBoxInfo(updateBoxBody);
+
+            using var memoryStream = new MemoryStream();
+            body.File!.CopyTo(memoryStream);
+            var bytes = memoryStream.ToArray();
+
+            var parentDirectory = _fileCfg.GetModelsParentDirectory();
+            var fullPath = Path.Combine(parentDirectory, filePath);
+
+            _file.UpdateFile(bytes, fullPath);
+
+            _cache.DeleteValue($"{body.UserID}/boxes");
         }
 
         public void DeleteBox(DeleteBoxDTO body)
         {
-            throw new NotImplementedException();
+            ValidateBoxExist(body.BoxID);
+            ValidateUserID(body.UserID);
+            ValidateBoxOwner(body.BoxID, body.UserID);
+
+            var filePath = _box.SelectBoxFilePath(body.BoxID)!;
+            var parentDirectory = _fileCfg.GetModelsParentDirectory();
+            var fullPath = Path.Combine(parentDirectory, filePath);
+
+            _file.DeleteFile(fullPath);
+            _box.DeleteBoxInfo(body.BoxID);
+            _cache.DeleteValue(body.BoxID);
+            _cache.DeleteValue($"{body.UserID}/boxes");
         }
 
         public byte[] GetBoxFile(Guid boxID)
@@ -138,6 +170,12 @@ namespace api.v1.main.Services.Box
                 throw new BadRequestException(_localization.UserIsNotExist());
         }
 
+        private void ValidateBoxOwner(Guid boxID, Guid userID)
+        {
+            if (!_box.IsBoxOwner(boxID, userID))
+                throw new BadRequestException(_localization.UserIsNotBoxOwner());
+        }
+
         private void ValidateBoxFile(IFormFile? file)
         {
             if (file is null || file.Length == 0)
@@ -155,6 +193,12 @@ namespace api.v1.main.Services.Box
             if (_box.IsBoxTitleBusy(userID, title))
                 throw new BadRequestException(_localization.BoxTitleIsBusy());
             _rgx.ValidateBoxTitle(title);
+        }
+
+        private void ValidateBoxExist(Guid boxID)
+        {
+            if (!_box.IsBoxExist(boxID))
+                throw new BadRequestException(_localization.FileIsNotExist());
         }
 
         private void ValidateBoxDescription(string? description)

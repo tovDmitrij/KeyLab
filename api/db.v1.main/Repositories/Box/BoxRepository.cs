@@ -21,6 +21,17 @@ namespace db.v1.main.Repositories.Box
             return box.ID;
         }
 
+        public void UpdateBoxInfo(UpdateBoxDTO body)
+        {
+            var box = _db.Boxes.First(box => box.ID == body.BoxID);
+            box.Title = body.Title;
+            box.Description = body.Description;
+            box.FilePath = body.FilePath;
+
+            _db.Boxes.Update(box);
+            SaveChanges();
+        }
+
         public void DeleteBoxInfo(Guid boxID)
         {
             var box = _db.Boxes.First(box => box.ID == boxID);
@@ -35,6 +46,12 @@ namespace db.v1.main.Repositories.Box
 
         public bool IsBoxTitleBusy(Guid userID, string title) => _db.Boxes
             .Any(box => box.OwnerID == userID && box.Title == title);
+
+        public bool IsBoxExist(Guid boxID) => _db.Boxes
+            .Any(box => box.ID == boxID);
+
+        public bool IsBoxOwner(Guid boxID, Guid userID) => _db.Boxes
+            .Any(box => box.ID == boxID && box.OwnerID == userID);
 
 
 
