@@ -4,7 +4,8 @@ using helper.v1.configuration.Interfaces;
 namespace helper.v1.configuration
 {
     public sealed class ConfigurationHelper : IEmailConfigurationHelper, IJWTConfigurationHelper, 
-                                              IFileConfigurationHelper, ICacheConfigurationHelper
+                                              IFileConfigurationHelper, ICacheConfigurationHelper,
+                                              IPreviewConfigurationHelper
     {
         private readonly IConfiguration _cfg;
 
@@ -58,5 +59,10 @@ namespace helper.v1.configuration
 
         public int GetCacheExpirationMinutes() => Convert.ToInt32(_cfg["Cache:ExpirationMinutes"] ?? 
             throw new ArgumentNullException("Cache:ExpirationMinutes отсутствует в конфигурационном файле"));
+
+
+
+        public string GetPreviewFileType() => _cfg["FilePreview:ImageType"] ??
+            throw new ArgumentNullException("FilePreview:ImageType отсутствует в конфигурационном файле");
     }
 }

@@ -17,13 +17,15 @@ namespace api.v1.main.Services.Switch
         private readonly ISwitchRepository _switch;
 
         private readonly IFileConfigurationHelper _fileCfg;
+        private readonly IPreviewConfigurationHelper _previewCfg;
         private readonly IFileHelper _file;
         private readonly ICacheHelper _cache;
         private readonly ICacheConfigurationHelper _cacheCfg;
         private readonly ILocalizationHelper _localization;
 
         public SwitchService(ISwitchRepository switches, IFileHelper file, IFileConfigurationHelper fileCfg,
-                             ICacheHelper cache, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization)
+                             ICacheHelper cache, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization,
+                             IPreviewConfigurationHelper previewCfg)
         {
             _switch = switches;
             _file = file;
@@ -31,6 +33,7 @@ namespace api.v1.main.Services.Switch
             _cache = cache;
             _cacheCfg = cacheCfg;
             _localization = localization;
+            _previewCfg = previewCfg;
         }
 
         
@@ -67,7 +70,7 @@ namespace api.v1.main.Services.Switch
                 _cache.SetValue(filePath, file, minutes);
             }
 
-            var fileType = fileName.Split('.')[1];
+            var fileType = _previewCfg.GetPreviewFileType();
             var base64File = $"data:audio/{fileType};base64," + Convert.ToBase64String(file!);
             return base64File;
         }
@@ -78,10 +81,10 @@ namespace api.v1.main.Services.Switch
         {
             var switches = new List<SwitchListDTO>();
 
+            var fileType = _previewCfg.GetPreviewFileType();
             var dbSwitches = _switch.SelectSwitches(body.Page, body.PageSize);
             foreach (var sw in dbSwitches) 
             {
-                var fileType = sw.PreviewName.Split(".")[1];
                 var filePath = _fileCfg.GetSwitchModelFilePath(sw.PreviewName);
 
                 byte[] bytes;

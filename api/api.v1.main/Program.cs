@@ -49,6 +49,7 @@ builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false,
 builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/preview.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -159,6 +160,7 @@ void InitHelpers()
     builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<IPreviewConfigurationHelper, ConfigurationHelper>();
 
     builder.Services.AddSingleton<IUserRegexHelper, RegexHelper>();
     builder.Services.AddSingleton<IVerificationRegexHelper, RegexHelper>();

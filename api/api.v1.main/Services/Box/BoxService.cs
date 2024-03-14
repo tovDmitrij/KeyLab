@@ -26,6 +26,7 @@ namespace api.v1.main.Services.Box
         private readonly ICacheHelper _cache;
         private readonly IFileConfigurationHelper _fileCfg;
         private readonly ICacheConfigurationHelper _cacheCfg;
+        private readonly IPreviewConfigurationHelper _previewCfg;
         private readonly IFileHelper _file;
         private readonly IBoxRegexHelper _rgx;
         private readonly ITimeHelper _time;
@@ -34,7 +35,8 @@ namespace api.v1.main.Services.Box
 
         public BoxService(IBoxRepository boxes, IUserRepository users, ICacheHelper cache, IMessageBrokerHelper broker,
                           IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx,
-                          ITimeHelper time, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization)
+                          ITimeHelper time, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization, 
+                          IPreviewConfigurationHelper previewCfg)
         {
             _box = boxes;
             _user = users;
@@ -46,6 +48,7 @@ namespace api.v1.main.Services.Box
             _time = time;
             _cacheCfg = cacheCfg;
             _localization = localization;
+            _previewCfg = previewCfg;
         }
 
 
@@ -65,7 +68,9 @@ namespace api.v1.main.Services.Box
             body.File!.CopyTo(memoryStream);
             var bytes = memoryStream.ToArray();
 
-            var imgFileName = $"{body.Title}.jpeg";
+            var fileType = _previewCfg.GetPreviewFileType();
+
+            var imgFileName = $"{body.Title}.{fileType}";
             var imgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, imgFileName);
             var previewBody = new PreviewDTO(imgFilePath, bytes);
             await _broker.SendData(previewBody);
@@ -102,7 +107,9 @@ namespace api.v1.main.Services.Box
             var oldImgFileName = _box.SelectBoxPreviewName(body.BoxID)!;
             var oldImgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, oldImgFileName);
 
-            var newImgFileName = $"{body.Title}.jpeg";
+            var fileType = _previewCfg.GetPreviewFileType();
+
+            var newImgFileName = $"{body.Title}.{fileType}";
             var newImgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, newImgFileName);
 
 
@@ -190,10 +197,10 @@ namespace api.v1.main.Services.Box
 
             var boxes = new List<BoxListDTO>();
 
+            var fileType = _previewCfg.GetPreviewFileType();
             var dbBoxes = _box.SelectUserBoxes(body.Page, body.PageSize, userID);
             foreach (var dbBox in dbBoxes) 
             {
-                var fileType = dbBox.PreviewName.Split('.')[1];
                 var filePath = _fileCfg.GetBoxModelFilePath(userID, dbBox.PreviewName);
 
                 byte[] bytes;
