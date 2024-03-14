@@ -36,14 +36,23 @@ namespace helper.v1.configuration
 
 
 
-        public string GetModelsParentDirectory() => _cfg["File:ModelsParentDirectory"] ??
-            throw new ArgumentNullException("File:ModelsParentDirectory отсутствует в конфигурационном файле");
         public Guid GetDefaultModelsUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"] ??
             throw new ArgumentNullException("File:DefaultModelsUserID отсутствует в конфигурационном файле"));
-        public string GetSwitchModelsDirectory() => _cfg["File:SwitchModelDirectory"] ??
-            throw new ArgumentNullException("File:SwitchModelDirectory отсутствует в конфигурационном файле");
-        public string GetSwitchSoundsDirectory() => _cfg["File:SwitchSoundDirectory"] ?? 
-            throw new ArgumentNullException("File:SwitchSoundDirectory отсутствует в конфигурационном файле");
+        
+        public string GetSwitchModelFilePath(string fileName) => string.Format(_cfg["File:SwitchModelFilePath"] ??
+            throw new ArgumentNullException("File:SwitchModelFilePath отсутствует в конфигурационном файле"), fileName);
+
+        public string GetSwitchSoundFilePath(string fileName) => string.Format(_cfg["File:SwitchSoundFilePath"] ??
+            throw new ArgumentNullException("File:SwitchSoundFilePath отсутствует в конфигурационном файле"), fileName);
+
+        public string GetKeyboardModelFilePath(Guid userID, string fileName) => string.Format(_cfg["File:KeyboardModelFilePath"] ??
+            throw new ArgumentNullException("File:KeyboardModelFilePath отсутствует в конфигурационном файле"), userID, fileName);
+
+        public string GetBoxModelFilePath(Guid userID, string fileName) => string.Format(_cfg["File:BoxModelFilePath"] ??
+            throw new ArgumentNullException("File:BoxModelFilePath отсутствует в конфигурационном файле"), userID, fileName);
+
+        public string GetErrorImageFilePath() => _cfg["File:ErrorImageFilePath"] ??
+            throw new ArgumentNullException("File:ErrorImageFilePath отсутствует в конфигурационном файле");
 
 
 

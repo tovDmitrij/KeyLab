@@ -201,6 +201,9 @@
   <data name="UserSignUp_IsSuccessfull" xml:space="preserve">
     <value>Новый аккаунт был успешно зарегистрирован</value>
   </data>
+  <data name="User_IsNotBoxOwner" xml:space="preserve">
+    <value>Текущему пользователю не принадлежит бокс с указанными параметрами</value>
+  </data>
   <data name="User_IsNotExist" xml:space="preserve">
     <value>Пользователя с заданными параметрами не существует</value>
   </data>

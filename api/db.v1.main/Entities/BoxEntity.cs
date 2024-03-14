@@ -22,30 +22,37 @@ namespace db.v1.main.Entities
         [Column("description")]
         public string? Description { get; set; }
 
-        [Column("file_path")]
-        public string FilePath { get; set; }
+        [Column("file_name")]
+        public string FileName { get; set; }
+
+        [Column("preview_name")]
+        public string PreviewName { get; set; }
 
         [Column("creation_date")]
         public double CreationDate { get; set; }
 
-        public BoxEntity(Guid ID, Guid ownerID, Guid typeID, string title, string? description, string filePath, double creationDate)
+        public BoxEntity(Guid ID, Guid ownerID, Guid typeID, string title, string? description, 
+                         string fileName, string previewName, double creationDate)
         {
             this.ID = ID;
             OwnerID = ownerID;
             TypeID = typeID;
             Title = title;
             Description = description;
-            FilePath = filePath;
+            FileName = fileName;
+            PreviewName = previewName;
             CreationDate = creationDate;
         }
 
-        public BoxEntity(Guid ownerID, Guid typeID, string title, string? description, string filePath, double creationDate)
+        public BoxEntity(Guid ownerID, Guid typeID, string title, string? description, 
+                         string fileName, string previewName, double creationDate)
         {
             OwnerID = ownerID;
             TypeID = typeID;
             Title = title;
             Description = description;
-            FilePath = filePath;
+            FileName = fileName;
+            PreviewName = previewName;
             CreationDate = creationDate;
         }
 

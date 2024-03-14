@@ -223,6 +223,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Текущему пользователю не принадлежит бокс с указанными параметрами.
+        /// </summary>
+        public static string User_IsNotBoxOwner {
+            get {
+                return ResourceManager.GetString("User_IsNotBoxOwner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Пользователя с заданными параметрами не существует.
         /// </summary>
         public static string User_IsNotExist {

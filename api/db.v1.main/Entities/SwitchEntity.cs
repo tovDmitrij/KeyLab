@@ -16,19 +16,23 @@ namespace db.v1.main.Entities
         [Column("description")]
         public string Description { get; set; }
 
-        [Column("file_path")]
-        public string FilePath { get; set; }
+        [Column("file_name")]
+        public string FileName { get; set; }
 
-        [Column("sound_path")]
-        public string SoundPath { get; set; }
+        [Column("preview_name")]
+        public string PreviewName { get; set; }
 
-        public SwitchEntity(Guid id, string title, string description, string filePath, string soundPath)
+        [Column("sound_name")]
+        public string SoundName { get; set; }
+
+        public SwitchEntity(Guid id, string title, string description, string fileName, string previewName, string soundName)
         {
             ID = id;
             Title = title;
             Description = description;
-            FilePath = filePath;
-            SoundPath = soundPath;
+            FileName = fileName;
+            PreviewName = previewName;
+            SoundName = soundName;
         }
 
         public SwitchEntity() { }

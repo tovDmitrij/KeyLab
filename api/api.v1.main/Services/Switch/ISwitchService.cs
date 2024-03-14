@@ -1,6 +1,8 @@
 ﻿using db.v1.main.DTOs.Switch;
 
 using component.v1.exceptions;
+using api.v1.main.DTOs.Switch;
+using api.v1.main.DTOs;
 
 namespace api.v1.main.Services.Switch
 {
@@ -11,6 +13,7 @@ namespace api.v1.main.Services.Switch
         /// <exception cref="BadRequestException"></exception>
         public string GetSwitchSoundBase64(Guid switchID);
 
-        public List<SelectSwitchDTO> GetSwitches();
+        public List<SwitchListDTO> GetSwitches(PaginationDTO body);
+        public int GetSwitchesTotalPages(int pageSize);
     }
 }

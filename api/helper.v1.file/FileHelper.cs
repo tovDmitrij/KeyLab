@@ -16,6 +16,8 @@
             fileStream.Write(file, 0, file.Length);
         }
 
+        public void MoveFile(string oldFilePath, string newFilePath) => File.Move(oldFilePath, newFilePath);
+
         public void DeleteFile(string fullFilePath) => File.Delete(fullFilePath);
 
         public byte[] GetFile(string fullFilePath) => File.ReadAllBytes(fullFilePath);

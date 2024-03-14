@@ -14,6 +14,7 @@ COPY ../api/helper.v1.localization/*.csproj ./helper.v1.localization/
 COPY ../api/helper.v1.messageBroker/*.csproj ./helper.v1.messageBroker/
 COPY ../api/component.v1.exceptions/*.csproj ./component.v1.exceptions/
 COPY ../api/component.v1.email/*.csproj ./component.v1.email/
+COPY ../api/component.v1.preview/*.csproj ./component.v1.preview/
 RUN dotnet restore
 
 COPY ../api/ ./

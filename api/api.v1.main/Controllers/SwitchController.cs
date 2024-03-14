@@ -1,4 +1,5 @@
-﻿using api.v1.main.Services.Switch;
+﻿using api.v1.main.DTOs.Switch;
+using api.v1.main.Services.Switch;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,17 @@ namespace api.v1.main.Controllers
 
 
         [HttpGet("models/default")]
-        public IActionResult GetSwitches()
+        public IActionResult GetSwitches(int page, int pageSize)
         {
-            var switches = _switch.GetSwitches();
+            var switches = _switch.GetSwitches(new(page, pageSize));
             return Ok(switches);
+        }
+
+        [HttpGet("models/default/totalPages")]
+        public IActionResult GetSwitchesTotalPages(int pageSize)
+        {
+            var totalPages = _switch.GetSwitchesTotalPages(pageSize);
+            return Ok(new { totalPages = totalPages });
         }
 
         [HttpGet("models")]

@@ -3,5 +3,5 @@
     public sealed record SelectKeyboardDTO(
         Guid ID, Guid BoxTypeID, string BoxTypeTitle,
         Guid SwitchTypeID, string SwitchTypeTitle,
-        string Title, string? Description, double CreationDate);
+        string Title, string? Description, string PreviewName, double CreationDate);
 }

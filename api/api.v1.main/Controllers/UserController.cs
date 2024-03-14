@@ -31,7 +31,7 @@ namespace api.v1.main.Controllers
         [HttpPost("signIn")]
         public IActionResult SignIn([FromBody] PostSignInDTO body)
         {
-            var response = _user.SignIn(body).Result;
+            var response = _user.SignIn(body);
             SetRefreshTokenInCookie(response.RefreshToken);
             return Ok(new { response.AccessToken, response.IsAdmin });
         }

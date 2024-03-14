@@ -75,7 +75,7 @@ namespace api.v1.main.Services.User
             _user.InsertUserInfo(signUpBody);
         }
 
-        public async Task<SignInDTO> SignIn(PostSignInDTO body)
+        public SignInDTO SignIn(PostSignInDTO body)
         {
             _rgx.ValidateUserEmail(body.Email);
             _rgx.ValidateUserPassword(body.Password);

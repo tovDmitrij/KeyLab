@@ -15,7 +15,7 @@ namespace db.v1.main.Repositories.Keyboard
         public Guid InsertKeyboardInfo(InsertKeyboardDTO body)
         {
             var keyboard = new KeyboardEntity(body.OwnerID, body.SwitchTypeID, body.BoxTypeID, 
-                                              body.Title, body.Description, body.FilePath, body.CreationDate);
+                                              body.Title, body.Description, body.FileName, body.PreviewName, body.CreationDate);
             _db.Keyboards.Add(keyboard);
             SaveChanges();
 
@@ -29,7 +29,8 @@ namespace db.v1.main.Repositories.Keyboard
             keyboard.BoxTypeID = body.BoxTypeID;
             keyboard.Title = body.Title;
             keyboard.Description = body.Description;
-            keyboard.FilePath = body.FilePath;
+            keyboard.FileName = body.FileName;
+            keyboard.PreviewName = body.PreviewName;
 
             _db.Keyboards.Update(keyboard);
             SaveChanges();
@@ -55,20 +56,32 @@ namespace db.v1.main.Repositories.Keyboard
 
 
 
-        public string? SelectKeyboardFilePath(Guid keyboardID) => _db.Keyboards
-            .FirstOrDefault(keyboard => keyboard.ID == keyboardID)?.FilePath;
+        public string? SelectKeyboardFileName(Guid keyboardID) => _db.Keyboards
+            .FirstOrDefault(keyboard => keyboard.ID == keyboardID)?.FileName;
 
-        public List<SelectKeyboardDTO> SelectUserKeyboards(Guid userID)
+        public string? SelectKeyboardPreviewName(Guid keyboardID) => _db.Keyboards
+            .FirstOrDefault(keyboard => keyboard.ID == keyboardID)?.PreviewName;
+
+        public Guid? SelectKeyboardOwnerID(Guid keyboardID) => _db.Keyboards
+            .FirstOrDefault(keyboard => keyboard.ID == keyboardID)?.OwnerID;
+
+        public List<SelectKeyboardDTO> SelectUserKeyboards(int page, int pageSize, Guid userID)
         {
-            var result = from keyboard in _db.Keyboards
-                         join box in _db.BoxTypes
-                             on keyboard.BoxTypeID equals box.ID
-                         join @switch in _db.Switches
-                             on keyboard.SwitchTypeID equals @switch.ID
-                         select new SelectKeyboardDTO(keyboard.ID, keyboard.BoxTypeID, box.Title, keyboard.SwitchTypeID, 
-                                                    @switch.Title, keyboard.Title, keyboard.Description, keyboard.CreationDate);
-            return result.ToList();
+            var keyboards = 
+                from keyboard in _db.Keyboards
+                join box in _db.BoxTypes
+                    on keyboard.BoxTypeID equals box.ID
+                join @switch in _db.Switches
+                    on keyboard.SwitchTypeID equals @switch.ID
+                where keyboard.OwnerID == userID
+                select new SelectKeyboardDTO(keyboard.ID, keyboard.BoxTypeID, box.Title, keyboard.SwitchTypeID, @switch.Title, 
+                                            keyboard.Title, keyboard.Description, keyboard.PreviewName, keyboard.CreationDate);
+            return keyboards.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
+
+        public int SelectCountOfKeyboards(Guid userID) => _db.Keyboards
+            .Count(keyboard => keyboard.OwnerID == userID);
+
 
 
         private KeyboardEntity? GetKeyboardByID(Guid keyboardID) =>
