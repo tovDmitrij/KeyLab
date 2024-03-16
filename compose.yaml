@@ -21,7 +21,6 @@ services:
       - rabbitmq
       - db_main
       - redis_main
-      - api_preview
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.api.main
@@ -44,20 +43,6 @@ services:
     entrypoint: [ "dotnet", "api.v1.email.dll" ]
     ports:
       - 6003:8080
-    volumes:
-      - ./configurations:/configurations
-
-  api_preview:
-    container_name: api_preview
-    restart: always
-    depends_on:
-      - rabbitmq
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile.api.preview
-    entrypoint: [ "node", "./app.js"]
-    ports:
-      - 6004:6004
     volumes:
       - ./configurations:/configurations
 
