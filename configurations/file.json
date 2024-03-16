@@ -7,6 +7,6 @@
         "KeyboardModelFilePath": "/files/{0}/keyboards/{1}",
         "BoxModelFilePath": "/files/{0}/boxes/{1}",
 
-        "ErrorImageFilePath": "/files/errors/noImage.jpeg"
+        "ErrorImageFilePath": "/files/another/noImage.jpeg"
     }
 }

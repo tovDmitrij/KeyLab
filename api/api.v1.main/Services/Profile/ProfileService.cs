@@ -21,7 +21,7 @@ namespace api.v1.main.Services.Profile
 
         public string GetUserNickname(Guid userID)
         {
-            if (_user.IsUserExist(userID))
+            if (!_user.IsUserExist(userID))
                 throw new BadRequestException(_localization.UserIsNotExist());
 
             var nickname = _user.SelectUserNickname(userID)!;

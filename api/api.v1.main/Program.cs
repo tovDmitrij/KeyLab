@@ -15,6 +15,7 @@ using api.v1.main.Services.Keyboard;
 using api.v1.main.Services.Switch;
 using api.v1.main.Services.Profile;
 using api.v1.main.Services.Box;
+using api.v1.main.Consumers;
 
 using db.v1.main.Contexts;
 using db.v1.main.Contexts.Interfaces;
@@ -49,6 +50,7 @@ builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false,
 builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/preview.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -71,6 +73,10 @@ builder.Services.AddMassTransit(options =>
         {
             host.Username(rabbitUsername);
             host.Password(rabbitPassword);
+        });
+        cfg.ReceiveEndpoint("preview_complete", e =>
+        {
+            e.Consumer<CompletePreviewConsumer>(context);
         });
     });
 });
@@ -116,10 +122,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         name: "ProtectedPolicy",
-        policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithOrigins("some"));
+        policy => policy.WithOrigins("http://localhost:5173/").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
     options.AddPolicy(
         name: "PublicPolicy",
-        policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(origin => true));
+        policy => policy.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 });
 
 InitContexts();
@@ -159,6 +165,7 @@ void InitHelpers()
     builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<IPreviewConfigurationHelper, ConfigurationHelper>();
 
     builder.Services.AddSingleton<IUserRegexHelper, RegexHelper>();
     builder.Services.AddSingleton<IVerificationRegexHelper, RegexHelper>();

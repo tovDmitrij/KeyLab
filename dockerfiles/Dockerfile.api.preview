@@ -4,4 +4,4 @@ COPY ../api/api.v1.preview/package.json ./package.json
 RUN npm install
 
 COPY ../api/api.v1.preview .
-EXPOSE 3000
+EXPOSE 6004

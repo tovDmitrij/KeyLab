@@ -48,7 +48,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpGet("auth/totalPages")]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetUserKeyboardsTotalPages(int pageSize)
         {
             var userID = GetUserIDFromAccessToken();

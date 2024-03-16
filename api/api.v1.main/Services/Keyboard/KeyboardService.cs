@@ -28,6 +28,7 @@ namespace api.v1.main.Services.Keyboard
         private readonly ISwitchRepository _switch;
 
         private readonly IFileConfigurationHelper _fileCfg;
+        private readonly IPreviewConfigurationHelper _previewCfg;
         private readonly IKeyboardRegexHelper _rgx;
         private readonly ICacheHelper _cache;
         private readonly IFileHelper _file;
@@ -40,7 +41,7 @@ namespace api.v1.main.Services.Keyboard
                                IUserRepository user, IKeyboardRegexHelper rgx, ICacheHelper cache,
                                IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
                                ILocalizationHelper localization, ICacheConfigurationHelper cacheCfg,
-                               IMessageBrokerHelper broker)
+                               IMessageBrokerHelper broker, IPreviewConfigurationHelper previewCfg)
         {
             _file = file;
             _time = time;
@@ -54,6 +55,7 @@ namespace api.v1.main.Services.Keyboard
             _localization = localization;
             _cacheCfg = cacheCfg;
             _broker = broker;
+            _previewCfg = previewCfg;
         }
 
 
@@ -74,9 +76,13 @@ namespace api.v1.main.Services.Keyboard
             body.File!.CopyTo(memoryStream);
             var bytes = memoryStream.ToArray();
 
-            var imgFileName = $"{body.Title}.jpeg";
+            var fileType = _previewCfg.GetPreviewFileType();
+
+            var imgFileName = $"{body.Title}.{fileType}";
             var imgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, imgFileName);
-            var previewBody = new PreviewDTO(imgFilePath, bytes);
+
+            var imgBase64 = Convert.ToBase64String(bytes);
+            var previewBody = new PreviewDTO(imgFilePath, imgBase64);
             await _broker.SendData(previewBody);
 
             var currentTime = _time.GetCurrentUNIXTime();
@@ -114,11 +120,14 @@ namespace api.v1.main.Services.Keyboard
             var oldImgFileName = _keyboard.SelectKeyboardPreviewName(body.KeyboardID)!;
             var oldImgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, oldImgFileName);
 
-            var newImgFileName = $"{body.Title}.jpeg";
+            var fileType = _previewCfg.GetPreviewFileType();
+
+            var newImgFileName = $"{body.Title}.{fileType}";
             var newImgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, newImgFileName);
 
 
-            var previewBody = new PreviewDTO(oldImgFilePath, bytes);
+            var imgBase64 = Convert.ToBase64String(bytes);
+            var previewBody = new PreviewDTO(newImgFilePath, imgBase64);
             _file.DeleteFile(oldImgFilePath);
             await _broker.SendData(previewBody);
 
@@ -195,10 +204,10 @@ namespace api.v1.main.Services.Keyboard
 
             var keyboards = new List<KeyboardListDTO>();
 
+            var fileType = _previewCfg.GetPreviewFileType();
             var dbKeyboards = _keyboard.SelectUserKeyboards(body.Page, body.PageSize, userID);
             foreach (var keyboard in dbKeyboards)
             {
-                var fileType = keyboard.PreviewName.Split('.')[1];
                 var filePath = _fileCfg.GetKeyboardModelFilePath(userID, keyboard.PreviewName);
 
                 byte[] bytes;
