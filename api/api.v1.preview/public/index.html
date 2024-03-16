@@ -17,26 +17,37 @@
 
 
 
-        const cameraPosition = { x: 0, y: 0.25, z: 0.45 };
-        const modelPosition = { x: -0.135, y: 0.115, z: 0.16 };
+        const cameraPosition = { 
+            x: 0, y: 0.07, z: 0.12 
+        };
+        const modelPosition = { 
+            x: 0, y: 0, z: 0 
+        };
 
         const canvas = new GLTFCanvas(cameraPosition, './assets/background.jpg', 1280, 720);
         document.body.appendChild(canvas.getRendererDom());
 
+        const imgService = new ImageService();
 
-
-        const connection = new WebSocket("ws://localhost:3000/")
+        const host = 'localhost'
+        const port = 6004
+        const connection = new WebSocket(`ws://${host}:${port}/`)
         connection.onmessage = async (e) => {
-            let urlData = URL.createObjectURL(new Blob([e.data]))
-            canvas.loadModel(modelPosition, urlData);
+            const json = JSON.parse(e.data.toString())
 
+            let urlData = URL.createObjectURL(new Blob([json.File]))
+            canvas.loadModel(modelPosition, urlData);
+            
             while(!canvas.isCompleted) {
                 await new Promise(r => setTimeout(r, 1000));
             }
 
-            var img = imgService.get(document.getElementsByTagName('canvas')[0]);
-            connection.send(img)
-            //imgService.download(document.getElementsByTagName('canvas')[0])
+            let img = imgService.get(document.getElementsByTagName('canvas')[0])
+            const body = {
+                FilePath: json.FilePath,
+                File: img
+            }
+            connection.send(JSON.stringify(body))
         }
     </script>
 </head>

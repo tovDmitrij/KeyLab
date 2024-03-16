@@ -72,7 +72,9 @@ namespace api.v1.main.Services.Box
 
             var imgFileName = $"{body.Title}.{fileType}";
             var imgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, imgFileName);
-            var previewBody = new PreviewDTO(imgFilePath, bytes);
+
+            var imgBase64 = Convert.ToBase64String(bytes);
+            var previewBody = new PreviewDTO(imgFilePath, imgBase64);
             await _broker.SendData(previewBody);
 
             var currentTime = _time.GetCurrentUNIXTime();
@@ -113,7 +115,8 @@ namespace api.v1.main.Services.Box
             var newImgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, newImgFileName);
 
 
-            var previewBody = new PreviewDTO(newImgFilePath, bytes);
+            var imgBase64 = Convert.ToBase64String(bytes);
+            var previewBody = new PreviewDTO(newImgFilePath, imgBase64);
             _file.DeleteFile(oldImgFilePath);
             await _broker.SendData(previewBody);
 

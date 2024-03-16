@@ -15,6 +15,7 @@ using api.v1.main.Services.Keyboard;
 using api.v1.main.Services.Switch;
 using api.v1.main.Services.Profile;
 using api.v1.main.Services.Box;
+using api.v1.main.Consumers;
 
 using db.v1.main.Contexts;
 using db.v1.main.Contexts.Interfaces;
@@ -73,6 +74,10 @@ builder.Services.AddMassTransit(options =>
             host.Username(rabbitUsername);
             host.Password(rabbitPassword);
         });
+        cfg.ReceiveEndpoint("preview_complete", e =>
+        {
+            e.Consumer<CompletePreviewConsumer>(context);
+        });
     });
 });
 
@@ -117,10 +122,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         name: "ProtectedPolicy",
-        policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithOrigins("some"));
+        policy => policy.WithOrigins("http://localhost:5173/").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
     options.AddPolicy(
         name: "PublicPolicy",
-        policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(origin => true));
+        policy => policy.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 });
 
 InitContexts();
