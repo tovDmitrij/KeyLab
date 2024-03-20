@@ -3,5 +3,5 @@
     public sealed record KeyboardListDTO(
         Guid ID, Guid BoxTypeID, string BoxTypeTitle,
         Guid SwitchTypeID, string SwitchTypeTitle,
-        string Title, string? Description, string Preview, double CreationDate);
+        string Title, string Preview, double CreationDate);
 }

@@ -1,3 +1,4 @@
+drop table if exists keycaps;
 drop table if exists kits;
 drop table if exists boxes;
 drop table if exists keyboards;

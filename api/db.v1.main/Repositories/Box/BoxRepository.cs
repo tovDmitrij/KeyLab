@@ -15,7 +15,7 @@ namespace db.v1.main.Repositories.Box
 
         public Guid InsertBoxInfo(InsertBoxDTO body)
         {
-            var box = new BoxEntity(body.OwnerID, body.BoxTypeID, body.Title, body.Description, body.FileName, body.PreviewName, body.CreationDate);
+            var box = new BoxEntity(body.OwnerID, body.BoxTypeID, body.Title, body.FileName, body.PreviewName, body.CreationDate);
             _db.Boxes.Add(box);
             SaveChanges();
 
@@ -26,7 +26,6 @@ namespace db.v1.main.Repositories.Box
         {
             var box = _db.Boxes.First(box => box.ID == body.BoxID);
             box.Title = body.Title;
-            box.Description = body.Description;
 
             _db.Boxes.Update(box);
             SaveChanges();
@@ -72,7 +71,7 @@ namespace db.v1.main.Repositories.Box
                     on box.TypeID equals types.ID
                 where box.OwnerID == userID &&
                     box.TypeID == typeID
-                select new SelectBoxDTO(box.ID, box.TypeID, types.Title, box.Title, box.Description, box.PreviewName, box.CreationDate);
+                select new SelectBoxDTO(box.ID, box.TypeID, types.Title, box.Title, box.PreviewName, box.CreationDate);
 
             return boxes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }

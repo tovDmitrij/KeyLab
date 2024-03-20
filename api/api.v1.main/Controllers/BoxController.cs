@@ -78,11 +78,10 @@ namespace api.v1.main.Controllers
         {
             var file = GetFormDataBoxFile();
             var title = GetFormDataBoxTitle();
-            var description = GetFormDataBoxDescription();
             var typeID = GetFormDataBoxTypeID();
             var userID = GetUserIDFromAccessToken();
 
-            var body = new PostBoxDTO(file, title, description, typeID, userID);
+            var body = new PostBoxDTO(file, title, typeID, userID);
 
             _box.AddBox(body);
 
@@ -95,11 +94,10 @@ namespace api.v1.main.Controllers
         {
             var file = GetFormDataBoxFile();
             var title = GetFormDataBoxTitle();
-            var description = GetFormDataBoxDescription();
             var userID = GetUserIDFromAccessToken();
             var boxID = GetFormDataBoxID();
 
-            var body = new PutBoxDTO(file, title, description, userID, boxID);
+            var body = new PutBoxDTO(file, title, userID, boxID);
             _box.UpdateBox(body);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
@@ -122,7 +120,6 @@ namespace api.v1.main.Controllers
 
         private IFormFile? GetFormDataBoxFile() => Request.Form.Files[0];
         private string GetFormDataBoxTitle() => Request.Form["title"];
-        private string? GetFormDataBoxDescription() => Request.Form["description"];
         public Guid GetFormDataBoxTypeID() => Guid.Parse(Request.Form["typeID"]);
         public Guid GetFormDataBoxID() => Guid.Parse(Request.Form["boxID"]);
     }

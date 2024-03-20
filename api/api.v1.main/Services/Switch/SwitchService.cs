@@ -104,7 +104,7 @@ namespace api.v1.main.Services.Switch
                     }
                     var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
 
-                    switches.Add(new(sw.ID, sw.Title, sw.Description, img));
+                    switches.Add(new(sw.ID, sw.Title, img));
                 }
 
                 _cache.SetValue(cacheKey, switches, 10);

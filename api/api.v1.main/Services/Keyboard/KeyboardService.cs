@@ -64,7 +64,6 @@ namespace api.v1.main.Services.Keyboard
             ValidateUserID(body.UserID);
             ValidateKeyboardFile(body.File);
             ValidateKeyboardTitle(body.UserID, body.Title);
-            ValidateKeyboardDescription(body.Description);
             ValidateBoxType(body.BoxTypeID);
             ValidateSwitchType(body.SwitchTypeID);
 
@@ -86,7 +85,7 @@ namespace api.v1.main.Services.Keyboard
 
             var currentTime = _time.GetCurrentUNIXTime();
             var insertKeyboardBody = new InsertKeyboardDTO(body.UserID, body.SwitchTypeID, body.BoxTypeID, body.Title, 
-                body.Description, modelFileName, imgFileName, currentTime);
+                modelFileName, imgFileName, currentTime);
             _keyboard.InsertKeyboardInfo(insertKeyboardBody);
 
             _file.AddFile(bytes, modelFilePath);
@@ -97,7 +96,6 @@ namespace api.v1.main.Services.Keyboard
             ValidateKeyboardExist(body.KeyboardID);
             ValidateKeyboardFile(body.File);
             ValidateKeyboardTitle(body.UserID, body.Title);
-            ValidateKeyboardDescription(body.Description);
             ValidateBoxType(body.BoxTypeID);
             ValidateSwitchType(body.SwitchTypeID);
             ValidateUserID(body.UserID);
@@ -131,7 +129,8 @@ namespace api.v1.main.Services.Keyboard
             //await _broker.SendData(previewBody);
 
 
-            var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title, body.Description, newModelFileName, newImgFileName);
+            var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title, 
+                newModelFileName, newImgFileName);
             _keyboard.UpdateKeyboardInfo(updateKeyboardBody);
 
 
@@ -233,7 +232,7 @@ namespace api.v1.main.Services.Keyboard
                     var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
 
                     keyboards.Add(new(keyboard.ID, keyboard.BoxTypeID, keyboard.BoxTypeTitle, keyboard.SwitchTypeID,
-                        keyboard.SwitchTypeTitle, keyboard.Title, keyboard.Description, img, keyboard.CreationDate));
+                        keyboard.SwitchTypeTitle, keyboard.Title, img, keyboard.CreationDate));
                 }
             }
 
@@ -252,12 +251,6 @@ namespace api.v1.main.Services.Keyboard
         {
             if (file == null || file.Length == 0)
                 throw new BadRequestException(_localization.FileIsNotAttached());
-        }
-
-        private void ValidateKeyboardDescription(string? description)
-        {
-            if (description != null)
-                _rgx.ValidateKeyboardDescription(description);
         }
 
         private void ValidateKeyboardTitle(Guid userID, string title)

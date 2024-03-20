@@ -22,9 +22,6 @@ namespace db.v1.main.Entities
         [Column("title")]
         public string Title { get; set; }
 
-        [Column("description")]
-        public string? Description { get; set; }
-
         [Column("file_name")]
         public string FileName { get; set; }
 
@@ -35,27 +32,25 @@ namespace db.v1.main.Entities
         public double CreationDate { get; set; }
 
         public KeyboardEntity(Guid id, Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, 
-                              string? description, string fileName, string previewName, double creationDate)
+                              string fileName, string previewName, double creationDate)
         {
             ID = id;
             OwnerID = ownerID;
             SwitchTypeID = switchTypeID;
             BoxTypeID = boxTypeID;
             Title = title;
-            Description = description;
             FileName = fileName;
             PreviewName = previewName;
             CreationDate = creationDate;
         }
 
         public KeyboardEntity(Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, 
-                              string? description, string fileName, string previewName, double creationDate)
+                              string fileName, string previewName, double creationDate)
         {
             OwnerID = ownerID;
             SwitchTypeID = switchTypeID;
             BoxTypeID = boxTypeID;
             Title = title;
-            Description = description;
             FileName = fileName;
             PreviewName = previewName;
             CreationDate = creationDate;

@@ -76,13 +76,12 @@ namespace api.v1.main.Controllers
         {
             var file = GetFormDataKeyboardFile();
             var title = GetFormDataKeyboardTitle();
-            var description = GetFormDataKeyboardDescription();
             var switchTypeID = GetFormDataSwitchType();
             var boxTypeID = GetFormDataBoxType();
 
             var userID = GetUserIDFromAccessToken();
 
-            var body = new PostKeyboardDTO(file, title, description, userID, boxTypeID, switchTypeID);
+            var body = new PostKeyboardDTO(file, title, userID, boxTypeID, switchTypeID);
             _keyboard.AddKeyboard(body);
 
             return Ok(_localization.FileIsSuccessfullUploaded());
@@ -94,14 +93,13 @@ namespace api.v1.main.Controllers
         {
             var file = GetFormDataKeyboardFile();
             var title = GetFormDataKeyboardTitle();
-            var description = GetFormDataKeyboardDescription();
             var switchTypeID = GetFormDataSwitchType();
             var boxTypeID = GetFormDataBoxType();
             var keyboardID = GetFormDataKeyboardID();
 
             var userID = GetUserIDFromAccessToken();
 
-            var body = new PutKeyboardDTO(file, title, description, userID, keyboardID, boxTypeID, switchTypeID);
+            var body = new PutKeyboardDTO(file, title, userID, keyboardID, boxTypeID, switchTypeID);
             _keyboard.UpdateKeyboard(body);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
@@ -122,7 +120,6 @@ namespace api.v1.main.Controllers
 
         private IFormFile? GetFormDataKeyboardFile() => Request.Form.Files[0];
         private string? GetFormDataKeyboardTitle() => Request.Form["title"];
-        private string? GetFormDataKeyboardDescription() => Request.Form["description"];
         private Guid GetFormDataSwitchType() => Guid.Parse(Request.Form["switchTypeID"]);
         private Guid GetFormDataBoxType() => Guid.Parse(Request.Form["boxTypeID"]);
         private Guid GetFormDataKeyboardID() => Guid.Parse(Request.Form["keyboardID"]);

@@ -15,7 +15,7 @@ namespace db.v1.main.Repositories.Keyboard
         public Guid InsertKeyboardInfo(InsertKeyboardDTO body)
         {
             var keyboard = new KeyboardEntity(body.OwnerID, body.SwitchTypeID, body.BoxTypeID, 
-                                              body.Title, body.Description, body.FileName, body.PreviewName, body.CreationDate);
+                                              body.Title, body.FileName, body.PreviewName, body.CreationDate);
             _db.Keyboards.Add(keyboard);
             SaveChanges();
 
@@ -28,7 +28,6 @@ namespace db.v1.main.Repositories.Keyboard
             keyboard.SwitchTypeID = body.SwitchTypeID;
             keyboard.BoxTypeID = body.BoxTypeID;
             keyboard.Title = body.Title;
-            keyboard.Description = body.Description;
             keyboard.FileName = body.FileName;
             keyboard.PreviewName = body.PreviewName;
 
@@ -75,7 +74,7 @@ namespace db.v1.main.Repositories.Keyboard
                     on keyboard.SwitchTypeID equals @switch.ID
                 where keyboard.OwnerID == userID
                 select new SelectKeyboardDTO(keyboard.ID, keyboard.BoxTypeID, box.Title, keyboard.SwitchTypeID, @switch.Title, 
-                                            keyboard.Title, keyboard.Description, keyboard.PreviewName, keyboard.CreationDate);
+                                            keyboard.Title, keyboard.PreviewName, keyboard.CreationDate);
             return keyboards.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 

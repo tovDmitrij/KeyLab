@@ -67,7 +67,6 @@ namespace api.v1.main.Services.Box
             ValidateBoxFile(body.File);
             ValidateBoxType(body.TypeID);
             ValidateBoxTitle(body.UserID, body.Title);
-            ValidateBoxDescription(body.Description);
 
             var modelFileName = $"{body.Title}.glb";
             var modelFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, modelFileName);
@@ -86,7 +85,7 @@ namespace api.v1.main.Services.Box
             //await _broker.SendData(previewBody);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title, body.Description, modelFileName, imgFileName, currentTime);
+            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title, modelFileName, imgFileName, currentTime);
             _box.InsertBoxInfo(insertBoxBody);
 
             _file.AddFile(bytes, modelFilePath);
@@ -98,7 +97,6 @@ namespace api.v1.main.Services.Box
             ValidateUserID(body.UserID);
             ValidateBoxFile(body.File);
             ValidateBoxTitle(body.UserID, body.Title);
-            ValidateBoxDescription(body.Description);
             ValidateBoxOwner(body.BoxID, body.UserID);
 
 
@@ -129,7 +127,7 @@ namespace api.v1.main.Services.Box
             //await _broker.SendData(previewBody);
 
 
-            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, body.Description, newModelFileName, newImgFileName);
+            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, newModelFileName, newImgFileName);
             _box.UpdateBoxInfo(updateBoxBody);
 
 
@@ -236,7 +234,7 @@ namespace api.v1.main.Services.Box
                     }
                     var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
 
-                    boxes.Add(new(dbBox.ID, dbBox.TypeID, dbBox.TypeTitle, dbBox.Title, dbBox.Description, img, dbBox.CreationDate));
+                    boxes.Add(new(dbBox.ID, dbBox.TypeID, dbBox.TypeTitle, dbBox.Title, img, dbBox.CreationDate));
                 }
             }
 
@@ -278,12 +276,6 @@ namespace api.v1.main.Services.Box
         {
             if (!_box.IsBoxExist(boxID))
                 throw new BadRequestException(_localization.FileIsNotExist());
-        }
-
-        private void ValidateBoxDescription(string? description)
-        {
-            if (description != null)
-                _rgx.ValidateBoxDescription(description);
         }
 
         private void ValidatePageSize(int pageSize)
