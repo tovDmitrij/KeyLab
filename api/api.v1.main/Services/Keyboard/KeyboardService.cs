@@ -59,7 +59,7 @@ namespace api.v1.main.Services.Keyboard
 
 
 
-        public async Task AddKeyboard(PostKeyboardDTO body)
+        public void AddKeyboard(PostKeyboardDTO body)
         {
             ValidateUserID(body.UserID);
             ValidateKeyboardFile(body.File);
@@ -92,7 +92,7 @@ namespace api.v1.main.Services.Keyboard
             _file.AddFile(bytes, modelFilePath);
         }
 
-        public async Task UpdateKeyboard(PutKeyboardDTO body)
+        public void UpdateKeyboard(PutKeyboardDTO body)
         {
             ValidateKeyboardExist(body.KeyboardID);
             ValidateKeyboardFile(body.File);
@@ -183,46 +183,58 @@ namespace api.v1.main.Services.Keyboard
 
         public int GetDefaultKeyboardsTotalPages(int pageSize)
         {
+            ValidatePageSize(pageSize);
+
             var userID = _fileCfg.GetDefaultModelsUserID();
             var count = _keyboard.SelectCountOfKeyboards(userID);
             double totalPages = count / pageSize;
+
             return (int)Math.Ceiling(totalPages);
         }
 
         public int GetUserKeyboardsTotalPages(Guid userID, int pageSize)
         {
+            ValidatePageSize(pageSize);
+
             ValidateUserID(userID);
             var count = _keyboard.SelectCountOfKeyboards(userID);
             double totalPages = count / pageSize;
+
             return (int)Math.Ceiling(totalPages);
         }
 
         private List<KeyboardListDTO> GetKeyboardsList(PaginationDTO body, Guid userID)
         {
             ValidateUserID(userID);
+            ValidatePageSize(body.PageSize);
+            ValidatePage(body.Page);
 
-            var keyboards = new List<KeyboardListDTO>();
-
-            var fileType = _previewCfg.GetPreviewFileType();
-            var dbKeyboards = _keyboard.SelectUserKeyboards(body.Page, body.PageSize, userID);
-            foreach (var keyboard in dbKeyboards)
+            var cacheKey = body.GetHashCode() + userID.GetHashCode();
+            if (!_cache.TryGetValue(cacheKey, out List<KeyboardListDTO>? keyboards))
             {
-                var filePath = _fileCfg.GetKeyboardModelFilePath(userID, keyboard.PreviewName);
+                keyboards = new();
 
-                byte[] bytes;
-                try
+                var fileType = _previewCfg.GetPreviewFileType();
+                var dbKeyboards = _keyboard.SelectUserKeyboards(body.Page, body.PageSize, userID);
+                foreach (var keyboard in dbKeyboards)
                 {
-                    bytes = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    bytes = _file.GetFile(errorImgPath);
-                }
-                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+                    var filePath = _fileCfg.GetKeyboardModelFilePath(userID, keyboard.PreviewName);
 
-                keyboards.Add(new(keyboard.ID, keyboard.BoxTypeID, keyboard.BoxTypeTitle, keyboard.SwitchTypeID,
-                    keyboard.SwitchTypeTitle, keyboard.Title, keyboard.Description, img, keyboard.CreationDate));
+                    byte[] bytes;
+                    try
+                    {
+                        bytes = _file.GetFile(filePath);
+                    }
+                    catch
+                    {
+                        var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                        bytes = _file.GetFile(errorImgPath);
+                    }
+                    var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+
+                    keyboards.Add(new(keyboard.ID, keyboard.BoxTypeID, keyboard.BoxTypeTitle, keyboard.SwitchTypeID,
+                        keyboard.SwitchTypeTitle, keyboard.Title, keyboard.Description, img, keyboard.CreationDate));
+                }
             }
 
             return keyboards;
@@ -277,6 +289,18 @@ namespace api.v1.main.Services.Keyboard
         {
             if (!_keyboard.IsKeyboardOwner(keyboardID, userID))
                 throw new BadRequestException(_localization.UserIsNotKeyboardOwner());
-        }   
+        }
+
+        private void ValidatePageSize(int pageSize)
+        {
+            if (pageSize < 1)
+                throw new BadRequestException(_localization.PaginationPageSizeIsNotValid());
+        }
+
+        private void ValidatePage(int page)
+        {
+            if (page < 1)
+                throw new BadRequestException(_localization.PaginationPageIsNotValid());
+        }
     }
 }

@@ -39,5 +39,8 @@
         public string BoxDescriptionIsNotValid();
 
         public string SwitchTypeIsNotExist();
+
+        public string PaginationPageIsNotValid();
+        public string PaginationPageSizeIsNotValid();
     }
 }

@@ -214,6 +214,24 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Номер страницы не валидный.
+        /// </summary>
+        public static string PaginationPage_NotValid {
+            get {
+                return ResourceManager.GetString("PaginationPage_NotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Размер страницы не валидный.
+        /// </summary>
+        public static string PaginationPageSize_NotValid {
+            get {
+                return ResourceManager.GetString("PaginationPageSize_NotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Типа переключателя с заданными параметрами не существует.
         /// </summary>
         public static string SwitchType_IsNotExist {

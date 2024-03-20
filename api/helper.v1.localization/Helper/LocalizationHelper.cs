@@ -48,5 +48,8 @@ namespace helper.v1.localization.Helper
         public string BoxDescriptionIsNotValid() => _localization["BoxDescription_IsNotValid"];
 
         public string SwitchTypeIsNotExist() => _localization["SwitchType_IsNotExist"];
+
+        public string PaginationPageIsNotValid() => _localization["PaginationPage_NotValid"];
+        public string PaginationPageSizeIsNotValid() => _localization["PaginationPageSize_NotValid"];
     }
 }

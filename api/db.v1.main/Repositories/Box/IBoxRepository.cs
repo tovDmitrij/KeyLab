@@ -1,4 +1,5 @@
 ﻿using db.v1.main.DTOs.Box;
+using db.v1.main.DTOs.BoxType;
 
 namespace db.v1.main.Repositories.Box
 {
@@ -17,7 +18,9 @@ namespace db.v1.main.Repositories.Box
         public string? SelectBoxPreviewName(Guid boxID);
         public Guid? SelectBoxOwnerID(Guid boxID);
 
-        public List<SelectBoxDTO> SelectUserBoxes(int page, int pageSize, Guid userID);
+        public List<SelectBoxDTO> SelectUserBoxes(int page, int pageSize, Guid typeID, Guid userID);
         public int SelectCountOfBoxes(Guid userID);
+
+        public List<SelectBoxTypeDTO> SelectBoxTypes();
     }
 }

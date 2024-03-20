@@ -6,6 +6,8 @@ using helper.v1.localization.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace api.v1.main.Controllers
 {
     [ApiController]
@@ -21,7 +23,7 @@ namespace api.v1.main.Controllers
 
         [HttpGet("default")]
         [AllowAnonymous]
-        public IActionResult GetDefaultKeyboardsList(int page, int pageSize)
+        public IActionResult GetDefaultKeyboardsList([Required] int page, [Required] int pageSize)
         {
             var keyboards = _keyboard.GetDefaultKeyboardsList(new(page, pageSize));
 
@@ -30,7 +32,7 @@ namespace api.v1.main.Controllers
 
         [HttpGet("auth")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GetUserKeyboardsList(int page, int pageSize)
+        public IActionResult GetUserKeyboardsList([Required] int page, [Required] int pageSize)
         {
             var userID = GetUserIDFromAccessToken();
 
@@ -41,7 +43,7 @@ namespace api.v1.main.Controllers
 
         [HttpGet("default/totalPages")]
         [AllowAnonymous]
-        public IActionResult GetDefaultKeyboardsTotalPages(int pageSize)
+        public IActionResult GetDefaultKeyboardsTotalPages([Required] int pageSize)
         {
             var totalPages = _keyboard.GetDefaultKeyboardsTotalPages(pageSize);
             return Ok(new { totalPages = totalPages });
@@ -49,7 +51,7 @@ namespace api.v1.main.Controllers
 
         [HttpGet("auth/totalPages")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GetUserKeyboardsTotalPages(int pageSize)
+        public IActionResult GetUserKeyboardsTotalPages([Required] int pageSize)
         {
             var userID = GetUserIDFromAccessToken();
             var totalPages = _keyboard.GetUserKeyboardsTotalPages(userID, pageSize);
@@ -60,7 +62,7 @@ namespace api.v1.main.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task GetKeyboardFile(Guid keyboardID) 
+        public async Task GetKeyboardFile([Required] Guid keyboardID) 
         {
             var file = _keyboard.GetKeyboardFile(keyboardID);
             await Response.Body.WriteAsync(file);

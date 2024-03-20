@@ -2,7 +2,6 @@
 using api.v1.main.DTOs.Switch;
 
 using component.v1.exceptions;
-using db.v1.main.DTOs.Switch;
 using db.v1.main.Repositories.Switch;
 
 using helper.v1.cache;
@@ -79,27 +78,36 @@ namespace api.v1.main.Services.Switch
 
         public List<SwitchListDTO> GetSwitches(PaginationDTO body)
         {
-            var switches = new List<SwitchListDTO>();
+            ValidatePageSize(body.PageSize);
+            ValidatePage(body.Page);
 
-            var fileType = _previewCfg.GetPreviewFileType();
-            var dbSwitches = _switch.SelectSwitches(body.Page, body.PageSize);
-            foreach (var sw in dbSwitches) 
+            var cacheKey = body.GetHashCode();
+            if (!_cache.TryGetValue(cacheKey, out List<SwitchListDTO>? switches))
             {
-                var filePath = _fileCfg.GetSwitchModelFilePath(sw.PreviewName);
+                switches = new();
 
-                byte[] bytes;
-                try
+                var fileType = _previewCfg.GetPreviewFileType();
+                var dbSwitches = _switch.SelectSwitches(body.Page, body.PageSize);
+                foreach (var sw in dbSwitches)
                 {
-                    bytes = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    bytes = _file.GetFile(errorImgPath);
-                }
-                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+                    var filePath = _fileCfg.GetSwitchModelFilePath(sw.PreviewName);
 
-                switches.Add(new(sw.ID, sw.Title, sw.Description, img));
+                    byte[] bytes;
+                    try
+                    {
+                        bytes = _file.GetFile(filePath);
+                    }
+                    catch
+                    {
+                        var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                        bytes = _file.GetFile(errorImgPath);
+                    }
+                    var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+
+                    switches.Add(new(sw.ID, sw.Title, sw.Description, img));
+                }
+
+                _cache.SetValue(cacheKey, switches, 10);
             }
 
             return switches;
@@ -107,10 +115,26 @@ namespace api.v1.main.Services.Switch
 
         public int GetSwitchesTotalPages(int pageSize)
         {
+            ValidatePageSize(pageSize);
+
             var count = _switch.SelectCountOfSwitch();
             double totalPages = count / pageSize;
 
             return (int)Math.Ceiling(totalPages);
+        }
+
+
+
+        private void ValidatePageSize(int pageSize)
+        {
+            if (pageSize < 1)
+                throw new BadRequestException(_localization.PaginationPageSizeIsNotValid());
+        }
+
+        private void ValidatePage(int page)
+        {
+            if (page < 1)
+                throw new BadRequestException(_localization.PaginationPageIsNotValid());
         }
     }
 }

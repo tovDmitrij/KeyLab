@@ -8,10 +8,10 @@ namespace api.v1.main.Services.Keyboard
     public interface IKeyboardService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task AddKeyboard(PostKeyboardDTO body);
+        public void AddKeyboard(PostKeyboardDTO body);
 
         /// <exception cref="BadRequestException"></exception>
-        public Task UpdateKeyboard(PutKeyboardDTO body);
+        public void UpdateKeyboard(PutKeyboardDTO body);
 
         /// <exception cref="BadRequestException"></exception>
         public void DeleteKeyboard(DeleteKeyboardDTO body);
