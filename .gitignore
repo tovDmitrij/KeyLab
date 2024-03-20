@@ -8,7 +8,7 @@ files/*
 !files/another
 rabbitmq/data
 rabbitmq/log
-redis
+redis/main/data
 
 
 

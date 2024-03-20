@@ -63,15 +63,12 @@ services:
       - REDIS_PASSWORD=admin
       - REDIS_PORT=6379
       - REDIS_DATABASES=16
-    command:
-      --port 6021
     ports:
       - 6021:6021
-    expose:
-      - 6021
+    command: redis-server --include /usr/local/etc/redis/redis.conf
     volumes:
       - ./redis/main/data:/root/redis
-      - ./redis/main/redis.conf:/usr/local/ets/redis/redis.conf
+      - ./redis/main/redis.conf:/usr/local/etc/redis/redis.conf
 
   rabbitmq:
     container_name: rabbitmq
