@@ -1,15 +1,17 @@
 ﻿using component.v1.exceptions;
 
+using Microsoft.AspNetCore.Http;
+
 using System.Net;
 using System.Text;
 
-namespace api.v1.main.Middlewares
+namespace component.v1.middlewares
 {
-    public sealed class ExceptionHandlerMiddleware
+    public sealed class ExceptionMiddleware
     {
         private readonly RequestDelegate _request;
 
-        public ExceptionHandlerMiddleware(RequestDelegate request) => _request = request;
+        public ExceptionMiddleware(RequestDelegate request) => _request = request;
 
 
 
@@ -22,12 +24,12 @@ namespace api.v1.main.Middlewares
             catch (APIException e)
             {
                 context.Response.StatusCode = (int)e.StatusCode;
-                await context.Response.WriteAsJsonAsync(e.Message);
+                await context.Response.WriteAsync(e.Message);
             }
             catch (Exception e)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await context.Response.WriteAsJsonAsync("Произошла непредвиденная ошибка. Повторите позже");
+                await context.Response.WriteAsync("Произошла непредвиденная ошибка. Повторите позже");
 
                 WriteTXTLogs(e, context.Request);
             }
@@ -38,7 +40,7 @@ namespace api.v1.main.Middlewares
         private static void WriteTXTLogs(Exception ex, HttpRequest req)
         {
             var currentTime = GetCurrentUTCTimeFormat();
-            var logPath = $"/logs/main/{currentTime}.txt";
+            var logPath = $"/logs/{currentTime}.txt";
             using var writer = new StreamWriter(logPath);
 
 

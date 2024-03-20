@@ -23,7 +23,7 @@ services:
     ports:
       - 6002:8080
     volumes:
-      - ./api/logs/main:/logs/main
+      - ./api/logs:/logs
       - ./files:/files
       - ./configurations:/configurations
 

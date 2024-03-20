@@ -8,14 +8,12 @@ using Microsoft.AspNetCore.Localization;
 
 using MassTransit;
 
-using api.v1.main.Middlewares;
 using api.v1.main.Services.Verification;
 using api.v1.main.Services.User;
 using api.v1.main.Services.Keyboard;
 using api.v1.main.Services.Switch;
 using api.v1.main.Services.Profile;
 using api.v1.main.Services.Box;
-using api.v1.main.Consumers;
 
 using db.v1.main.Contexts;
 using db.v1.main.Contexts.Interfaces;
@@ -37,6 +35,7 @@ using helper.v1.localization.Helper;
 using helper.v1.file;
 using helper.v1.messageBroker;
 using helper.v1.cache.Implements;
+using component.v1.middlewares;
 
 
 
@@ -73,10 +72,6 @@ builder.Services.AddMassTransit(options =>
         {
             host.Username(rabbitUsername);
             host.Password(rabbitPassword);
-        });
-        cfg.ReceiveEndpoint("preview_complete", e =>
-        {
-            e.Consumer<CompletePreviewConsumer>(context);
         });
     });
 });
@@ -192,7 +187,8 @@ void InitServices()
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 app.UseCors("PublicPolicy");
-app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<StatisticMiddleware>();
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();

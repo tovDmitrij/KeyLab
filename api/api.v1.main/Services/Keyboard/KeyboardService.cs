@@ -2,7 +2,6 @@
 using api.v1.main.DTOs.Keyboard;
 
 using component.v1.exceptions;
-using component.v1.preview;
 
 using db.v1.main.DTOs.Keyboard;
 using db.v1.main.Repositories.Box;
@@ -81,9 +80,9 @@ namespace api.v1.main.Services.Keyboard
             var imgFileName = $"{body.Title}.{fileType}";
             var imgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, imgFileName);
 
-            var imgBase64 = Convert.ToBase64String(bytes);
-            var previewBody = new PreviewDTO(imgFilePath, imgBase64);
-            await _broker.SendData(previewBody);
+            //var imgBase64 = Convert.ToBase64String(bytes);
+            //var previewBody = new PreviewDTO(imgFilePath, imgBase64);
+            //await _broker.SendData(previewBody);
 
             var currentTime = _time.GetCurrentUNIXTime();
             var insertKeyboardBody = new InsertKeyboardDTO(body.UserID, body.SwitchTypeID, body.BoxTypeID, body.Title, 
@@ -126,10 +125,10 @@ namespace api.v1.main.Services.Keyboard
             var newImgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, newImgFileName);
 
 
-            var imgBase64 = Convert.ToBase64String(bytes);
-            var previewBody = new PreviewDTO(newImgFilePath, imgBase64);
-            _file.DeleteFile(oldImgFilePath);
-            await _broker.SendData(previewBody);
+            //var imgBase64 = Convert.ToBase64String(bytes);
+            //var previewBody = new PreviewDTO(newImgFilePath, imgBase64);
+            //_file.DeleteFile(oldImgFilePath);
+            //await _broker.SendData(previewBody);
 
 
             var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title, body.Description, newModelFileName, newImgFileName);

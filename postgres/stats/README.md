@@ -1,0 +1,1 @@
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/db_stats.svg" />
