@@ -1,3 +1,1 @@
-Main db here
-
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/db_v1_main.svg" />
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/db_main.svg" />

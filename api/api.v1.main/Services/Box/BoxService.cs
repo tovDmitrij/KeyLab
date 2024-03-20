@@ -13,7 +13,6 @@ using helper.v1.time;
 using helper.v1.localization.Helper;
 using helper.v1.file;
 using helper.v1.messageBroker;
-using component.v1.preview;
 using api.v1.main.DTOs;
 
 namespace api.v1.main.Services.Box
@@ -73,9 +72,9 @@ namespace api.v1.main.Services.Box
             var imgFileName = $"{body.Title}.{fileType}";
             var imgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, imgFileName);
 
-            var imgBase64 = Convert.ToBase64String(bytes);
-            var previewBody = new PreviewDTO(imgFilePath, imgBase64);
-            await _broker.SendData(previewBody);
+            //var imgBase64 = Convert.ToBase64String(bytes);
+            //var previewBody = new PreviewDTO(imgFilePath, imgBase64);
+            //await _broker.SendData(previewBody);
 
             var currentTime = _time.GetCurrentUNIXTime();
             var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title, body.Description, modelFileName, imgFileName, currentTime);
@@ -115,10 +114,10 @@ namespace api.v1.main.Services.Box
             var newImgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, newImgFileName);
 
 
-            var imgBase64 = Convert.ToBase64String(bytes);
-            var previewBody = new PreviewDTO(newImgFilePath, imgBase64);
-            _file.DeleteFile(oldImgFilePath);
-            await _broker.SendData(previewBody);
+            //var imgBase64 = Convert.ToBase64String(bytes);
+            //var previewBody = new PreviewDTO(newImgFilePath, imgBase64);
+            //_file.DeleteFile(oldImgFilePath);
+            //await _broker.SendData(previewBody);
 
 
             var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, body.Description, newModelFileName, newImgFileName);
