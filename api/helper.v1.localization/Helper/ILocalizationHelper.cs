@@ -29,6 +29,8 @@
         public string UserSignInEmailLabel();
         public string UserSignInEmailText();
 
+        public string EndpointIsNotAcceptable();
+
         public string KeyboardTitleIsBusy();
         public string KeyboardTitleIsNotValid();
         public string KeyboardDescriptionIsNotValid();

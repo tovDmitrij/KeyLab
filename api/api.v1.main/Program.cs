@@ -56,6 +56,7 @@ var cfg = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = cfg["RedisMain:Configuration"];
@@ -185,7 +186,6 @@ void InitServices()
 #region App
 
 var app = builder.Build();
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 app.UseCors("PublicPolicy");
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<StatisticMiddleware>();

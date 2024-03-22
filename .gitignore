@@ -1,4 +1,5 @@
 postgres/main/data
+postgres/stats/data
 .vs
 .github
 logs
@@ -6,10 +7,9 @@ files/*
 !files/dced1acd-b907-47e0-9659-77cb2c95e0aa
 !files/switches
 !files/another
-rabbitmq/data
-rabbitmq/log
-redis/main/data
 
+rabbitmq
+redis
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/aspnetcore

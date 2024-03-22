@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace api.v1.main.Controllers
+namespace component.v1.apicontroller
 {
     public abstract class APIController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace api.v1.main.Controllers
         {
             var accessToken = GetAccessToken();
             var claims = GetClaimsFromAccessToken(accessToken);
-            var userID = claims.First(claim => claim.Type == JwtRegisteredClaimNames.Name).Value ?? 
+            var userID = claims.First(claim => claim.Type == JwtRegisteredClaimNames.Name).Value ??
                 throw new UnauthorizedException(_localization.UserAccessTokenIsExpired());
 
             return Guid.Parse(userID);

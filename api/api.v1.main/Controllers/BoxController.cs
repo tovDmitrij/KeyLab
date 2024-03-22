@@ -1,6 +1,8 @@
 ﻿using api.v1.main.DTOs.Box;
 using api.v1.main.Services.Box;
 
+using component.v1.apicontroller;
+
 using helper.v1.localization.Helper;
 
 using Microsoft.AspNetCore.Authorization;

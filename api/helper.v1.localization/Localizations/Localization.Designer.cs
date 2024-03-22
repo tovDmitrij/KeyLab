@@ -142,6 +142,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Доступ запрещён.
+        /// </summary>
+        public static string Endpoint_IsNotAcceptable {
+            get {
+                return ResourceManager.GetString("Endpoint_IsNotAcceptable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Файл повреждён или не был прикреплён.
         /// </summary>
         public static string File_IsNotAttached {

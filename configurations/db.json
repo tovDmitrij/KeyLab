@@ -1,6 +1,6 @@
 {
     "PostgreSQL": {
         "Main": "Host=db_main;Database=main;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300",
-        "Statistic": "Host=db_statistic;Database=statistic;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300"
+        "Stats": "Host=db_stats;Database=stats;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300"
     }
 }

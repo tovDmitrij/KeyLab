@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />
+    <ProjectReference Include="..\helper.v1.localization\helper.v1.localization.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -7,7 +7,7 @@ services:
     ports:
       - 6001:6001
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./configurations/nginx.conf:/etc/nginx/nginx.conf
 
   api_main:
     container_name: api_main
@@ -41,6 +41,22 @@ services:
     volumes:
       - ./configurations:/configurations
 
+  api_stats:
+    container_name: api_stats
+    restart: always
+    depends_on:
+      - db_stats
+      - redis_stats
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.api.stats
+    entrypoint: [ "dotnet", "api.v1.stats.dll" ]
+    ports:
+      - 6004:8080
+    volumes:
+      - ./api/logs:/logs
+      - ./configurations:/configurations
+
   db_main:
     container_name: db_main
     image: postgres:16.0
@@ -55,6 +71,20 @@ services:
       - ./postgres/main/data:/var/lib/postgresql/data
       - ./postgres/main/create.sql:/docker-entrypoint-initdb.d/create.sql
 
+  db_stats:
+    container_name: db_stats
+    image: postgres:16.0
+    restart: always
+    environment:
+      POSTGRES_DB: stats
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 6012:5432
+    volumes:
+      - ./postgres/stats/data:/var/lib/postgresql/data
+      - ./postgres/stats/create.sql:/docker-entrypoint-initdb.d/create.sql
+
   redis_main:
     container_name: redis_main
     image: redis:7.2.4
@@ -68,7 +98,22 @@ services:
     command: redis-server --include /usr/local/etc/redis/redis.conf
     volumes:
       - ./redis/main/data:/root/redis
-      - ./redis/main/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./configurations/redis.main.conf:/usr/local/etc/redis/redis.conf
+
+  redis_stats:
+    container_name: redis_stats
+    image: redis:7.2.4
+    restart: always
+    environment:
+      - REDIS_PASSWORD=admin
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    ports:
+      - 6022:6022
+    command: redis-server --include /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/stats/data:/root/redis
+      - ./configurations/redis.stats.conf:/usr/local/etc/redis/redis.conf
 
   rabbitmq:
     container_name: rabbitmq
@@ -83,7 +128,7 @@ services:
     volumes:
       - ./rabbitmq/data/:/var/lib/rabbitmq/
       - ./rabbitmq/log/:/var/log.rabbitmq/
-      - ./rabbitmq/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./configurations/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
 
   adminer:
     container_name: adminer

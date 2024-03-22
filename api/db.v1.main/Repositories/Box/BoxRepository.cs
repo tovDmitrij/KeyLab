@@ -81,7 +81,7 @@ namespace db.v1.main.Repositories.Box
 
 
         public List<SelectBoxTypeDTO> SelectBoxTypes() => _db.BoxTypes
-            .Select(x => new SelectBoxTypeDTO(x.ID, x.Title)).ToList();
+            .Select(box => new SelectBoxTypeDTO(box.ID, box.Title)).ToList();
 
 
         private void SaveChanges() => _db.SaveChanges();
