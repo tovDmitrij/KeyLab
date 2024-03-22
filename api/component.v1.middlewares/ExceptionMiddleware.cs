@@ -40,7 +40,8 @@ namespace component.v1.middlewares
         private static void WriteTXTLogs(Exception ex, HttpRequest req)
         {
             var currentTime = GetCurrentUTCTimeFormat();
-            var logPath = $"/logs/{currentTime}.txt";
+            var uuid = Guid.NewGuid();
+            var logPath = $"/logs/{currentTime}__{uuid}.txt";
             using var writer = new StreamWriter(logPath);
 
 

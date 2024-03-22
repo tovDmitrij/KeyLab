@@ -142,6 +142,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Доступ запрещён.
+        /// </summary>
+        public static string Endpoint_IsNotAcceptable {
+            get {
+                return ResourceManager.GetString("Endpoint_IsNotAcceptable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Файл повреждён или не был прикреплён.
         /// </summary>
         public static string File_IsNotAttached {
@@ -210,6 +219,24 @@ namespace helper.v1.localization.Localizations {
         public static string KeyboardTitle_IsNotValid {
             get {
                 return ResourceManager.GetString("KeyboardTitle_IsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Номер страницы не валидный.
+        /// </summary>
+        public static string PaginationPage_NotValid {
+            get {
+                return ResourceManager.GetString("PaginationPage_NotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Размер страницы не валидный.
+        /// </summary>
+        public static string PaginationPageSize_NotValid {
+            get {
+                return ResourceManager.GetString("PaginationPageSize_NotValid", resourceCulture);
             }
         }
         

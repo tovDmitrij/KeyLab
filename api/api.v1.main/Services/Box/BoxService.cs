@@ -14,6 +14,7 @@ using helper.v1.localization.Helper;
 using helper.v1.file;
 using helper.v1.messageBroker;
 using api.v1.main.DTOs;
+using db.v1.main.DTOs.BoxType;
 
 namespace api.v1.main.Services.Box
 {
@@ -52,13 +53,20 @@ namespace api.v1.main.Services.Box
 
 
 
-        public async Task AddBox(PostBoxDTO body)
+        public List<SelectBoxTypeDTO> GetBoxTypes()
+        {
+            var types = _box.SelectBoxTypes();
+            return types;
+        }
+
+
+
+        public void AddBox(PostBoxDTO body)
         {
             ValidateUserID(body.UserID);
             ValidateBoxFile(body.File);
             ValidateBoxType(body.TypeID);
             ValidateBoxTitle(body.UserID, body.Title);
-            ValidateBoxDescription(body.Description);
 
             var modelFileName = $"{body.Title}.glb";
             var modelFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, modelFileName);
@@ -77,19 +85,18 @@ namespace api.v1.main.Services.Box
             //await _broker.SendData(previewBody);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title, body.Description, modelFileName, imgFileName, currentTime);
+            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title, modelFileName, imgFileName, currentTime);
             _box.InsertBoxInfo(insertBoxBody);
 
             _file.AddFile(bytes, modelFilePath);
         }
 
-        public async Task UpdateBox(PutBoxDTO body)
+        public void UpdateBox(PutBoxDTO body)
         {
             ValidateBoxExist(body.BoxID);
             ValidateUserID(body.UserID);
             ValidateBoxFile(body.File);
             ValidateBoxTitle(body.UserID, body.Title);
-            ValidateBoxDescription(body.Description);
             ValidateBoxOwner(body.BoxID, body.UserID);
 
 
@@ -120,7 +127,7 @@ namespace api.v1.main.Services.Box
             //await _broker.SendData(previewBody);
 
 
-            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, body.Description, newModelFileName, newImgFileName);
+            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title, newModelFileName, newImgFileName);
             _box.UpdateBoxInfo(updateBoxBody);
 
 
@@ -169,12 +176,14 @@ namespace api.v1.main.Services.Box
 
 
 
-        public List<BoxListDTO> GetDefaultBoxesList(PaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
+        public List<BoxListDTO> GetDefaultBoxesList(BoxPaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
 
-        public List<BoxListDTO> GetUserBoxesList(PaginationDTO body, Guid userID) => GetBoxesList(body, userID);
+        public List<BoxListDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID) => GetBoxesList(body, userID);
 
         public int GetDefaultBoxesTotalPages(int pageSize)
         {
+            ValidatePageSize(pageSize);
+
             var userID = _fileCfg.GetDefaultModelsUserID();
             var count = _box.SelectCountOfBoxes(userID);
             double totalPages = count / pageSize;
@@ -184,6 +193,8 @@ namespace api.v1.main.Services.Box
 
         public int GetUserBoxesTotalPages(Guid userID, int pageSize)
         {
+            ValidatePageSize(pageSize);
+
             ValidateUserID(userID);
             var count = _box.SelectCountOfBoxes(userID);
             double totalPages = count / pageSize;
@@ -193,31 +204,38 @@ namespace api.v1.main.Services.Box
 
 
 
-        private List<BoxListDTO> GetBoxesList(PaginationDTO body, Guid userID)
+        private List<BoxListDTO> GetBoxesList(BoxPaginationDTO body, Guid userID)
         {
             ValidateUserID(userID);
+            ValidateBoxType(body.TypeID);
+            ValidatePageSize(body.PageSize);
+            ValidatePage(body.Page);
 
-            var boxes = new List<BoxListDTO>();
-
-            var fileType = _previewCfg.GetPreviewFileType();
-            var dbBoxes = _box.SelectUserBoxes(body.Page, body.PageSize, userID);
-            foreach (var dbBox in dbBoxes) 
+            var cacheKey = body.GetHashCode() + userID.GetHashCode();
+            if (!_cache.TryGetValue(cacheKey, out List<BoxListDTO>? boxes))
             {
-                var filePath = _fileCfg.GetBoxModelFilePath(userID, dbBox.PreviewName);
+                boxes = new();
 
-                byte[] bytes;
-                try
+                var fileType = _previewCfg.GetPreviewFileType();
+                var dbBoxes = _box.SelectUserBoxes(body.Page, body.PageSize, body.TypeID, userID);
+                foreach (var dbBox in dbBoxes)
                 {
-                    bytes = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    bytes = _file.GetFile(errorImgPath);
-                }
-                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+                    var filePath = _fileCfg.GetBoxModelFilePath(userID, dbBox.PreviewName);
 
-                boxes.Add(new(dbBox.ID, dbBox.TypeID, dbBox.TypeTitle, dbBox.Title, dbBox.Description, img, dbBox.CreationDate));
+                    byte[] bytes;
+                    try
+                    {
+                        bytes = _file.GetFile(filePath);
+                    }
+                    catch
+                    {
+                        var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                        bytes = _file.GetFile(errorImgPath);
+                    }
+                    var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
+
+                    boxes.Add(new(dbBox.ID, dbBox.TypeID, dbBox.TypeTitle, dbBox.Title, img, dbBox.CreationDate));
+                }
             }
 
             return boxes;
@@ -260,10 +278,16 @@ namespace api.v1.main.Services.Box
                 throw new BadRequestException(_localization.FileIsNotExist());
         }
 
-        private void ValidateBoxDescription(string? description)
+        private void ValidatePageSize(int pageSize)
         {
-            if (description != null)
-                _rgx.ValidateBoxDescription(description);
+            if (pageSize < 1)
+                throw new BadRequestException(_localization.PaginationPageSizeIsNotValid());
+        }
+
+        private void ValidatePage(int page)
+        {
+            if (page < 1)
+                throw new BadRequestException(_localization.PaginationPageIsNotValid());
         }
     }
 }

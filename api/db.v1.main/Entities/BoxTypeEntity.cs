@@ -13,14 +13,10 @@ namespace db.v1.main.Entities
         [Column("title")]
         public string Title { get; set; }
 
-        [Column("description")]
-        public string Description { get; set; }
-
-        public BoxTypeEntity(Guid id, string title, string description)
+        public BoxTypeEntity(Guid id, string title)
         {
             ID = id;
             Title = title;
-            Description = description;
         }
 
         public BoxTypeEntity() { }

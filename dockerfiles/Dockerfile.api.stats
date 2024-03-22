@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as build-env
+WORKDIR /api
+COPY ../api/api.stats.sln ./
+COPY ../api/db.v1.stats/*.csproj ./db.v1.stats/
+COPY ../api/api.v1.stats/*.csproj ./api.v1.stats/
+COPY ../api/helper.v1.security/*.csproj ./helper.v1.security/
+COPY ../api/helper.v1.configuration/*.csproj ./helper.v1.configuration/
+COPY ../api/helper.v1.localization/*.csproj ./helper.v1.localization/
+COPY ../api/helper.v1.cache/*.csproj ./helper.v1.cache/
+COPY ../api/component.v1.exceptions/*.csproj ./component.v1.exceptions/
+COPY ../api/component.v1.middlewares/*.csproj ./component.v1.middlewares/
+COPY ../api/component.v1.apicontroller/*.csproj ./component.v1.apicontroller/
+RUN dotnet restore
+
+COPY ../api/ ./
+RUN dotnet publish api.stats.sln -c Release -o /publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runtime
+WORKDIR /publish
+COPY --from=build-env /publish .
+
+EXPOSE 80

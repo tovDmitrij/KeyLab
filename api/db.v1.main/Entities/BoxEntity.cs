@@ -19,9 +19,6 @@ namespace db.v1.main.Entities
         [Column("title")]
         public string Title { get; set; }
 
-        [Column("description")]
-        public string? Description { get; set; }
-
         [Column("file_name")]
         public string FileName { get; set; }
 
@@ -31,26 +28,24 @@ namespace db.v1.main.Entities
         [Column("creation_date")]
         public double CreationDate { get; set; }
 
-        public BoxEntity(Guid ID, Guid ownerID, Guid typeID, string title, string? description, 
+        public BoxEntity(Guid ID, Guid ownerID, Guid typeID, string title, 
                          string fileName, string previewName, double creationDate)
         {
             this.ID = ID;
             OwnerID = ownerID;
             TypeID = typeID;
             Title = title;
-            Description = description;
             FileName = fileName;
             PreviewName = previewName;
             CreationDate = creationDate;
         }
 
-        public BoxEntity(Guid ownerID, Guid typeID, string title, string? description, 
+        public BoxEntity(Guid ownerID, Guid typeID, string title, 
                          string fileName, string previewName, double creationDate)
         {
             OwnerID = ownerID;
             TypeID = typeID;
             Title = title;
-            Description = description;
             FileName = fileName;
             PreviewName = previewName;
             CreationDate = creationDate;

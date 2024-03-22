@@ -1,6 +1,7 @@
 ﻿using api.v1.main.DTOs.User;
 using api.v1.main.Services.User;
 
+using component.v1.apicontroller;
 using component.v1.exceptions;
 
 using helper.v1.localization.Helper;

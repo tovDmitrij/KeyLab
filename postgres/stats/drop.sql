@@ -1,2 +1,1 @@
-drop table if exists users_activity;
-drop table if exists pages;
+drop table if exists intervals;

@@ -144,6 +144,9 @@
   <data name="Email_SendVerificationCode" xml:space="preserve">
     <value>Код подтверждения аккаунта был успешно отправлен на указанную почту</value>
   </data>
+  <data name="Endpoint_IsNotAcceptable" xml:space="preserve">
+    <value>Доступ запрещён</value>
+  </data>
   <data name="File_IsNotAttached" xml:space="preserve">
     <value>Файл повреждён или не был прикреплён</value>
   </data>
@@ -167,6 +170,12 @@
   </data>
   <data name="KeyboardTitle_IsNotValid" xml:space="preserve">
     <value>Наименование клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
+  </data>
+  <data name="PaginationPageSize_NotValid" xml:space="preserve">
+    <value>Размер страницы не валидный</value>
+  </data>
+  <data name="PaginationPage_NotValid" xml:space="preserve">
+    <value>Номер страницы не валидный</value>
   </data>
   <data name="SwitchType_IsNotExist" xml:space="preserve">
     <value>Типа переключателя с заданными параметрами не существует</value>

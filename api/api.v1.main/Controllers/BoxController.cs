@@ -1,10 +1,14 @@
 ﻿using api.v1.main.DTOs.Box;
 using api.v1.main.Services.Box;
 
+using component.v1.apicontroller;
+
 using helper.v1.localization.Helper;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using System.ComponentModel.DataAnnotations;
 
 namespace api.v1.main.Controllers
 {
@@ -19,27 +23,35 @@ namespace api.v1.main.Controllers
 
 
 
+        [HttpGet("types")]
+        [AllowAnonymous]
+        public IActionResult GetBoxTypes()
+        {
+            var types = _box.GetBoxTypes();
+            return Ok(types);
+        }
+
         [HttpGet("default")]
         [AllowAnonymous]
-        public IActionResult GetDefaultBoxesList(int page, int pageSize)
+        public IActionResult GetDefaultBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
         {
-            var boxes = _box.GetDefaultBoxesList(new(page, pageSize));
+            var boxes = _box.GetDefaultBoxesList(new(page, pageSize, typeID));
             return Ok(boxes);
         }
 
         [HttpGet("auth")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GetUserBoxesList(int page, int pageSize)
+        public IActionResult GetUserBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
         {
             var userID = GetUserIDFromAccessToken();
 
-            var boxes = _box.GetUserBoxesList(new(page, pageSize), userID);
+            var boxes = _box.GetUserBoxesList(new(page, pageSize, typeID), userID);
             return Ok(boxes);
         }
 
         [HttpGet("default/totalPages")]
         [AllowAnonymous]
-        public IActionResult GetDefaultBoxesTotalPages(int pageSize)
+        public IActionResult GetDefaultBoxesTotalPages([Required] int pageSize)
         {
             var totalPages = _box.GetDefaultBoxesTotalPages(pageSize);
             return Ok(new { totalPages = totalPages });
@@ -47,7 +59,7 @@ namespace api.v1.main.Controllers
 
         [HttpGet("auth/totalPages")]
         [AllowAnonymous]
-        public IActionResult GetUserBoxesTotalPages(int pageSize)
+        public IActionResult GetUserBoxesTotalPages([Required] int pageSize)
         {
             var userID = GetUserIDFromAccessToken();
             var totalPages = _box.GetUserBoxesTotalPages(userID, pageSize);
@@ -56,7 +68,7 @@ namespace api.v1.main.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task GetBoxFile(Guid boxID)
+        public async Task GetBoxFile([Required] Guid boxID)
         {
             var file = _box.GetBoxFile(boxID);
             await Response.Body.WriteAsync(file);
@@ -68,11 +80,10 @@ namespace api.v1.main.Controllers
         {
             var file = GetFormDataBoxFile();
             var title = GetFormDataBoxTitle();
-            var description = GetFormDataBoxDescription();
             var typeID = GetFormDataBoxTypeID();
             var userID = GetUserIDFromAccessToken();
 
-            var body = new PostBoxDTO(file, title, description, typeID, userID);
+            var body = new PostBoxDTO(file, title, typeID, userID);
 
             _box.AddBox(body);
 
@@ -85,11 +96,10 @@ namespace api.v1.main.Controllers
         {
             var file = GetFormDataBoxFile();
             var title = GetFormDataBoxTitle();
-            var description = GetFormDataBoxDescription();
             var userID = GetUserIDFromAccessToken();
             var boxID = GetFormDataBoxID();
 
-            var body = new PutBoxDTO(file, title, description, userID, boxID);
+            var body = new PutBoxDTO(file, title, userID, boxID);
             _box.UpdateBox(body);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
@@ -112,7 +122,6 @@ namespace api.v1.main.Controllers
 
         private IFormFile? GetFormDataBoxFile() => Request.Form.Files[0];
         private string GetFormDataBoxTitle() => Request.Form["title"];
-        private string? GetFormDataBoxDescription() => Request.Form["description"];
         public Guid GetFormDataBoxTypeID() => Guid.Parse(Request.Form["typeID"]);
         public Guid GetFormDataBoxID() => Guid.Parse(Request.Form["boxID"]);
     }

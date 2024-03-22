@@ -1,5 +1,8 @@
 {
     "RedisMain": {
         "Configuration": "redis_main:6021"
+    },
+    "RedisStats": {
+        "Configuration": "redis_stats:6022"
     }
 }

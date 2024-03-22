@@ -5,7 +5,7 @@ namespace helper.v1.configuration
 {
     public sealed class ConfigurationHelper : IEmailConfigurationHelper, IJWTConfigurationHelper, 
                                               IFileConfigurationHelper, ICacheConfigurationHelper,
-                                              IPreviewConfigurationHelper
+                                              IPreviewConfigurationHelper, IAdminConfigurationHelper
     {
         private readonly IConfiguration _cfg;
 
@@ -64,5 +64,10 @@ namespace helper.v1.configuration
 
         public string GetPreviewFileType() => _cfg["FilePreview:ImageType"] ??
             throw new ArgumentNullException("FilePreview:ImageType отсутствует в конфигурационном файле");
+
+
+
+        public Guid GetDefaultUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"] ??
+            throw new ArgumentNullException("File:DefaultModelsUserID отсутствует в конфигурационном файле"));
     }
 }

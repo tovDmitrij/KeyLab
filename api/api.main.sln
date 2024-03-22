@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "component.v1.email", "compo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "component.v1.middlewares", "component.v1.middlewares\component.v1.middlewares.csproj", "{414329F2-2136-4000-BC64-173CE86ADCEA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "component.v1.apicontroller", "component.v1.apicontroller\component.v1.apicontroller.csproj", "{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{414329F2-2136-4000-BC64-173CE86ADCEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{414329F2-2136-4000-BC64-173CE86ADCEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{414329F2-2136-4000-BC64-173CE86ADCEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

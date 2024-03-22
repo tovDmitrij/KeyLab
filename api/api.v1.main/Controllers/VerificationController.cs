@@ -1,6 +1,8 @@
 ﻿using api.v1.main.DTOs.User;
 using api.v1.main.Services.Verification;
 
+using component.v1.apicontroller;
+
 using helper.v1.localization.Helper;
 
 using Microsoft.AspNetCore.Authorization;

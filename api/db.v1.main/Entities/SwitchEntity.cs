@@ -13,9 +13,6 @@ namespace db.v1.main.Entities
         [Column("title")]
         public string Title { get; set; }
 
-        [Column("description")]
-        public string Description { get; set; }
-
         [Column("file_name")]
         public string FileName { get; set; }
 
@@ -25,11 +22,10 @@ namespace db.v1.main.Entities
         [Column("sound_name")]
         public string SoundName { get; set; }
 
-        public SwitchEntity(Guid id, string title, string description, string fileName, string previewName, string soundName)
+        public SwitchEntity(Guid id, string title, string fileName, string previewName, string soundName)
         {
             ID = id;
             Title = title;
-            Description = description;
             FileName = fileName;
             PreviewName = previewName;
             SoundName = soundName;

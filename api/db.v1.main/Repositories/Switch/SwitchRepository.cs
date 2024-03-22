@@ -28,7 +28,7 @@ namespace db.v1.main.Repositories.Switch
 
 
         public List<SelectSwitchDTO> SelectSwitches(int page, int pageSize) => _db.Switches
-            .Select(@switch => new SelectSwitchDTO(@switch.ID, @switch.Title, @switch.Description, @switch.FileName))
+            .Select(@switch => new SelectSwitchDTO(@switch.ID, @switch.Title, @switch.FileName))
             .Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         public int SelectCountOfSwitch() => _db.Switches

@@ -1,5 +1,6 @@
 ﻿using db.v1.main.Contexts.Interfaces;
 using db.v1.main.DTOs.Box;
+using db.v1.main.DTOs.BoxType;
 using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.Box
@@ -14,7 +15,7 @@ namespace db.v1.main.Repositories.Box
 
         public Guid InsertBoxInfo(InsertBoxDTO body)
         {
-            var box = new BoxEntity(body.OwnerID, body.BoxTypeID, body.Title, body.Description, body.FileName, body.PreviewName, body.CreationDate);
+            var box = new BoxEntity(body.OwnerID, body.BoxTypeID, body.Title, body.FileName, body.PreviewName, body.CreationDate);
             _db.Boxes.Add(box);
             SaveChanges();
 
@@ -25,7 +26,6 @@ namespace db.v1.main.Repositories.Box
         {
             var box = _db.Boxes.First(box => box.ID == body.BoxID);
             box.Title = body.Title;
-            box.Description = body.Description;
 
             _db.Boxes.Update(box);
             SaveChanges();
@@ -63,13 +63,15 @@ namespace db.v1.main.Repositories.Box
             .FirstOrDefault(box => box.ID == boxID)?.OwnerID;
 
 
-        public List<SelectBoxDTO> SelectUserBoxes(int page, int pageSize, Guid userID)
+        public List<SelectBoxDTO> SelectUserBoxes(int page, int pageSize, Guid typeID, Guid userID)
         {
             var boxes = 
                 from box in _db.Boxes
                 join types in _db.BoxTypes
                     on box.TypeID equals types.ID
-                select new SelectBoxDTO(box.ID, box.TypeID, types.Title, box.Title, box.Description, box.PreviewName, box.CreationDate);
+                where box.OwnerID == userID &&
+                    box.TypeID == typeID
+                select new SelectBoxDTO(box.ID, box.TypeID, types.Title, box.Title, box.PreviewName, box.CreationDate);
 
             return boxes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
@@ -77,6 +79,9 @@ namespace db.v1.main.Repositories.Box
         public int SelectCountOfBoxes(Guid userID) => _db.Boxes
             .Count(box => box.OwnerID == userID);
 
+
+        public List<SelectBoxTypeDTO> SelectBoxTypes() => _db.BoxTypes
+            .Select(box => new SelectBoxTypeDTO(box.ID, box.Title)).ToList();
 
 
         private void SaveChanges() => _db.SaveChanges();

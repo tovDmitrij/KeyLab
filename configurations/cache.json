@@ -1,5 +1,5 @@
 {
     "Cache": {
-        "ExpirationMinutes": 5
+        "ExpirationMinutes": 10
     }
 }
