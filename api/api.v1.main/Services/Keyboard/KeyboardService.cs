@@ -1,5 +1,6 @@
 ﻿using api.v1.main.DTOs;
 using api.v1.main.DTOs.Keyboard;
+using api.v1.main.Services.Base;
 
 using component.v1.exceptions;
 
@@ -35,12 +36,13 @@ namespace api.v1.main.Services.Keyboard
         private readonly ILocalizationHelper _localization;
         private readonly ICacheConfigurationHelper _cacheCfg;
         private readonly IMessageBrokerHelper _broker;
+        private readonly IBaseService _base;
 
         public KeyboardService(IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, 
                                IUserRepository user, IKeyboardRegexHelper rgx, ICacheHelper cache,
                                IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
                                ILocalizationHelper localization, ICacheConfigurationHelper cacheCfg,
-                               IMessageBrokerHelper broker, IPreviewConfigurationHelper previewCfg)
+                               IMessageBrokerHelper broker, IPreviewConfigurationHelper previewCfg, IBaseService @base)
         {
             _file = file;
             _time = time;
@@ -55,6 +57,7 @@ namespace api.v1.main.Services.Keyboard
             _cacheCfg = cacheCfg;
             _broker = broker;
             _previewCfg = previewCfg;
+            _base = @base;
         }
 
 
@@ -178,23 +181,15 @@ namespace api.v1.main.Services.Keyboard
 
 
         public List<KeyboardListDTO> GetDefaultKeyboardsList(PaginationDTO body) => GetKeyboardsList(body, _fileCfg.GetDefaultModelsUserID())!;
-        public List<KeyboardListDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID) => GetKeyboardsList(body, userID);
+        public List<KeyboardListDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID) => GetKeyboardsList(body, userID)!;
 
-        public int GetDefaultKeyboardsTotalPages(int pageSize) => GetKeyboardsTotalPages(_fileCfg.GetDefaultModelsUserID(), pageSize);
-        public int GetUserKeyboardsTotalPages(Guid userID, int pageSize) => GetKeyboardsTotalPages(userID, pageSize);
+        public int GetDefaultKeyboardsTotalPages(int pageSize) =>
+            _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _keyboard.SelectCountOfKeyboards);
+        public int GetUserKeyboardsTotalPages(Guid userID, int pageSize) =>
+            _base.GetPaginationTotalPages(pageSize, userID, _keyboard.SelectCountOfKeyboards);
 
 
 
-        private int GetKeyboardsTotalPages(Guid userID, int pageSize)
-        {
-            ValidatePageSize(pageSize);
-
-            ValidateUserID(userID);
-            var count = _keyboard.SelectCountOfKeyboards(userID);
-            double totalPages = (double)count / (double)pageSize;
-
-            return (int)Math.Ceiling(totalPages);
-        }
 
         private List<KeyboardListDTO> GetKeyboardsList(PaginationDTO body, Guid userID)
         {

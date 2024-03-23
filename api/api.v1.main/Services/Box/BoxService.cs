@@ -15,6 +15,7 @@ using helper.v1.file;
 using helper.v1.messageBroker;
 using api.v1.main.DTOs;
 using db.v1.main.DTOs.BoxType;
+using api.v1.main.Services.Base;
 
 namespace api.v1.main.Services.Box
 {
@@ -31,17 +32,16 @@ namespace api.v1.main.Services.Box
         private readonly IBoxRegexHelper _rgx;
         private readonly ITimeHelper _time;
         private readonly ILocalizationHelper _localization;
-        private readonly IMessageBrokerHelper _broker;
+        private readonly IBaseService _base;
 
-        public BoxService(IBoxRepository boxes, IUserRepository users, ICacheHelper cache, IMessageBrokerHelper broker,
+        public BoxService(IBoxRepository boxes, IUserRepository users, ICacheHelper cache,
                           IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx,
                           ITimeHelper time, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization, 
-                          IPreviewConfigurationHelper previewCfg)
+                          IPreviewConfigurationHelper previewCfg, IBaseService @base)
         {
             _box = boxes;
             _user = users;
             _cache = cache;
-            _broker = broker;
             _fileCfg = fileCfg;
             _file = file;
             _rgx = rgx;
@@ -49,6 +49,8 @@ namespace api.v1.main.Services.Box
             _cacheCfg = cacheCfg;
             _localization = localization;
             _previewCfg = previewCfg;
+            _file = file;
+            _base = @base;
         }
 
 
@@ -179,21 +181,12 @@ namespace api.v1.main.Services.Box
         public List<BoxListDTO> GetDefaultBoxesList(BoxPaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
         public List<BoxListDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID) => GetBoxesList(body, userID);
 
-        public int GetDefaultBoxesTotalPages(int pageSize) => GetBoxesTotalPages(_fileCfg.GetDefaultModelsUserID(), pageSize);
-        public int GetUserBoxesTotalPages(Guid userID, int pageSize) => GetBoxesTotalPages(userID, pageSize);
+        public int GetDefaultBoxesTotalPages(int pageSize) => 
+            _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _box.SelectCountOfBoxes);
+        public int GetUserBoxesTotalPages(Guid userID, int pageSize) => 
+            _base.GetPaginationTotalPages(pageSize, userID, _box.SelectCountOfBoxes);
 
 
-
-        private int GetBoxesTotalPages(Guid userID, int pageSize)
-        {
-            ValidatePageSize(pageSize);
-
-            ValidateUserID(userID);
-            var count = _box.SelectCountOfBoxes(userID);
-            double totalPages = count / pageSize;
-
-            return (int)Math.Ceiling(totalPages);
-        }
 
         private List<BoxListDTO> GetBoxesList(BoxPaginationDTO body, Guid userID)
         {

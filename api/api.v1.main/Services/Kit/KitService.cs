@@ -1,4 +1,5 @@
 ﻿using api.v1.main.DTOs;
+using api.v1.main.Services.Base;
 
 using component.v1.exceptions;
 
@@ -20,9 +21,10 @@ namespace api.v1.main.Services.Kit
         private readonly ILocalizationHelper _localization;
         private readonly ICacheHelper _cache;
         private readonly ICacheConfigurationHelper _cacheCfg;
+        private readonly IBaseService _base;
 
         public KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, ILocalizationHelper localization,
-                          IUserRepository user, ICacheHelper cache, ICacheConfigurationHelper cacheCfg)
+                          IUserRepository user, ICacheHelper cache, ICacheConfigurationHelper cacheCfg, IBaseService @base)
         {
             _kit = kit;
             _fileCfg = fileCfg;
@@ -30,6 +32,7 @@ namespace api.v1.main.Services.Kit
             _user = user;
             _cache = cache;
             _cacheCfg = cacheCfg;
+            _base = @base;
         }
 
 
@@ -37,21 +40,12 @@ namespace api.v1.main.Services.Kit
         public List<SelectKitDTO> GetDefaultKits(PaginationDTO body) => GetKits(body, _fileCfg.GetDefaultModelsUserID());
         public List<SelectKitDTO> GetUserKits(PaginationDTO body, Guid userID) => GetKits(body, userID);
 
-        public int GetDefaultKitsTotalPages(int pageSize) => GetKitsTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID());
-        public int GetUserKitsTotalPages(int pageSize, Guid userID) => GetKitsTotalPages(pageSize, userID);
+        public int GetDefaultKitsTotalPages(int pageSize) =>
+            _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _kit.SelectCountOfKits);
+        public int GetUserKitsTotalPages(int pageSize, Guid userID) =>
+            _base.GetPaginationTotalPages(pageSize, userID, _kit.SelectCountOfKits);
 
 
-
-        private int GetKitsTotalPages(int pageSize, Guid userID)
-        {
-            ValidatePageSize(pageSize);
-
-            ValidateUserID(userID);
-            var count = _kit.SelectCountOfKits(userID);
-            double totalPages = (double)count / (double)pageSize;
-
-            return (int)Math.Ceiling(totalPages);
-        }
 
         private List<SelectKitDTO> GetKits(PaginationDTO body, Guid userID)
         {

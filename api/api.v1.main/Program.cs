@@ -38,6 +38,7 @@ using helper.v1.cache.Implements;
 using component.v1.middlewares;
 using db.v1.main.Repositories.Kit;
 using api.v1.main.Services.Kit;
+using api.v1.main.Services.Base;
 
 
 
@@ -175,6 +176,7 @@ void InitHelpers()
 
 void InitServices()
 {
+    builder.Services.AddScoped<IBaseService, BaseService>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IVerificationService, VerificationService>();
     builder.Services.AddScoped<IKeyboardService, KeyboardService>();

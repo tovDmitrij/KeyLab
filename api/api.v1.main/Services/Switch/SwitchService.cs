@@ -1,13 +1,17 @@
 ﻿using api.v1.main.DTOs;
 using api.v1.main.DTOs.Switch;
-
+using api.v1.main.Services.Base;
 using component.v1.exceptions;
+
 using db.v1.main.Repositories.Switch;
 
 using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
+
+using Microsoft.VisualBasic.FileIO;
+using System.Diagnostics;
 
 namespace api.v1.main.Services.Switch
 {
@@ -21,10 +25,11 @@ namespace api.v1.main.Services.Switch
         private readonly ICacheHelper _cache;
         private readonly ICacheConfigurationHelper _cacheCfg;
         private readonly ILocalizationHelper _localization;
+        private readonly IBaseService _base;
 
         public SwitchService(ISwitchRepository switches, IFileHelper file, IFileConfigurationHelper fileCfg,
                              ICacheHelper cache, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization,
-                             IPreviewConfigurationHelper previewCfg)
+                             IPreviewConfigurationHelper previewCfg, IBaseService @base)
         {
             _switch = switches;
             _file = file;
@@ -33,9 +38,10 @@ namespace api.v1.main.Services.Switch
             _cacheCfg = cacheCfg;
             _localization = localization;
             _previewCfg = previewCfg;
+            _base = @base;
         }
 
-        
+
 
         public byte[] GetSwitchModelFile(Guid switchID)
         {
@@ -113,18 +119,8 @@ namespace api.v1.main.Services.Switch
 
             return switches!;
         }
-
-        public int GetSwitchesTotalPages(int pageSize)
-        {
-            ValidatePageSize(pageSize);
-
-            var count = _switch.SelectCountOfSwitch();
-            double totalPages = count / pageSize;
-
-            return (int)Math.Ceiling(totalPages);
-        }
-
-
+        public int GetSwitchesTotalPages(int pageSize) => 
+            _base.GetPaginationTotalPages(pageSize, _switch.SelectCountOfSwitch);
 
         private void ValidatePageSize(int pageSize)
         {
