@@ -121,9 +121,28 @@ namespace api.v1.main.Controllers
 
 
         private IFormFile? GetFormDataKeyboardFile() => Request.Form.Files[0];
+
         private string? GetFormDataKeyboardTitle() => Request.Form["title"];
-        private Guid GetFormDataSwitchType() => Guid.Parse(Request.Form["switchTypeID"]);
-        private Guid GetFormDataBoxType() => Guid.Parse(Request.Form["boxTypeID"]);
-        private Guid GetFormDataKeyboardID() => Guid.Parse(Request.Form["keyboardID"]);
-    }
+
+        private Guid GetFormDataSwitchType()
+        {
+            if (!Guid.TryParse(Request.Form["switchTypeID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+
+        private Guid GetFormDataBoxType()
+        {
+            if (!Guid.TryParse(Request.Form["boxTypeID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+
+        private Guid GetFormDataKeyboardID()
+        {
+            if (!Guid.TryParse(Request.Form["keyboardID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+}
 }

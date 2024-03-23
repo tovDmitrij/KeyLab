@@ -18,7 +18,7 @@ namespace api.v1.main.Controllers
     {
         private readonly IBoxService _box;
 
-        public BoxController(IBoxService box, ILocalizationHelper localization) : base(localization) => 
+        public BoxController(IBoxService box, ILocalizationHelper localization) : base(localization) =>
             _box = box;
 
 
@@ -118,11 +118,24 @@ namespace api.v1.main.Controllers
             return Ok(_localization.FileIsSuccessfullDeleted());
         }
 
-       
+
 
         private IFormFile? GetFormDataBoxFile() => Request.Form.Files[0];
-        private string GetFormDataBoxTitle() => Request.Form["title"];
-        public Guid GetFormDataBoxTypeID() => Guid.Parse(Request.Form["typeID"]);
-        public Guid GetFormDataBoxID() => Guid.Parse(Request.Form["boxID"]);
+
+        private string? GetFormDataBoxTitle() => Request.Form["title"];
+
+        public Guid GetFormDataBoxTypeID()
+        {
+            if (!Guid.TryParse(Request.Form["typeID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+
+        public Guid GetFormDataBoxID()
+        {
+            if (!Guid.TryParse(Request.Form["boxID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
     }
 }

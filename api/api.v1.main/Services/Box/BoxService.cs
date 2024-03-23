@@ -12,8 +12,6 @@ using helper.v1.regex.Interfaces;
 using helper.v1.time;
 using helper.v1.localization.Helper;
 using helper.v1.file;
-using helper.v1.messageBroker;
-using api.v1.main.DTOs;
 using db.v1.main.DTOs.BoxType;
 using api.v1.main.Services.Base;
 
@@ -252,11 +250,11 @@ namespace api.v1.main.Services.Box
                 throw new BadRequestException(_localization.BoxTypeIsNotExist());
         }
 
-        private void ValidateBoxTitle(Guid userID, string title)
+        private void ValidateBoxTitle(Guid userID, string? title)
         {
-            if (_box.IsBoxTitleBusy(userID, title))
+            _rgx.ValidateBoxTitle(title ?? "");
+            if (_box.IsBoxTitleBusy(userID, title!))
                 throw new BadRequestException(_localization.BoxTitleIsBusy());
-            _rgx.ValidateBoxTitle(title);
         }
 
         private void ValidateBoxExist(Guid boxID)
