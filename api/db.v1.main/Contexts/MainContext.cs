@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 namespace db.v1.main.Contexts
 {
     public sealed class MainContext : DbContext, IUserContext, IVerificationContext, 
-                                      IKeyboardContext, IBoxContext, ISwitchContext
+                                      IKeyboardContext, IBoxContext, ISwitchContext,
+                                      IKitContext
     {
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<EmailVerificationCodeEntity> EmailCodes { get; set; }
@@ -17,6 +18,8 @@ namespace db.v1.main.Contexts
         public DbSet<BoxEntity> Boxes { get; set; }
 
         public DbSet<SwitchEntity> Switches { get; set; }
+
+        public DbSet<KitEntity> Kits { get; set; }
 
 
 

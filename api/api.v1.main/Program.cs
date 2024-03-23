@@ -36,6 +36,8 @@ using helper.v1.file;
 using helper.v1.messageBroker;
 using helper.v1.cache.Implements;
 using component.v1.middlewares;
+using db.v1.main.Repositories.Kit;
+using api.v1.main.Services.Kit;
 
 
 
@@ -137,6 +139,7 @@ void InitContexts()
     builder.Services.AddScoped<IKeyboardContext, MainContext>();
     builder.Services.AddScoped<ISwitchContext, MainContext>();
     builder.Services.AddScoped<IBoxContext, MainContext>();
+    builder.Services.AddScoped<IKitContext, MainContext>();
 }
 
 void InitRepositories()
@@ -146,6 +149,7 @@ void InitRepositories()
     builder.Services.AddScoped<IKeyboardRepository, KeyboardRepository>();
     builder.Services.AddScoped<ISwitchRepository, SwitchRepository>();
     builder.Services.AddScoped<IBoxRepository, BoxRepository>();
+    builder.Services.AddScoped<IKitRepository, KitRepository>();
 }
 
 void InitHelpers()
@@ -177,6 +181,7 @@ void InitServices()
     builder.Services.AddScoped<ISwitchService, SwitchService>();
     builder.Services.AddScoped<IProfileService, ProfileService>();
     builder.Services.AddScoped<IBoxService, BoxService>();
+    builder.Services.AddScoped<IKitService, KitService>();
 }
 
 #endregion

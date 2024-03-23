@@ -107,10 +107,11 @@ namespace api.v1.main.Services.Switch
                     switches.Add(new(sw.ID, sw.Title, img));
                 }
 
-                _cache.SetValue(cacheKey, switches, 10);
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(cacheKey, switches, minutes);
             }
 
-            return switches;
+            return switches!;
         }
 
         public int GetSwitchesTotalPages(int pageSize)

@@ -180,24 +180,18 @@ namespace api.v1.main.Services.Keyboard
         public List<KeyboardListDTO> GetDefaultKeyboardsList(PaginationDTO body) => GetKeyboardsList(body, _fileCfg.GetDefaultModelsUserID())!;
         public List<KeyboardListDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID) => GetKeyboardsList(body, userID);
 
-        public int GetDefaultKeyboardsTotalPages(int pageSize)
-        {
-            ValidatePageSize(pageSize);
+        public int GetDefaultKeyboardsTotalPages(int pageSize) => GetKeyboardsTotalPages(_fileCfg.GetDefaultModelsUserID(), pageSize);
+        public int GetUserKeyboardsTotalPages(Guid userID, int pageSize) => GetKeyboardsTotalPages(userID, pageSize);
 
-            var userID = _fileCfg.GetDefaultModelsUserID();
-            var count = _keyboard.SelectCountOfKeyboards(userID);
-            double totalPages = count / pageSize;
 
-            return (int)Math.Ceiling(totalPages);
-        }
 
-        public int GetUserKeyboardsTotalPages(Guid userID, int pageSize)
+        private int GetKeyboardsTotalPages(Guid userID, int pageSize)
         {
             ValidatePageSize(pageSize);
 
             ValidateUserID(userID);
             var count = _keyboard.SelectCountOfKeyboards(userID);
-            double totalPages = count / pageSize;
+            double totalPages = (double)count / (double)pageSize;
 
             return (int)Math.Ceiling(totalPages);
         }
@@ -234,9 +228,12 @@ namespace api.v1.main.Services.Keyboard
                     keyboards.Add(new(keyboard.ID, keyboard.BoxTypeID, keyboard.BoxTypeTitle, keyboard.SwitchTypeID,
                         keyboard.SwitchTypeTitle, keyboard.Title, img, keyboard.CreationDate));
                 }
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(cacheKey, keyboards, minutes);
             }
 
-            return keyboards;
+            return keyboards!;
         }
 
 

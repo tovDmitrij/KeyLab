@@ -177,21 +177,14 @@ namespace api.v1.main.Services.Box
 
 
         public List<BoxListDTO> GetDefaultBoxesList(BoxPaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
-
         public List<BoxListDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID) => GetBoxesList(body, userID);
 
-        public int GetDefaultBoxesTotalPages(int pageSize)
-        {
-            ValidatePageSize(pageSize);
+        public int GetDefaultBoxesTotalPages(int pageSize) => GetBoxesTotalPages(_fileCfg.GetDefaultModelsUserID(), pageSize);
+        public int GetUserBoxesTotalPages(Guid userID, int pageSize) => GetBoxesTotalPages(userID, pageSize);
 
-            var userID = _fileCfg.GetDefaultModelsUserID();
-            var count = _box.SelectCountOfBoxes(userID);
-            double totalPages = count / pageSize;
 
-            return (int)Math.Ceiling(totalPages);
-        }
 
-        public int GetUserBoxesTotalPages(Guid userID, int pageSize)
+        private int GetBoxesTotalPages(Guid userID, int pageSize)
         {
             ValidatePageSize(pageSize);
 
@@ -201,8 +194,6 @@ namespace api.v1.main.Services.Box
 
             return (int)Math.Ceiling(totalPages);
         }
-
-
 
         private List<BoxListDTO> GetBoxesList(BoxPaginationDTO body, Guid userID)
         {
@@ -236,6 +227,9 @@ namespace api.v1.main.Services.Box
 
                     boxes.Add(new(dbBox.ID, dbBox.TypeID, dbBox.TypeTitle, dbBox.Title, img, dbBox.CreationDate));
                 }
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(cacheKey, boxes, minutes);
             }
 
             return boxes;
