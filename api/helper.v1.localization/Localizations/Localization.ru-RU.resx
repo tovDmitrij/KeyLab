@@ -177,6 +177,9 @@
   <data name="PaginationPage_NotValid" xml:space="preserve">
     <value>Номер страницы не валидный</value>
   </data>
+  <data name="Preview_IsNotAttached" xml:space="preserve">
+    <value>Превью файла повреждено или не было прикреплено</value>
+  </data>
   <data name="SwitchType_IsNotExist" xml:space="preserve">
     <value>Типа переключателя с заданными параметрами не существует</value>
   </data>

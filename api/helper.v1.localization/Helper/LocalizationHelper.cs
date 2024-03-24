@@ -18,6 +18,8 @@ namespace helper.v1.localization.Helper
         public string FileIsSuccessfullUpdated() => _localization["File_IsSuccessfullUpdated"];
         public string FileIsSuccessfullDeleted() => _localization["File_IsSuccessfullDeleted"];
 
+        public string PreviewIsNotAttached() => _localization["Preview_IsNotAttached"];
+
         public string EmailCodeIsNotExist() => _localization["EmailCode_IsNotExist"];
         public string EmailCodeIsSuccessfullSend() => _localization["EmailCode_IsSuccessfullSend"];
         public string EmailVerificationEmailLabel() => _localization["EmailVerification_EmailLabel"];

@@ -134,23 +134,23 @@ InitServices();
 
 void InitContexts()
 {
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg["PostgreSQL:Main"]), ServiceLifetime.Scoped);
-    builder.Services.AddScoped<IUserContext, MainContext>();
-    builder.Services.AddScoped<IVerificationContext, MainContext>();
-    builder.Services.AddScoped<IKeyboardContext, MainContext>();
-    builder.Services.AddScoped<ISwitchContext, MainContext>();
-    builder.Services.AddScoped<IBoxContext, MainContext>();
-    builder.Services.AddScoped<IKitContext, MainContext>();
+    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg["PostgreSQL:Main"]), ServiceLifetime.Transient);
+    builder.Services.AddTransient<IUserContext, MainContext>();
+    builder.Services.AddTransient<IVerificationContext, MainContext>();
+    builder.Services.AddTransient<IKeyboardContext, MainContext>();
+    builder.Services.AddTransient<ISwitchContext, MainContext>();
+    builder.Services.AddTransient<IBoxContext, MainContext>();
+    builder.Services.AddTransient<IKitContext, MainContext>();
 }
 
 void InitRepositories()
 {
-    builder.Services.AddScoped<IUserRepository, UserRepository>();
-    builder.Services.AddScoped<IVerificationRepository, VerificationRepository>();
-    builder.Services.AddScoped<IKeyboardRepository, KeyboardRepository>();
-    builder.Services.AddScoped<ISwitchRepository, SwitchRepository>();
-    builder.Services.AddScoped<IBoxRepository, BoxRepository>();
-    builder.Services.AddScoped<IKitRepository, KitRepository>();
+    builder.Services.AddTransient<IUserRepository, UserRepository>();
+    builder.Services.AddTransient<IVerificationRepository, VerificationRepository>();
+    builder.Services.AddTransient<IKeyboardRepository, KeyboardRepository>();
+    builder.Services.AddTransient<ISwitchRepository, SwitchRepository>();
+    builder.Services.AddTransient<IBoxRepository, BoxRepository>();
+    builder.Services.AddTransient<IKitRepository, KitRepository>();
 }
 
 void InitHelpers()
@@ -176,14 +176,14 @@ void InitHelpers()
 
 void InitServices()
 {
-    builder.Services.AddScoped<IBaseService, BaseService>();
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IVerificationService, VerificationService>();
-    builder.Services.AddScoped<IKeyboardService, KeyboardService>();
-    builder.Services.AddScoped<ISwitchService, SwitchService>();
-    builder.Services.AddScoped<IProfileService, ProfileService>();
-    builder.Services.AddScoped<IBoxService, BoxService>();
-    builder.Services.AddScoped<IKitService, KitService>();
+    builder.Services.AddTransient<IBaseService, BaseService>();
+    builder.Services.AddTransient<IUserService, UserService>();
+    builder.Services.AddTransient<IVerificationService, VerificationService>();
+    builder.Services.AddTransient<IKeyboardService, KeyboardService>();
+    builder.Services.AddTransient<ISwitchService, SwitchService>();
+    builder.Services.AddTransient<IProfileService, ProfileService>();
+    builder.Services.AddTransient<IBoxService, BoxService>();
+    builder.Services.AddTransient<IKitService, KitService>();
 }
 
 #endregion

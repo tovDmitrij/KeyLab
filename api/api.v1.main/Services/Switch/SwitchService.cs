@@ -10,9 +10,6 @@ using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
 
-using Microsoft.VisualBasic.FileIO;
-using System.Diagnostics;
-
 namespace api.v1.main.Services.Switch
 {
     public sealed class SwitchService : ISwitchService
@@ -87,34 +84,27 @@ namespace api.v1.main.Services.Switch
             ValidatePageSize(body.PageSize);
             ValidatePage(body.Page);
 
-            var cacheKey = body.GetHashCode();
-            if (!_cache.TryGetValue(cacheKey, out List<SwitchListDTO>? switches))
+            var switches = new List<SwitchListDTO>();
+
+            var fileType = _previewCfg.GetPreviewFileType();
+            var dbSwitches = _switch.SelectSwitches(body.Page, body.PageSize);
+            foreach (var sw in dbSwitches)
             {
-                switches = new();
+                var filePath = _fileCfg.GetSwitchModelFilePath(sw.PreviewName);
 
-                var fileType = _previewCfg.GetPreviewFileType();
-                var dbSwitches = _switch.SelectSwitches(body.Page, body.PageSize);
-                foreach (var sw in dbSwitches)
+                byte[] bytes;
+                try
                 {
-                    var filePath = _fileCfg.GetSwitchModelFilePath(sw.PreviewName);
-
-                    byte[] bytes;
-                    try
-                    {
-                        bytes = _file.GetFile(filePath);
-                    }
-                    catch
-                    {
-                        var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                        bytes = _file.GetFile(errorImgPath);
-                    }
-                    var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
-
-                    switches.Add(new(sw.ID, sw.Title, img));
+                    bytes = _file.GetFile(filePath);
                 }
+                catch
+                {
+                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                    bytes = _file.GetFile(errorImgPath);
+                }
+                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
 
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(cacheKey, switches, minutes);
+                switches.Add(new(sw.ID, sw.Title, img));
             }
 
             return switches!;

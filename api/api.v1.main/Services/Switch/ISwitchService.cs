@@ -1,6 +1,4 @@
-﻿using db.v1.main.DTOs.Switch;
-
-using component.v1.exceptions;
+﻿using component.v1.exceptions;
 using api.v1.main.DTOs.Switch;
 using api.v1.main.DTOs;
 
