@@ -53,14 +53,6 @@ namespace api.v1.main.Services.Box
 
 
 
-        public List<SelectBoxTypeDTO> GetBoxTypes()
-        {
-            var types = _box.SelectBoxTypes();
-            return types;
-        }
-
-
-
         public void AddBox(PostBoxDTO body)
         {
             ValidateUserID(body.UserID);
@@ -69,67 +61,22 @@ namespace api.v1.main.Services.Box
             ValidateBoxType(body.TypeID);
             ValidateBoxTitle(body.UserID, body.Title);
 
-            var modelFileName = $"{body.Title}.glb";
-            var modelFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, modelFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.File!.CopyTo(memoryStream);
-                var modelBytes = memoryStream.ToArray();
-                _file.AddFile(modelBytes, modelFilePath);
-            }
-
-            var fileType = _previewCfg.GetPreviewFileType();
-            var imgFileName = $"{body.Title}.{fileType}";
-            var imgFilePath = _fileCfg.GetBoxModelFilePath(body.UserID, imgFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.Preview!.CopyTo(memoryStream);
-                var imgBytes = memoryStream.ToArray();
-                _file.AddFile(imgBytes, imgFilePath);
-            }
+            var names = _base.AddFile(body.File, body.Preview, body.UserID, body.Title!, _fileCfg.GetBoxFilePath);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title!, modelFileName, imgFileName, currentTime);
+            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title!, names.FileName, names.PreviewName, currentTime);
             _box.InsertBoxInfo(insertBoxBody);
         }
 
         public void UpdateBox(PutBoxDTO body)
         {
             ValidateBoxExist(body.BoxID);
-            ValidateUserID(body.UserID);
-            ValidateBoxFile(body.File);
-            ValidateBoxPreview(body.Preview);
             ValidateBoxTitle(body.UserID, body.Title);
             ValidateBoxOwner(body.BoxID, body.UserID);
 
-            var oldModelFileName = _box.SelectBoxFileName(body.BoxID)!;
-            var oldModelFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, oldModelFileName);
-            var newModelFileName = $"{body.Title}.glb";
-            var newModelFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, newModelFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.File!.CopyTo(memoryStream);
-                var modelBytes = memoryStream.ToArray();
-                _file.DeleteFile(oldModelFilePath);
-                _file.AddFile(modelBytes, newModelFilePath);
-            }
+            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.BoxID, body.Title!, _box.SelectBoxFileName, _box.SelectBoxPreviewName, _fileCfg.GetBoxFilePath);
 
-            var oldImgFileName = _box.SelectBoxPreviewName(body.BoxID)!;
-            var oldImgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, oldImgFileName);
-            var fileType = _previewCfg.GetPreviewFileType();
-            var newImgFileName = $"{body.Title}.{fileType}";
-            var newImgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, newImgFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.Preview!.CopyTo(memoryStream);
-                var imgBytes = memoryStream.ToArray();
-                _file.DeleteFile(oldImgFilePath);
-                _file.AddFile(imgBytes, newImgFilePath);
-            }
-
-            _cache.DeleteValue(body.BoxID);
-
-            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title!, newModelFileName, newImgFileName);
+            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title!, names.FileName, names.PreviewName);
             _box.UpdateBoxInfo(updateBoxBody);
         }
 
@@ -140,10 +87,10 @@ namespace api.v1.main.Services.Box
             ValidateBoxOwner(body.BoxID, userID);
 
             var modelFileName = _box.SelectBoxFileName(body.BoxID)!;
-            var modelFilePath = _fileCfg.GetBoxModelFilePath(userID, modelFileName);
+            var modelFilePath = _fileCfg.GetBoxFilePath(userID, modelFileName);
 
             var imgFileName = _box.SelectBoxPreviewName(body.BoxID)!;
-            var imgFilePath = _fileCfg.GetBoxModelFilePath(userID, imgFileName);
+            var imgFilePath = _fileCfg.GetBoxFilePath(userID, imgFileName);
 
             _file.DeleteFile(modelFilePath);
             _file.DeleteFile(imgFilePath);
@@ -155,13 +102,13 @@ namespace api.v1.main.Services.Box
 
         public byte[] GetBoxFile(Guid boxID)
         {
-            var file = _base.GetFile(boxID, _box.SelectBoxFileName, _box.SelectBoxOwnerID, _fileCfg.GetBoxModelFilePath);
+            var file = _base.GetFile(boxID, _box.SelectBoxFileName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
             return file;
         }
 
         public string GetBoxPreview(Guid boxID)
         {
-            var preview = _base.GetFile(boxID, _box.SelectBoxPreviewName, _box.SelectBoxOwnerID, _fileCfg.GetBoxModelFilePath);
+            var preview = _base.GetFile(boxID, _box.SelectBoxPreviewName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
             return Convert.ToBase64String(preview);
         }
 
@@ -183,10 +130,25 @@ namespace api.v1.main.Services.Box
 
 
 
-        public int GetDefaultBoxesTotalPages(int pageSize) => 
-            _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _box.SelectCountOfBoxes);
-        public int GetUserBoxesTotalPages(Guid userID, int pageSize) => 
-            _base.GetPaginationTotalPages(pageSize, userID, _box.SelectCountOfBoxes);
+        public int GetDefaultBoxesTotalPages(int pageSize)
+        {
+            var totalPages = _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _box.SelectCountOfBoxes);
+            return totalPages;
+        }
+
+        public int GetUserBoxesTotalPages(Guid userID, int pageSize)
+        {
+            var totalPages = _base.GetPaginationTotalPages(pageSize, userID, _box.SelectCountOfBoxes);
+            return totalPages;
+        }
+
+
+
+        public List<SelectBoxTypeDTO> GetBoxTypes()
+        {
+            var types = _box.SelectBoxTypes();
+            return types;
+        }
 
 
 

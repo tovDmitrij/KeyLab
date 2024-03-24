@@ -14,10 +14,10 @@
         public string GetSwitchSoundFilePath(string fileName);
 
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetKeyboardModelFilePath(Guid userID, string fileName);
+        public string GetKeyboardFilePath(Guid userID, string fileName);
 
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetBoxModelFilePath(Guid userID, string fileName);
+        public string GetBoxFilePath(Guid userID, string fileName);
 
 
 

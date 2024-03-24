@@ -4,6 +4,24 @@ namespace api.v1.main.Services.Base
 {
     public interface IBaseService
     {
+        public InitFileDTO AddFile(
+            IFormFile? file,
+            IFormFile? preview,
+            Guid userID,
+            string title,
+            Func<Guid, string, string> filePathFunction);
+        public InitFileDTO UpdateFile(
+            IFormFile? file,
+            IFormFile? preview,
+            Guid userID,
+            Guid objectID,
+            string title,
+            Func<Guid, string> fileNameFunction,
+            Func<Guid, string> previewNameFunction,
+            Func<Guid, string, string> filePathFunction);
+
+
+
         public byte[] GetFile(
             Guid fileID,
             Func<Guid, string?> fileNameFunction,

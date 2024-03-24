@@ -46,10 +46,10 @@ namespace helper.v1.configuration
         public string GetSwitchSoundFilePath(string fileName) => string.Format(_cfg["File:SwitchSoundFilePath"] ??
             throw new ArgumentNullException("File:SwitchSoundFilePath отсутствует в конфигурационном файле"), fileName);
 
-        public string GetKeyboardModelFilePath(Guid userID, string fileName) => string.Format(_cfg["File:KeyboardModelFilePath"] ??
+        public string GetKeyboardFilePath(Guid userID, string fileName) => string.Format(_cfg["File:KeyboardModelFilePath"] ??
             throw new ArgumentNullException("File:KeyboardModelFilePath отсутствует в конфигурационном файле"), userID, fileName);
 
-        public string GetBoxModelFilePath(Guid userID, string fileName) => string.Format(_cfg["File:BoxModelFilePath"] ??
+        public string GetBoxFilePath(Guid userID, string fileName) => string.Format(_cfg["File:BoxModelFilePath"] ??
             throw new ArgumentNullException("File:BoxModelFilePath отсутствует в конфигурационном файле"), userID, fileName);
 
         public string GetErrorImageFilePath() => _cfg["File:ErrorImageFilePath"] ??

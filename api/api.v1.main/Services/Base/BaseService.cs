@@ -18,15 +18,17 @@ namespace api.v1.main.Services.Base
         private readonly ICacheHelper _cache;
         private readonly ICacheConfigurationHelper _cacheCfg;
         private readonly IFileHelper _file;
+        private readonly IPreviewConfigurationHelper _previewCfg;
 
         public BaseService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, ICacheConfigurationHelper cacheCfg, 
-                           IFileHelper file)
+                           IFileHelper file, IPreviewConfigurationHelper previewCfg)
         {
             _localization = localization;
             _user = user;
             _cache = cache;
             _cacheCfg = cacheCfg;
             _file = file;
+            _previewCfg = previewCfg;
         }
 
 
@@ -72,6 +74,85 @@ namespace api.v1.main.Services.Base
                 _cache.SetValue(filePath, file, minutes);
             }
             return file!;
+        }
+
+
+
+        public InitFileDTO AddFile(
+            IFormFile? file,
+            IFormFile? preview,
+            Guid userID,
+            string title,
+            Func<Guid, string, string> filePathFunction)
+        {
+            ValidateUserID(userID);
+            ValidateFile(file);
+            ValidatePreview(preview);
+
+            var fileName = $"{title}.glb";
+            var filePath = filePathFunction(userID, fileName);
+            using (var ms = new MemoryStream())
+            {
+                file!.CopyTo(ms);
+                var modelBytes = ms.ToArray();
+                _file.AddFile(modelBytes, filePath);
+            }
+
+            var fileType = _previewCfg.GetPreviewFileType();
+            var previewName = $"{title}.{fileType}";
+            var previewPath = filePathFunction(userID, previewName);
+            using (var ms = new MemoryStream())
+            {
+                preview!.CopyTo(ms);
+                var imgBytes = ms.ToArray();
+                _file.AddFile(imgBytes, previewPath);
+            }
+
+            return new(fileName, previewName);
+        }
+
+        public InitFileDTO UpdateFile(
+            IFormFile? file,
+            IFormFile? preview,
+            Guid userID,
+            Guid objectID,
+            string title,
+            Func<Guid, string> fileNameFunction,
+            Func<Guid, string> previewNameFunction,
+            Func<Guid, string, string> filePathFunction)
+        {
+            ValidateUserID(userID);
+            ValidateFile(file);
+            ValidatePreview(preview);
+
+            var oldFileName = fileNameFunction(objectID);
+            var oldFilePath = filePathFunction(userID, oldFileName);
+            var newFileName = $"{title}.glb";
+            var newFilePath = filePathFunction(userID, newFileName);
+            using (var ms = new MemoryStream())
+            {
+                file!.CopyTo(ms);
+                var modelBytes = ms.ToArray();
+                _file.DeleteFile(oldFilePath);
+                _file.AddFile(modelBytes, newFilePath);
+            }
+
+            var oldPreviewFileName = previewNameFunction(objectID)!;
+            var oldPreviewFilePath = filePathFunction(userID, oldPreviewFileName);
+            var fileType = _previewCfg.GetPreviewFileType();
+            var newPreviewName = $"{title}.{fileType}";
+            var newPreviewPath = filePathFunction(userID, newPreviewName);
+            using (var memoryStream = new MemoryStream())
+            {
+                preview!.CopyTo(memoryStream);
+                var imgBytes = memoryStream.ToArray();
+                _file.DeleteFile(oldPreviewFilePath);
+                _file.AddFile(imgBytes, newPreviewPath);
+            }
+
+            _cache.DeleteValue(objectID);
+
+            return new(newFileName, newPreviewName);
         }
 
 
@@ -141,6 +222,17 @@ namespace api.v1.main.Services.Base
         private static int GetTotalPages(int count, int pageSize) => (int)Math.Ceiling((double)count / pageSize);
 
 
+        private void ValidateFile(IFormFile? file)
+        {
+            if (file == null || file.Length == 0)
+                throw new BadRequestException(_localization.FileIsNotAttached());
+        }
+
+        private void ValidatePreview(IFormFile? preview)
+        {
+            if (preview == null || preview.Length == 0)
+                throw new BadRequestException(_localization.PreviewIsNotAttached());
+        }
 
         private void ValidateUserID(Guid userID)
         {
