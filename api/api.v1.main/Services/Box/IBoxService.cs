@@ -15,7 +15,7 @@ namespace api.v1.main.Services.Box
         public void UpdateBox(PutBoxDTO body);
 
         /// <exception cref="BadRequestException"></exception>
-        public void DeleteBox(DeleteBoxDTO body);
+        public void DeleteBox(DeleteBoxDTO body, Guid userID);
 
         /// <exception cref="BadRequestException"></exception>
         public byte[] GetBoxFile(Guid boxID);

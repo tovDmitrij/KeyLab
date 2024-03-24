@@ -241,6 +241,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Превью файла повреждено или не было прикреплено.
+        /// </summary>
+        public static string Preview_IsNotAttached {
+            get {
+                return ResourceManager.GetString("Preview_IsNotAttached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Типа переключателя с заданными параметрами не существует.
         /// </summary>
         public static string SwitchType_IsNotExist {

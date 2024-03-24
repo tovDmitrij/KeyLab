@@ -14,7 +14,7 @@ namespace api.v1.main.Services.Keyboard
         public void UpdateKeyboard(PutKeyboardDTO body);
 
         /// <exception cref="BadRequestException"></exception>
-        public void DeleteKeyboard(DeleteKeyboardDTO body);
+        public void DeleteKeyboard(DeleteKeyboardDTO body, Guid userID);
 
         /// <exception cref="BadRequestException"></exception>
         public byte[] GetKeyboardFile(Guid keyboardID);

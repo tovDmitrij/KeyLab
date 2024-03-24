@@ -1,9 +1,11 @@
+using api.v1.stats.Services.Activity;
 using api.v1.stats.Services.Interval;
 
 using component.v1.middlewares;
 
 using db.v1.stats.Contexts;
 using db.v1.stats.Contexts.Interfaces;
+using db.v1.stats.Repositories.Activity;
 using db.v1.stats.Repositories.Interval;
 
 using helper.v1.cache;
@@ -98,24 +100,28 @@ void InitContexts()
 {
     builder.Services.AddDbContext<StatContext>(options => options.UseNpgsql(cfg["PostgreSQL:Stats"]), ServiceLifetime.Scoped);
     builder.Services.AddScoped<IIntervalContext, StatContext>();
+    builder.Services.AddScoped<IActivityContext, StatContext>();
 }
 
 void InitRepositories()
 {
     builder.Services.AddScoped<IIntervalRepository, IntervalRepository>();
+    builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 }
 
 void InitHelpers()
 {
-    builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
     builder.Services.AddSingleton<IAdminConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
+
+    builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
     builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
 }
 
 void InitServices()
 {
     builder.Services.AddScoped<IIntervalService, IntervalService>();
+    builder.Services.AddScoped<IActivityService, ActivityService>();
 }
 
 #endregion

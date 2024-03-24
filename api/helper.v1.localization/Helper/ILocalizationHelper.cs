@@ -8,6 +8,8 @@
         public string FileIsSuccessfullUpdated();
         public string FileIsSuccessfullDeleted();
 
+        public string PreviewIsNotAttached();
+
         public string EmailCodeIsNotExist();
         public string EmailCodeIsSuccessfullSend();
 

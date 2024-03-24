@@ -18,7 +18,7 @@ namespace api.v1.main.Controllers
     {
         private readonly IBoxService _box;
 
-        public BoxController(IBoxService box, ILocalizationHelper localization) : base(localization) => 
+        public BoxController(IBoxService box, ILocalizationHelper localization) : base(localization) =>
             _box = box;
 
 
@@ -79,11 +79,12 @@ namespace api.v1.main.Controllers
         public IActionResult AddBoxFile()
         {
             var file = GetFormDataBoxFile();
+            var preview = GetFormDataBoxPreview();
             var title = GetFormDataBoxTitle();
             var typeID = GetFormDataBoxTypeID();
             var userID = GetUserIDFromAccessToken();
 
-            var body = new PostBoxDTO(file, title, typeID, userID);
+            var body = new PostBoxDTO(file, preview, title, typeID, userID);
 
             _box.AddBox(body);
 
@@ -95,11 +96,12 @@ namespace api.v1.main.Controllers
         public IActionResult UpdateBoxFile()
         {
             var file = GetFormDataBoxFile();
+            var preview = GetFormDataBoxPreview();
             var title = GetFormDataBoxTitle();
             var userID = GetUserIDFromAccessToken();
             var boxID = GetFormDataBoxID();
 
-            var body = new PutBoxDTO(file, title, userID, boxID);
+            var body = new PutBoxDTO(file, preview, title, userID, boxID);
             _box.UpdateBox(body);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
@@ -107,22 +109,33 @@ namespace api.v1.main.Controllers
 
         [HttpDelete]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult DeleteBoxFile()
+        public IActionResult DeleteBoxFile([FromBody] DeleteBoxDTO body)
         {
             var userID = GetUserIDFromAccessToken();
-            var boxID = GetFormDataBoxID();
 
-            var body = new DeleteBoxDTO(boxID, userID);
-            _box.DeleteBox(body);
-
+            _box.DeleteBox(body, userID);
             return Ok(_localization.FileIsSuccessfullDeleted());
         }
 
-       
 
-        private IFormFile? GetFormDataBoxFile() => Request.Form.Files[0];
-        private string GetFormDataBoxTitle() => Request.Form["title"];
-        public Guid GetFormDataBoxTypeID() => Guid.Parse(Request.Form["typeID"]);
-        public Guid GetFormDataBoxID() => Guid.Parse(Request.Form["boxID"]);
+
+        private IFormFile? GetFormDataBoxFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
+        private IFormFile? GetFormDataBoxPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
+
+        private string? GetFormDataBoxTitle() => Request.Form["title"];
+
+        public Guid GetFormDataBoxTypeID()
+        {
+            if (!Guid.TryParse(Request.Form["typeID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+
+        public Guid GetFormDataBoxID()
+        {
+            if (!Guid.TryParse(Request.Form["boxID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
     }
 }

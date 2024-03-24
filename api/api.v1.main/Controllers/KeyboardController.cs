@@ -77,13 +77,14 @@ namespace api.v1.main.Controllers
         public IActionResult AddKeyboard()
         {
             var file = GetFormDataKeyboardFile();
+            var preview = GetFormDataKeyboardPreview();
             var title = GetFormDataKeyboardTitle();
             var switchTypeID = GetFormDataSwitchType();
             var boxTypeID = GetFormDataBoxType();
 
             var userID = GetUserIDFromAccessToken();
 
-            var body = new PostKeyboardDTO(file, title, userID, boxTypeID, switchTypeID);
+            var body = new PostKeyboardDTO(file, preview, title, userID, boxTypeID, switchTypeID);
             _keyboard.AddKeyboard(body);
 
             return Ok(_localization.FileIsSuccessfullUploaded());
@@ -94,6 +95,7 @@ namespace api.v1.main.Controllers
         public IActionResult UpdateKeyboard()
         {
             var file = GetFormDataKeyboardFile();
+            var preview = GetFormDataKeyboardPreview();
             var title = GetFormDataKeyboardTitle();
             var switchTypeID = GetFormDataSwitchType();
             var boxTypeID = GetFormDataBoxType();
@@ -101,7 +103,7 @@ namespace api.v1.main.Controllers
 
             var userID = GetUserIDFromAccessToken();
 
-            var body = new PutKeyboardDTO(file, title, userID, keyboardID, boxTypeID, switchTypeID);
+            var body = new PutKeyboardDTO(file, preview, title, userID, keyboardID, boxTypeID, switchTypeID);
             _keyboard.UpdateKeyboard(body);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
@@ -109,21 +111,41 @@ namespace api.v1.main.Controllers
 
         [HttpDelete]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult DeleteKeyboard([FromBody] Guid keyboardID)
+        public IActionResult DeleteKeyboard([FromBody] DeleteKeyboardDTO body)
         {
             var userID = GetUserIDFromAccessToken();
 
-            _keyboard.DeleteKeyboard(new(keyboardID, userID));
+            _keyboard.DeleteKeyboard(body, userID);
 
             return Ok(_localization.FileIsSuccessfullDeleted());
         }
 
 
 
-        private IFormFile? GetFormDataKeyboardFile() => Request.Form.Files[0];
+        private IFormFile? GetFormDataKeyboardFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
+        private IFormFile? GetFormDataKeyboardPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
+
         private string? GetFormDataKeyboardTitle() => Request.Form["title"];
-        private Guid GetFormDataSwitchType() => Guid.Parse(Request.Form["switchTypeID"]);
-        private Guid GetFormDataBoxType() => Guid.Parse(Request.Form["boxTypeID"]);
-        private Guid GetFormDataKeyboardID() => Guid.Parse(Request.Form["keyboardID"]);
-    }
+
+        private Guid GetFormDataSwitchType()
+        {
+            if (!Guid.TryParse(Request.Form["switchTypeID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+
+        private Guid GetFormDataBoxType()
+        {
+            if (!Guid.TryParse(Request.Form["boxTypeID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+
+        private Guid GetFormDataKeyboardID()
+        {
+            if (!Guid.TryParse(Request.Form["keyboardID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+}
 }
