@@ -8,7 +8,7 @@
 
 
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetSwitchModelFilePath(string fileName);
+        public string GetSwitchFilePath(string fileName);
 
         /// <exception cref="ArgumentNullException"></exception>
         public string GetSwitchSoundFilePath(string fileName);

@@ -18,7 +18,7 @@ namespace api.v1.main.Controllers
 
 
 
-        [HttpGet("models/default")]
+        [HttpGet("default")]
         public IActionResult GetSwitches([Required] int page, [Required] int pageSize)
         {
             var switches = _switch.GetSwitches(new(page, pageSize));
@@ -27,7 +27,7 @@ namespace api.v1.main.Controllers
 
 
 
-        [HttpGet("models/default/totalPages")]
+        [HttpGet("default/totalPages")]
         public IActionResult GetSwitchesTotalPages([Required] int pageSize)
         {
             var totalPages = _switch.GetSwitchesTotalPages(pageSize);

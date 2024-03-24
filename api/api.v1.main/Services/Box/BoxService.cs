@@ -151,59 +151,37 @@ namespace api.v1.main.Services.Box
             _box.DeleteBoxInfo(body.BoxID);
         }
 
+
+
         public byte[] GetBoxFile(Guid boxID)
         {
-            var fileName = _box.SelectBoxFileName(boxID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = _box.SelectBoxOwnerID(boxID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-
-            var filePath = _fileCfg.GetBoxModelFilePath(userID, fileName);
-
-            if (!_cache.TryGetValue(boxID, out byte[]? file))
-            {
-                file = _file.GetFile(filePath);
-                if (file.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var cacheExpireTime = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(boxID, file, cacheExpireTime);
-            }
-
-            return file!;
+            var file = _base.GetFile(boxID, _box.SelectBoxFileName, _box.SelectBoxOwnerID, _fileCfg.GetBoxModelFilePath);
+            return file;
         }
 
-        public string GetBoxPreview(Guid keyboardID)
+        public string GetBoxPreview(Guid boxID)
         {
-            var previewName = _box.SelectBoxPreviewName(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = _box.SelectBoxOwnerID(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-
-            var filePath = _fileCfg.GetBoxModelFilePath(userID, previewName);
-
-            if (!_cache.TryGetValue(filePath, out byte[]? preview))
-            {
-                try
-                {
-                    preview = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    preview = _file.GetFile(errorImgPath);
-                }
-
-                if (preview.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(filePath, preview, minutes);
-            }
-
-            return Convert.ToBase64String(preview!);
+            var preview = _base.GetFile(boxID, _box.SelectBoxPreviewName, _box.SelectBoxOwnerID, _fileCfg.GetBoxModelFilePath);
+            return Convert.ToBase64String(preview);
         }
 
 
 
-        public List<SelectBoxDTO> GetDefaultBoxesList(BoxPaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
-        public List<SelectBoxDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID) => GetBoxesList(body, userID);
+        public List<SelectBoxDTO> GetDefaultBoxesList(BoxPaginationDTO body)
+        {
+            ValidateBoxType(body.TypeID);
+            var userID = _fileCfg.GetDefaultModelsUserID();
+            var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, body.TypeID, _box.SelectUserBoxes);
+            return boxes;
+        }
+        public List<SelectBoxDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID)
+        {
+            ValidateBoxType(body.TypeID);
+            var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, body.TypeID, _box.SelectUserBoxes);
+            return boxes;
+        }
+
+
 
         public int GetDefaultBoxesTotalPages(int pageSize) => 
             _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _box.SelectCountOfBoxes);
@@ -211,17 +189,6 @@ namespace api.v1.main.Services.Box
             _base.GetPaginationTotalPages(pageSize, userID, _box.SelectCountOfBoxes);
 
 
-
-        private List<SelectBoxDTO> GetBoxesList(BoxPaginationDTO body, Guid userID)
-        {
-            ValidateUserID(userID);
-            ValidateBoxType(body.TypeID);
-            ValidatePageSize(body.PageSize);
-            ValidatePage(body.Page);
-
-            var boxes = _box.SelectUserBoxes(body.Page, body.PageSize, body.TypeID, userID);
-            return boxes;
-        }
 
         private void ValidateUserID(Guid userID)
         {
@@ -264,18 +231,6 @@ namespace api.v1.main.Services.Box
         {
             if (!_box.IsBoxExist(boxID))
                 throw new BadRequestException(_localization.FileIsNotExist());
-        }
-
-        private void ValidatePageSize(int pageSize)
-        {
-            if (pageSize < 1)
-                throw new BadRequestException(_localization.PaginationPageSizeIsNotValid());
-        }
-
-        private void ValidatePage(int page)
-        {
-            if (page < 1)
-                throw new BadRequestException(_localization.PaginationPageIsNotValid());
         }
     }
 }

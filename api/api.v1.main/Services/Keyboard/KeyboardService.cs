@@ -14,7 +14,6 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
-using helper.v1.messageBroker;
 using helper.v1.regex.Interfaces;
 using helper.v1.time;
 
@@ -34,15 +33,13 @@ namespace api.v1.main.Services.Keyboard
         private readonly IFileHelper _file;
         private readonly ITimeHelper _time;
         private readonly ILocalizationHelper _localization;
-        private readonly ICacheConfigurationHelper _cacheCfg;
-        private readonly IMessageBrokerHelper _broker;
         private readonly IBaseService _base;
 
         public KeyboardService(IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, 
                                IUserRepository user, IKeyboardRegexHelper rgx, ICacheHelper cache,
                                IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
-                               ILocalizationHelper localization, ICacheConfigurationHelper cacheCfg,
-                               IMessageBrokerHelper broker, IPreviewConfigurationHelper previewCfg, IBaseService @base)
+                               ILocalizationHelper localization,
+                               IPreviewConfigurationHelper previewCfg, IBaseService @base)
         {
             _file = file;
             _time = time;
@@ -54,8 +51,6 @@ namespace api.v1.main.Services.Keyboard
             _box = box;
             _switch = @switch;
             _localization = localization;
-            _cacheCfg = cacheCfg;
-            _broker = broker;
             _previewCfg = previewCfg;
             _base = @base;
         }
@@ -159,56 +154,30 @@ namespace api.v1.main.Services.Keyboard
 
         public byte[] GetKeyboardFile(Guid keyboardID)
         {
-            var fileName = _keyboard.SelectKeyboardFileName(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = _keyboard.SelectKeyboardOwnerID(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-
-            var filePath = _fileCfg.GetKeyboardModelFilePath(userID, fileName);
-
-            if (!_cache.TryGetValue(filePath, out byte[]? file))
-            {
-                file = _file.GetFile(filePath);
-                if (file.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(filePath, file, minutes);
-            }
-            return file!;
+            var file = _base.GetFile(keyboardID, _keyboard.SelectKeyboardFileName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardModelFilePath);
+            return file;
         }
 
         public string GetKeyboardPreview(Guid keyboardID)
         {
-            var previewName = _keyboard.SelectKeyboardPreviewName(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = _keyboard.SelectKeyboardOwnerID(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-
-            var filePath = _fileCfg.GetKeyboardModelFilePath(userID, previewName);
-
-            if (!_cache.TryGetValue(filePath, out byte[]? preview))
-            {
-                try
-                {
-                    preview = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    preview = _file.GetFile(errorImgPath);
-                }
-
-                if (preview.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(filePath, preview, minutes);
-            }
-
-            return Convert.ToBase64String(preview!);
+            var preview = _base.GetFile(keyboardID, _keyboard.SelectKeyboardPreviewName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardModelFilePath);
+            return Convert.ToBase64String(preview);
         }
 
 
 
-        public List<SelectKeyboardDTO> GetDefaultKeyboardsList(PaginationDTO body) => GetKeyboardsList(body, _fileCfg.GetDefaultModelsUserID())!;
-        public List<SelectKeyboardDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID) => GetKeyboardsList(body, userID)!;
+        public List<SelectKeyboardDTO> GetDefaultKeyboardsList(PaginationDTO body)
+        {
+            var userID = _fileCfg.GetDefaultModelsUserID();
+            var keyboards = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, _keyboard.SelectUserKeyboards);
+            return keyboards;
+        }
+
+        public List<SelectKeyboardDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID)
+        {
+            var keyboards = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, _keyboard.SelectUserKeyboards);
+            return keyboards;
+        }
 
 
 
@@ -216,19 +185,6 @@ namespace api.v1.main.Services.Keyboard
             _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _keyboard.SelectCountOfKeyboards);
         public int GetUserKeyboardsTotalPages(Guid userID, int pageSize) =>
             _base.GetPaginationTotalPages(pageSize, userID, _keyboard.SelectCountOfKeyboards);
-
-
-
-
-        private List<SelectKeyboardDTO> GetKeyboardsList(PaginationDTO body, Guid userID)
-        {
-            ValidateUserID(userID);
-            ValidatePageSize(body.PageSize);
-            ValidatePage(body.Page);
-
-            var keyboards = _keyboard.SelectUserKeyboards(body.Page, body.PageSize, userID);
-            return keyboards;
-        }
 
 
 
@@ -279,18 +235,6 @@ namespace api.v1.main.Services.Keyboard
         {
             if (!_keyboard.IsKeyboardOwner(keyboardID, userID))
                 throw new BadRequestException(_localization.UserIsNotKeyboardOwner());
-        }
-
-        private void ValidatePageSize(int pageSize)
-        {
-            if (pageSize < 1)
-                throw new BadRequestException(_localization.PaginationPageSizeIsNotValid());
-        }
-
-        private void ValidatePage(int page)
-        {
-            if (page < 1)
-                throw new BadRequestException(_localization.PaginationPageIsNotValid());
         }
     }
 }

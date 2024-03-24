@@ -40,7 +40,7 @@ namespace helper.v1.configuration
         public Guid GetDefaultModelsUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"] ??
             throw new ArgumentNullException("File:DefaultModelsUserID отсутствует в конфигурационном файле"));
         
-        public string GetSwitchModelFilePath(string fileName) => string.Format(_cfg["File:SwitchModelFilePath"] ??
+        public string GetSwitchFilePath(string fileName) => string.Format(_cfg["File:SwitchModelFilePath"] ??
             throw new ArgumentNullException("File:SwitchModelFilePath отсутствует в конфигурационном файле"), fileName);
 
         public string GetSwitchSoundFilePath(string fileName) => string.Format(_cfg["File:SwitchSoundFilePath"] ??

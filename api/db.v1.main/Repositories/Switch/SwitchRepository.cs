@@ -16,7 +16,7 @@ namespace db.v1.main.Repositories.Switch
 
         
 
-        public string? SelectSwitchModelName(Guid switchID) => _db.Switches
+        public string? SelectSwitchFileName(Guid switchID) => _db.Switches
             .FirstOrDefault(@switch => @switch.ID == switchID)?.FileName;
 
         public string? SelectSwitchSoundName(Guid switchID) => _db.Switches
