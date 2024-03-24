@@ -14,7 +14,6 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
-using helper.v1.messageBroker;
 using helper.v1.regex.Interfaces;
 using helper.v1.time;
 
@@ -28,21 +27,17 @@ namespace api.v1.main.Services.Keyboard
         private readonly ISwitchRepository _switch;
 
         private readonly IFileConfigurationHelper _fileCfg;
-        private readonly IPreviewConfigurationHelper _previewCfg;
         private readonly IKeyboardRegexHelper _rgx;
         private readonly ICacheHelper _cache;
         private readonly IFileHelper _file;
         private readonly ITimeHelper _time;
         private readonly ILocalizationHelper _localization;
-        private readonly ICacheConfigurationHelper _cacheCfg;
-        private readonly IMessageBrokerHelper _broker;
         private readonly IBaseService _base;
 
         public KeyboardService(IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, 
                                IUserRepository user, IKeyboardRegexHelper rgx, ICacheHelper cache,
                                IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
-                               ILocalizationHelper localization, ICacheConfigurationHelper cacheCfg,
-                               IMessageBrokerHelper broker, IPreviewConfigurationHelper previewCfg, IBaseService @base)
+                               ILocalizationHelper localization, IBaseService @base)
         {
             _file = file;
             _time = time;
@@ -54,9 +49,6 @@ namespace api.v1.main.Services.Keyboard
             _box = box;
             _switch = @switch;
             _localization = localization;
-            _cacheCfg = cacheCfg;
-            _broker = broker;
-            _previewCfg = previewCfg;
             _base = @base;
         }
 
@@ -64,76 +56,29 @@ namespace api.v1.main.Services.Keyboard
 
         public void AddKeyboard(PostKeyboardDTO body)
         {
-            ValidateUserID(body.UserID);
-            ValidateKeyboardFile(body.File);
-            ValidateKeyboardPreview(body.Preview);
             ValidateKeyboardTitle(body.UserID, body.Title);
             ValidateBoxType(body.BoxTypeID);
             ValidateSwitchType(body.SwitchTypeID);
 
-            var modelFileName = $"{body.Title}.glb";
-            var modelFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, modelFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.File!.CopyTo(memoryStream);
-                var modelBytes = memoryStream.ToArray();
-                _file.AddFile(modelBytes, modelFilePath);
-            }
-
-            var fileType = _previewCfg.GetPreviewFileType();
-            var imgFileName = $"{body.Title}.{fileType}";
-            var imgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, imgFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.Preview!.CopyTo(memoryStream);
-                var imgBytes = memoryStream.ToArray();
-                _file.AddFile(imgBytes, imgFilePath);
-            }
+            var names = _base.AddFile(body.File, body.Preview, body.UserID, body.Title!, _fileCfg.GetKeyboardFilePath);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var insertKeyboardBody = new InsertKeyboardDTO(body.UserID, body.SwitchTypeID, body.BoxTypeID, body.Title!, modelFileName, imgFileName, currentTime);
+            var insertKeyboardBody = new InsertKeyboardDTO(body.UserID, body.SwitchTypeID, body.BoxTypeID, body.Title!, names.FileName, names.PreviewName, currentTime);
             _keyboard.InsertKeyboardInfo(insertKeyboardBody);
         }
 
         public void UpdateKeyboard(PutKeyboardDTO body)
         {
             ValidateKeyboardExist(body.KeyboardID);
-            ValidateKeyboardFile(body.File);
-            ValidateKeyboardPreview(body.Preview);
             ValidateKeyboardTitle(body.UserID, body.Title);
             ValidateBoxType(body.BoxTypeID);
             ValidateSwitchType(body.SwitchTypeID);
-            ValidateUserID(body.UserID);
             ValidateKeyboardOwner(body.KeyboardID, body.UserID);
 
-            var oldModelFileName = _keyboard.SelectKeyboardFileName(body.KeyboardID)!;
-            var oldModelFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, oldModelFileName);
-            var newModelFileName = $"{body.Title}.glb";
-            var newModelFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, newModelFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.File!.CopyTo(memoryStream);
-                var modelBytes = memoryStream.ToArray();
-                _file.DeleteFile(oldModelFilePath);
-                _file.AddFile(modelBytes, newModelFilePath);
-            }
+            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.KeyboardID, body.Title, 
+                                         _keyboard.SelectKeyboardFileName, _keyboard.SelectKeyboardPreviewName, _fileCfg.GetKeyboardFilePath);
 
-            var oldImgFileName = _keyboard.SelectKeyboardPreviewName(body.KeyboardID)!;
-            var oldImgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, oldImgFileName);
-            var fileType = _previewCfg.GetPreviewFileType();
-            var newImgFileName = $"{body.Title}.{fileType}";
-            var newImgFilePath = _fileCfg.GetKeyboardModelFilePath(body.UserID, newImgFileName);
-            using (var memoryStream = new MemoryStream())
-            {
-                body.Preview!.CopyTo(memoryStream);
-                var imgBytes = memoryStream.ToArray();
-                _file.DeleteFile(oldImgFilePath);
-                _file.AddFile(imgBytes, newImgFilePath);
-            }
-
-            _cache.DeleteValue(body.KeyboardID);
-
-            var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title!, newModelFileName, newImgFileName);
+            var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title!, names.FileName, names.PreviewName);
             _keyboard.UpdateKeyboardInfo(updateKeyboardBody);
         }
         
@@ -144,10 +89,10 @@ namespace api.v1.main.Services.Keyboard
             ValidateKeyboardOwner(body.KeyboardID, userID);
 
             var modelFileName = _keyboard.SelectKeyboardFileName(body.KeyboardID)!;
-            var modelFilePath = _fileCfg.GetKeyboardModelFilePath(userID, modelFileName);
+            var modelFilePath = _fileCfg.GetKeyboardFilePath(userID, modelFileName);
 
             var imgFileName = _keyboard.SelectKeyboardPreviewName(body.KeyboardID)!;
-            var imgFilePath = _fileCfg.GetKeyboardModelFilePath(userID, imgFileName);
+            var imgFilePath = _fileCfg.GetKeyboardFilePath(userID, imgFileName);
 
             _file.DeleteFile(modelFilePath);
             _file.DeleteFile(imgFilePath);
@@ -155,69 +100,47 @@ namespace api.v1.main.Services.Keyboard
             _keyboard.DeleteKeyboardInfo(body.KeyboardID);
         }
 
+
+
         public byte[] GetKeyboardFile(Guid keyboardID)
         {
-            var fileName = _keyboard.SelectKeyboardFileName(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = _keyboard.SelectKeyboardOwnerID(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var file = _base.GetFile(keyboardID, _keyboard.SelectKeyboardFileName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardFilePath);
+            return file;
+        }
 
-            var filePath = _fileCfg.GetKeyboardModelFilePath(userID, fileName);
-
-            if (!_cache.TryGetValue(keyboardID, out byte[]? file))
-            {
-                file = _file.GetFile(filePath);
-                if (file.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(keyboardID, file, minutes);
-            }
-            return file!;
+        public string GetKeyboardPreview(Guid keyboardID)
+        {
+            var preview = _base.GetFile(keyboardID, _keyboard.SelectKeyboardPreviewName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardFilePath);
+            return Convert.ToBase64String(preview);
         }
 
 
 
-        public List<KeyboardListDTO> GetDefaultKeyboardsList(PaginationDTO body) => GetKeyboardsList(body, _fileCfg.GetDefaultModelsUserID())!;
-        public List<KeyboardListDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID) => GetKeyboardsList(body, userID)!;
-
-        public int GetDefaultKeyboardsTotalPages(int pageSize) =>
-            _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _keyboard.SelectCountOfKeyboards);
-        public int GetUserKeyboardsTotalPages(Guid userID, int pageSize) =>
-            _base.GetPaginationTotalPages(pageSize, userID, _keyboard.SelectCountOfKeyboards);
-
-
-
-
-        private List<KeyboardListDTO> GetKeyboardsList(PaginationDTO body, Guid userID)
+        public List<SelectKeyboardDTO> GetDefaultKeyboardsList(PaginationDTO body)
         {
-            ValidateUserID(userID);
-            ValidatePageSize(body.PageSize);
-            ValidatePage(body.Page);
+            var userID = _fileCfg.GetDefaultModelsUserID();
+            var keyboards = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, _keyboard.SelectUserKeyboards);
+            return keyboards;
+        }
 
-            var keyboards = new List<KeyboardListDTO>();
+        public List<SelectKeyboardDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID)
+        {
+            var keyboards = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, _keyboard.SelectUserKeyboards);
+            return keyboards;
+        }
 
-            var fileType = _previewCfg.GetPreviewFileType();
-            var dbKeyboards = _keyboard.SelectUserKeyboards(body.Page, body.PageSize, userID);
-            foreach (var keyboard in dbKeyboards)
-            {
-                var filePath = _fileCfg.GetKeyboardModelFilePath(userID, keyboard.PreviewName);
 
-                byte[] bytes;
-                try
-                {
-                    bytes = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    bytes = _file.GetFile(errorImgPath);
-                }
-                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
 
-                keyboards.Add(new(keyboard.ID, keyboard.BoxTypeID, keyboard.BoxTypeTitle, keyboard.SwitchTypeID,
-                    keyboard.SwitchTypeTitle, keyboard.Title, img, keyboard.CreationDate));
-            }
+        public int GetDefaultKeyboardsTotalPages(int pageSize)
+        {
+            var totalPages = _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _keyboard.SelectCountOfKeyboards);
+            return totalPages;
+        }
 
-            return keyboards!;
+        public int GetUserKeyboardsTotalPages(Guid userID, int pageSize)
+        {
+            var totalPages = _base.GetPaginationTotalPages(pageSize, userID, _keyboard.SelectCountOfKeyboards);
+            return totalPages;
         }
 
 
@@ -226,18 +149,6 @@ namespace api.v1.main.Services.Keyboard
         {
             if (!_user.IsUserExist(userID))
                 throw new BadRequestException(_localization.UserIsNotExist());
-        }
-
-        private void ValidateKeyboardFile(IFormFile? file)
-        {
-            if (file == null || file.Length == 0)
-                throw new BadRequestException(_localization.FileIsNotAttached());
-        }
-
-        private void ValidateKeyboardPreview(IFormFile? preview)
-        {
-            if (preview == null || preview.Length == 0)
-                throw new BadRequestException(_localization.PreviewIsNotAttached());
         }
 
         private void ValidateKeyboardTitle(Guid userID, string? title)
@@ -269,18 +180,6 @@ namespace api.v1.main.Services.Keyboard
         {
             if (!_keyboard.IsKeyboardOwner(keyboardID, userID))
                 throw new BadRequestException(_localization.UserIsNotKeyboardOwner());
-        }
-
-        private void ValidatePageSize(int pageSize)
-        {
-            if (pageSize < 1)
-                throw new BadRequestException(_localization.PaginationPageSizeIsNotValid());
-        }
-
-        private void ValidatePage(int page)
-        {
-            if (page < 1)
-                throw new BadRequestException(_localization.PaginationPageIsNotValid());
         }
     }
 }

@@ -20,7 +20,17 @@
 
         public void DeleteFile(string fullFilePath) => File.Delete(fullFilePath);
 
-        public byte[] GetFile(string fullFilePath) => File.ReadAllBytes(fullFilePath);
+        public byte[] GetFile(string fullFilePath)
+        {
+            try
+            {
+                return File.ReadAllBytes(fullFilePath);
+            }
+            catch
+            {
+                return [];
+            }
+        }
 
         public bool IsFileExist(string fullFilePath) => File.Exists(fullFilePath);
     }

@@ -6,7 +6,7 @@ namespace db.v1.main.Repositories.Switch
     {
         public bool IsSwitchExist(Guid switchID);
 
-        public string? SelectSwitchModelName(Guid switchID);
+        public string? SelectSwitchFileName(Guid switchID);
         public string? SelectSwitchSoundName(Guid switchID);
         public string? SelectSwitchPreviewName(Guid switchID);
 

@@ -40,16 +40,16 @@ namespace helper.v1.configuration
         public Guid GetDefaultModelsUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"] ??
             throw new ArgumentNullException("File:DefaultModelsUserID отсутствует в конфигурационном файле"));
         
-        public string GetSwitchModelFilePath(string fileName) => string.Format(_cfg["File:SwitchModelFilePath"] ??
+        public string GetSwitchFilePath(string fileName) => string.Format(_cfg["File:SwitchModelFilePath"] ??
             throw new ArgumentNullException("File:SwitchModelFilePath отсутствует в конфигурационном файле"), fileName);
 
         public string GetSwitchSoundFilePath(string fileName) => string.Format(_cfg["File:SwitchSoundFilePath"] ??
             throw new ArgumentNullException("File:SwitchSoundFilePath отсутствует в конфигурационном файле"), fileName);
 
-        public string GetKeyboardModelFilePath(Guid userID, string fileName) => string.Format(_cfg["File:KeyboardModelFilePath"] ??
+        public string GetKeyboardFilePath(Guid userID, string fileName) => string.Format(_cfg["File:KeyboardModelFilePath"] ??
             throw new ArgumentNullException("File:KeyboardModelFilePath отсутствует в конфигурационном файле"), userID, fileName);
 
-        public string GetBoxModelFilePath(Guid userID, string fileName) => string.Format(_cfg["File:BoxModelFilePath"] ??
+        public string GetBoxFilePath(Guid userID, string fileName) => string.Format(_cfg["File:BoxModelFilePath"] ??
             throw new ArgumentNullException("File:BoxModelFilePath отсутствует в конфигурационном файле"), userID, fileName);
 
         public string GetErrorImageFilePath() => _cfg["File:ErrorImageFilePath"] ??

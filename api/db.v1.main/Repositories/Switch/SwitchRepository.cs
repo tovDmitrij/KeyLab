@@ -16,7 +16,7 @@ namespace db.v1.main.Repositories.Switch
 
         
 
-        public string? SelectSwitchModelName(Guid switchID) => _db.Switches
+        public string? SelectSwitchFileName(Guid switchID) => _db.Switches
             .FirstOrDefault(@switch => @switch.ID == switchID)?.FileName;
 
         public string? SelectSwitchSoundName(Guid switchID) => _db.Switches
@@ -28,7 +28,7 @@ namespace db.v1.main.Repositories.Switch
 
 
         public List<SelectSwitchDTO> SelectSwitches(int page, int pageSize) => _db.Switches
-            .Select(@switch => new SelectSwitchDTO(@switch.ID, @switch.Title, @switch.FileName))
+            .Select(@switch => new SelectSwitchDTO(@switch.ID, @switch.Title))
             .Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         public int SelectCountOfSwitch() => _db.Switches

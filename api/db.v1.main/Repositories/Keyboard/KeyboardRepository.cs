@@ -67,14 +67,13 @@ namespace db.v1.main.Repositories.Keyboard
         public List<SelectKeyboardDTO> SelectUserKeyboards(int page, int pageSize, Guid userID)
         {
             var keyboards = 
-                from keyboard in _db.Keyboards
-                join box in _db.BoxTypes
-                    on keyboard.BoxTypeID equals box.ID
-                join @switch in _db.Switches
-                    on keyboard.SwitchTypeID equals @switch.ID
-                where keyboard.OwnerID == userID
-                select new SelectKeyboardDTO(keyboard.ID, keyboard.BoxTypeID, box.Title, keyboard.SwitchTypeID, @switch.Title, 
-                                            keyboard.Title, keyboard.PreviewName, keyboard.CreationDate);
+                from k in _db.Keyboards
+                join b in _db.BoxTypes
+                    on k.BoxTypeID equals b.ID
+                join s in _db.Switches
+                    on k.SwitchTypeID equals s.ID
+                where k.OwnerID == userID
+                select new SelectKeyboardDTO(k.ID, k.BoxTypeID, b.Title, k.SwitchTypeID, s.Title, k.Title, k.CreationDate);
             return keyboards.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 

@@ -1,17 +1,25 @@
 ﻿using component.v1.exceptions;
-using api.v1.main.DTOs.Switch;
 using api.v1.main.DTOs;
+using db.v1.main.DTOs.Switch;
 
 namespace api.v1.main.Services.Switch
 {
     public interface ISwitchService
     {
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetSwitchModelFile(Guid switchID);
+        public byte[] GetSwitchFile(Guid switchID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetSwitchSoundBase64(Guid switchID);
+        public string GetSwitchSound(Guid switchID);
+        /// <exception cref="BadRequestException"></exception>
+        public string GetSwitchPreview(Guid switchID);
 
-        public List<SwitchListDTO> GetSwitches(PaginationDTO body);
+
+        /// <exception cref="BadRequestException"></exception>
+        public List<SelectSwitchDTO> GetSwitches(PaginationDTO body);
+
+
+
+        /// <exception cref="BadRequestException"></exception>
         public int GetSwitchesTotalPages(int pageSize);
     }
 }
