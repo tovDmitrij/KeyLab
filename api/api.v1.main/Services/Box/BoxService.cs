@@ -171,10 +171,39 @@ namespace api.v1.main.Services.Box
             return file!;
         }
 
+        public string GetBoxPreview(Guid keyboardID)
+        {
+            var previewName = _box.SelectBoxPreviewName(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var userID = _box.SelectBoxOwnerID(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+
+            var filePath = _fileCfg.GetBoxModelFilePath(userID, previewName);
+
+            if (!_cache.TryGetValue(filePath, out byte[]? preview))
+            {
+                try
+                {
+                    preview = _file.GetFile(filePath);
+                }
+                catch
+                {
+                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                    preview = _file.GetFile(errorImgPath);
+                }
+
+                if (preview.Length == 0)
+                    throw new BadRequestException(_localization.FileIsNotExist());
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(filePath, preview, minutes);
+            }
+
+            return Convert.ToBase64String(preview!);
+        }
 
 
-        public List<BoxListDTO> GetDefaultBoxesList(BoxPaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
-        public List<BoxListDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID) => GetBoxesList(body, userID);
+
+        public List<SelectBoxDTO> GetDefaultBoxesList(BoxPaginationDTO body) => GetBoxesList(body, _fileCfg.GetDefaultModelsUserID());
+        public List<SelectBoxDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID) => GetBoxesList(body, userID);
 
         public int GetDefaultBoxesTotalPages(int pageSize) => 
             _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _box.SelectCountOfBoxes);
@@ -183,36 +212,14 @@ namespace api.v1.main.Services.Box
 
 
 
-        private List<BoxListDTO> GetBoxesList(BoxPaginationDTO body, Guid userID)
+        private List<SelectBoxDTO> GetBoxesList(BoxPaginationDTO body, Guid userID)
         {
             ValidateUserID(userID);
             ValidateBoxType(body.TypeID);
             ValidatePageSize(body.PageSize);
             ValidatePage(body.Page);
 
-            var boxes = new List<BoxListDTO>();
-
-            var fileType = _previewCfg.GetPreviewFileType();
-            var dbBoxes = _box.SelectUserBoxes(body.Page, body.PageSize, body.TypeID, userID);
-            foreach (var dbBox in dbBoxes)
-            {
-                var filePath = _fileCfg.GetBoxModelFilePath(userID, dbBox.PreviewName);
-
-                byte[] bytes;
-                try
-                {
-                    bytes = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    bytes = _file.GetFile(errorImgPath);
-                }
-                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
-
-                boxes.Add(new(dbBox.ID, dbBox.TypeID, dbBox.TypeTitle, dbBox.Title, img, dbBox.CreationDate));
-            }
-
+            var boxes = _box.SelectUserBoxes(body.Page, body.PageSize, body.TypeID, userID);
             return boxes;
         }
 

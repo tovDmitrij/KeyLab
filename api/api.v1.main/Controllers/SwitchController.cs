@@ -25,6 +25,8 @@ namespace api.v1.main.Controllers
             return Ok(switches);
         }
 
+
+
         [HttpGet("models/default/totalPages")]
         public IActionResult GetSwitchesTotalPages([Required] int pageSize)
         {
@@ -32,18 +34,27 @@ namespace api.v1.main.Controllers
             return Ok(new { totalPages = totalPages });
         }
 
-        [HttpGet("models")]
-        public async Task GetSwitchModelFile([Required] Guid switchID)
+
+
+        [HttpGet("file")]
+        public async Task GetSwitchFile([Required] Guid switchID)
         {
-            var file = _switch.GetSwitchModelFile(switchID);
+            var file = _switch.GetSwitchFile(switchID);
             await Response.Body.WriteAsync(file);
         }
 
-        [HttpGet("sounds")]
-        public IActionResult GetSwitchSoundFile([Required] Guid switchID)
+        [HttpGet("sound")]
+        public IActionResult GetSwitchSound([Required] Guid switchID)
         {
-            var file = _switch.GetSwitchSoundBase64(switchID);
-            return Ok(new { file = file });
+            var sound = _switch.GetSwitchSound(switchID);
+            return Ok(new { soundBase64 = sound });
+        }
+
+        [HttpGet("preview")]
+        public IActionResult GetSwitchPreview([Required] Guid switchID)
+        {
+            var preview = _switch.GetSwitchPreview(switchID);
+            return Ok(new { previewBase64 = preview });
         }
     }
 }

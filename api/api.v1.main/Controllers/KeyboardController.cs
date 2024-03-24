@@ -62,12 +62,20 @@ namespace api.v1.main.Controllers
 
 
 
-        [HttpGet]
+        [HttpGet("file")]
         [AllowAnonymous]
         public async Task GetKeyboardFile([Required] Guid keyboardID) 
         {
             var file = _keyboard.GetKeyboardFile(keyboardID);
             await Response.Body.WriteAsync(file);
+        }
+
+        [HttpGet("preview")]
+        [AllowAnonymous]
+        public IActionResult GetKeyboardPreview([Required] Guid keyboardID)
+        {
+            var preview = _keyboard.GetKeyboardPreview(keyboardID);
+            return Ok(new { previewBase64 = preview });
         }
 
 

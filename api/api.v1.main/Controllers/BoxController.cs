@@ -31,6 +31,8 @@ namespace api.v1.main.Controllers
             return Ok(types);
         }
 
+
+
         [HttpGet("default")]
         [AllowAnonymous]
         public IActionResult GetDefaultBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
@@ -49,6 +51,8 @@ namespace api.v1.main.Controllers
             return Ok(boxes);
         }
 
+
+
         [HttpGet("default/totalPages")]
         [AllowAnonymous]
         public IActionResult GetDefaultBoxesTotalPages([Required] int pageSize)
@@ -66,13 +70,25 @@ namespace api.v1.main.Controllers
             return Ok(new { totalPages = totalPages });
         }
 
-        [HttpGet]
+
+
+        [HttpGet("file")]
         [AllowAnonymous]
         public async Task GetBoxFile([Required] Guid boxID)
         {
             var file = _box.GetBoxFile(boxID);
             await Response.Body.WriteAsync(file);
         }
+
+        [HttpGet("preview")]
+        [AllowAnonymous]
+        public IActionResult GetBoxPreview([Required] Guid boxID)
+        {
+            var preview = _box.GetBoxPreview(boxID);
+            return Ok(new { previewBase64 = preview });
+        }
+
+
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]

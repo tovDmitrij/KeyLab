@@ -53,6 +53,7 @@ namespace db.v1.main.Repositories.Box
             .Any(box => box.ID == boxTypeID);
 
 
+
         public string? SelectBoxFileName(Guid boxID) => _db.Boxes
             .FirstOrDefault(box => box.ID == boxID)?.FileName;
 
@@ -63,25 +64,25 @@ namespace db.v1.main.Repositories.Box
             .FirstOrDefault(box => box.ID == boxID)?.OwnerID;
 
 
+
         public List<SelectBoxDTO> SelectUserBoxes(int page, int pageSize, Guid typeID, Guid userID)
         {
             var boxes = 
-                from box in _db.Boxes
-                join types in _db.BoxTypes
-                    on box.TypeID equals types.ID
-                where box.OwnerID == userID &&
-                    box.TypeID == typeID
-                select new SelectBoxDTO(box.ID, box.TypeID, types.Title, box.Title, box.PreviewName, box.CreationDate);
-
+                from b in _db.Boxes
+                join t in _db.BoxTypes
+                    on b.TypeID equals t.ID
+                where b.OwnerID == userID &&
+                    b.TypeID == typeID
+                select new SelectBoxDTO(b.ID, b.TypeID, t.Title, b.Title, b.CreationDate);
             return boxes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
         public int SelectCountOfBoxes(Guid userID) => _db.Boxes
             .Count(box => box.OwnerID == userID);
 
-
         public List<SelectBoxTypeDTO> SelectBoxTypes() => _db.BoxTypes
             .Select(box => new SelectBoxTypeDTO(box.ID, box.Title)).ToList();
+        
 
 
         private void SaveChanges() => _db.SaveChanges();

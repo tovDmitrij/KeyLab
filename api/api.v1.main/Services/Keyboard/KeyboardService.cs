@@ -155,6 +155,8 @@ namespace api.v1.main.Services.Keyboard
             _keyboard.DeleteKeyboardInfo(body.KeyboardID);
         }
 
+
+
         public byte[] GetKeyboardFile(Guid keyboardID)
         {
             var fileName = _keyboard.SelectKeyboardFileName(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
@@ -162,22 +164,53 @@ namespace api.v1.main.Services.Keyboard
 
             var filePath = _fileCfg.GetKeyboardModelFilePath(userID, fileName);
 
-            if (!_cache.TryGetValue(keyboardID, out byte[]? file))
+            if (!_cache.TryGetValue(filePath, out byte[]? file))
             {
                 file = _file.GetFile(filePath);
                 if (file.Length == 0)
                     throw new BadRequestException(_localization.FileIsNotExist());
 
                 var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(keyboardID, file, minutes);
+                _cache.SetValue(filePath, file, minutes);
             }
             return file!;
         }
 
+        public string GetKeyboardPreview(Guid keyboardID)
+        {
+            var previewName = _keyboard.SelectKeyboardPreviewName(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var userID = _keyboard.SelectKeyboardOwnerID(keyboardID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+
+            var filePath = _fileCfg.GetKeyboardModelFilePath(userID, previewName);
+
+            if (!_cache.TryGetValue(filePath, out byte[]? preview))
+            {
+                try
+                {
+                    preview = _file.GetFile(filePath);
+                }
+                catch
+                {
+                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
+                    preview = _file.GetFile(errorImgPath);
+                }
+
+                if (preview.Length == 0)
+                    throw new BadRequestException(_localization.FileIsNotExist());
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(filePath, preview, minutes);
+            }
+
+            return Convert.ToBase64String(preview!);
+        }
 
 
-        public List<KeyboardListDTO> GetDefaultKeyboardsList(PaginationDTO body) => GetKeyboardsList(body, _fileCfg.GetDefaultModelsUserID())!;
-        public List<KeyboardListDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID) => GetKeyboardsList(body, userID)!;
+
+        public List<SelectKeyboardDTO> GetDefaultKeyboardsList(PaginationDTO body) => GetKeyboardsList(body, _fileCfg.GetDefaultModelsUserID())!;
+        public List<SelectKeyboardDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID) => GetKeyboardsList(body, userID)!;
+
+
 
         public int GetDefaultKeyboardsTotalPages(int pageSize) =>
             _base.GetPaginationTotalPages(pageSize, _fileCfg.GetDefaultModelsUserID(), _keyboard.SelectCountOfKeyboards);
@@ -187,37 +220,14 @@ namespace api.v1.main.Services.Keyboard
 
 
 
-        private List<KeyboardListDTO> GetKeyboardsList(PaginationDTO body, Guid userID)
+        private List<SelectKeyboardDTO> GetKeyboardsList(PaginationDTO body, Guid userID)
         {
             ValidateUserID(userID);
             ValidatePageSize(body.PageSize);
             ValidatePage(body.Page);
 
-            var keyboards = new List<KeyboardListDTO>();
-
-            var fileType = _previewCfg.GetPreviewFileType();
-            var dbKeyboards = _keyboard.SelectUserKeyboards(body.Page, body.PageSize, userID);
-            foreach (var keyboard in dbKeyboards)
-            {
-                var filePath = _fileCfg.GetKeyboardModelFilePath(userID, keyboard.PreviewName);
-
-                byte[] bytes;
-                try
-                {
-                    bytes = _file.GetFile(filePath);
-                }
-                catch
-                {
-                    var errorImgPath = _fileCfg.GetErrorImageFilePath();
-                    bytes = _file.GetFile(errorImgPath);
-                }
-                var img = $"data:image/{fileType};base64," + Convert.ToBase64String(bytes);
-
-                keyboards.Add(new(keyboard.ID, keyboard.BoxTypeID, keyboard.BoxTypeTitle, keyboard.SwitchTypeID,
-                    keyboard.SwitchTypeTitle, keyboard.Title, img, keyboard.CreationDate));
-            }
-
-            return keyboards!;
+            var keyboards = _keyboard.SelectUserKeyboards(body.Page, body.PageSize, userID);
+            return keyboards;
         }
 
 
