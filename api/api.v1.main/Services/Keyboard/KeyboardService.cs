@@ -32,12 +32,12 @@ namespace api.v1.main.Services.Keyboard
         private readonly IFileHelper _file;
         private readonly ITimeHelper _time;
         private readonly ILocalizationHelper _localization;
-        private readonly IBaseService _base;
+        private readonly IBaseAlgorithmService _base;
 
         public KeyboardService(IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, 
                                IUserRepository user, IKeyboardRegexHelper rgx, ICacheHelper cache,
                                IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
-                               ILocalizationHelper localization, IBaseService @base)
+                               ILocalizationHelper localization, IBaseAlgorithmService @base)
         {
             _file = file;
             _time = time;

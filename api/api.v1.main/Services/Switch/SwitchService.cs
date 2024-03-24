@@ -12,9 +12,9 @@ namespace api.v1.main.Services.Switch
     {
         private readonly ISwitchRepository _switch;
         private readonly IFileConfigurationHelper _fileCfg;
-        private readonly IBaseService _base;
+        private readonly IBaseAlgorithmService _base;
 
-        public SwitchService(ISwitchRepository switches, IFileConfigurationHelper fileCfg, IBaseService @base)
+        public SwitchService(ISwitchRepository switches, IFileConfigurationHelper fileCfg, IBaseAlgorithmService @base)
         {
             _switch = switches;
             _fileCfg = fileCfg;

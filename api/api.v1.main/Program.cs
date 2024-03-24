@@ -176,7 +176,7 @@ void InitHelpers()
 
 void InitServices()
 {
-    builder.Services.AddTransient<IBaseService, BaseService>();
+    builder.Services.AddTransient<IBaseAlgorithmService, BaseAlgorithmService>();
     builder.Services.AddTransient<IUserService, UserService>();
     builder.Services.AddTransient<IVerificationService, VerificationService>();
     builder.Services.AddTransient<IKeyboardService, KeyboardService>();

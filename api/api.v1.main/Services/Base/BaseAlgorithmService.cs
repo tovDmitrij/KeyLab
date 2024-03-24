@@ -11,7 +11,7 @@ using helper.v1.localization.Helper;
 
 namespace api.v1.main.Services.Base
 {
-    public sealed class BaseService : IBaseService
+    public sealed class BaseAlgorithmService : IBaseAlgorithmService
     {
         private readonly ILocalizationHelper _localization;
         private readonly IUserRepository _user;
@@ -20,7 +20,7 @@ namespace api.v1.main.Services.Base
         private readonly IFileHelper _file;
         private readonly IPreviewConfigurationHelper _previewCfg;
 
-        public BaseService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, ICacheConfigurationHelper cacheCfg, 
+        public BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, ICacheConfigurationHelper cacheCfg, 
                            IFileHelper file, IPreviewConfigurationHelper previewCfg)
         {
             _localization = localization;

@@ -2,7 +2,7 @@
 
 namespace api.v1.main.Services.Base
 {
-    public interface IBaseService
+    public interface IBaseAlgorithmService
     {
         public InitFileDTO AddFile(
             IFormFile? file,

@@ -30,12 +30,12 @@ namespace api.v1.main.Services.Box
         private readonly IBoxRegexHelper _rgx;
         private readonly ITimeHelper _time;
         private readonly ILocalizationHelper _localization;
-        private readonly IBaseService _base;
+        private readonly IBaseAlgorithmService _base;
 
         public BoxService(IBoxRepository boxes, IUserRepository users, ICacheHelper cache,
                           IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx,
                           ITimeHelper time, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization, 
-                          IPreviewConfigurationHelper previewCfg, IBaseService @base)
+                          IPreviewConfigurationHelper previewCfg, IBaseAlgorithmService @base)
         {
             _box = boxes;
             _user = users;

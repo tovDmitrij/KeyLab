@@ -12,9 +12,9 @@ namespace api.v1.main.Services.Kit
     {
         private readonly IKitRepository _kit;
         private readonly IFileConfigurationHelper _fileCfg;
-        private readonly IBaseService _base;
+        private readonly IBaseAlgorithmService _base;
 
-        public KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, IBaseService @base)
+        public KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, IBaseAlgorithmService @base)
         {
             _kit = kit;
             _fileCfg = fileCfg;
