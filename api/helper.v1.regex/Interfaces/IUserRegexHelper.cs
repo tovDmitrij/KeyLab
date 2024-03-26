@@ -6,10 +6,8 @@ namespace helper.v1.regex.Interfaces
     {
         /// <exception cref="BadRequestException"></exception>
         public void ValidateUserEmail(string email);
-
         /// <exception cref="BadRequestException"></exception>
         public void ValidateUserPassword(string password);
-
         /// <exception cref="BadRequestException"></exception>
         public void ValidateUserNickname(string nickname);
     }

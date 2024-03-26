@@ -10,13 +10,9 @@ namespace api.v1.main.Controllers
     [ApiController]
     [Route("api/v1/switches")]
     [AllowAnonymous]
-    public sealed class SwitchController : ControllerBase
+    public sealed class SwitchController(ISwitchService @switch) : ControllerBase
     {
-        private readonly ISwitchService _switch;
-
-        public SwitchController(ISwitchService @switch) => _switch = @switch;
-
-
+        private readonly ISwitchService _switch = @switch;
 
         [HttpGet("default")]
         public IActionResult GetSwitches([Required] int page, [Required] int pageSize)

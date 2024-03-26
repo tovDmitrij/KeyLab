@@ -13,13 +13,9 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/kits")]
-    public sealed class KitController : APIController
+    public sealed class KitController(IKitService kit, ILocalizationHelper localization) : APIController(localization)
     {
-        private readonly IKitService _kit;
-
-        public KitController(IKitService kit, ILocalizationHelper localization) : base(localization) => _kit = kit;
-
-
+        private readonly IKitService _kit = kit;
 
         [HttpGet("default")]
         [AllowAnonymous]
@@ -41,7 +37,7 @@ namespace api.v1.main.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetUserKits([Required] int page, [Required] int pageSize)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var kits = _kit.GetUserKits(new(page, pageSize), userID);
             return Ok(kits);
@@ -51,7 +47,7 @@ namespace api.v1.main.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetUserKitsTotalPages([Required] int pageSize)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var totalPages = _kit.GetUserKitsTotalPages(pageSize, userID);
             return Ok(new { totalPages = totalPages });

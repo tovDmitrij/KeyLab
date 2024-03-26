@@ -2,13 +2,9 @@
 
 namespace component.v1.middlewares
 {
-    public sealed class StatisticMiddleware
+    public sealed class StatisticMiddleware(RequestDelegate request)
     {
-        private readonly RequestDelegate _request;
-
-        public StatisticMiddleware(RequestDelegate request) => _request = request;
-
-
+        private readonly RequestDelegate _request = request;
 
         public async Task InvokeAsync(HttpContext context)
         {

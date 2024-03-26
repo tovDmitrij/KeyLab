@@ -4,13 +4,9 @@ using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.Keyboard
 {
-    public sealed class KeyboardRepository : IKeyboardRepository
+    public sealed class KeyboardRepository(IKeyboardContext db) : IKeyboardRepository
     {
-        private readonly IKeyboardContext _db;
-
-        public KeyboardRepository(IKeyboardContext db) => _db = db;
-
-
+        private readonly IKeyboardContext _db = db;
 
         public Guid InsertKeyboardInfo(InsertKeyboardDTO body)
         {

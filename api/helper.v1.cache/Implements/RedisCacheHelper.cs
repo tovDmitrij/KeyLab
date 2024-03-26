@@ -4,18 +4,13 @@ using System.Text.Json;
 
 namespace helper.v1.cache.Implements
 {
-    public sealed class RedisCacheHelper : ICacheHelper
+    public sealed class RedisCacheHelper(IDistributedCache cache) : ICacheHelper
     {
-        private readonly IDistributedCache _cache;
-
-        public RedisCacheHelper(IDistributedCache cache) => _cache = cache;
-
-
+        private readonly IDistributedCache _cache = cache;
 
         public bool TryGetValue<T>(object key, out T? value)
         {
             var json = _cache.GetString(key.ToString());
-
 
             if (json == null)
             {

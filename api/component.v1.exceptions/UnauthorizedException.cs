@@ -2,8 +2,5 @@
 
 namespace component.v1.exceptions
 {
-    public sealed class UnauthorizedException : APIException
-    {
-        public UnauthorizedException(string msg) : base(HttpStatusCode.Unauthorized, msg) { }
-    }
+    public sealed class UnauthorizedException(string msg) : APIException(HttpStatusCode.Unauthorized, msg) { }
 }

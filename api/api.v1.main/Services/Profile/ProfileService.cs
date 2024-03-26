@@ -6,18 +6,10 @@ using helper.v1.localization.Helper;
 
 namespace api.v1.main.Services.Profile
 {
-    public sealed class ProfileService : IProfileService
+    public sealed class ProfileService(IUserRepository user, ILocalizationHelper localization) : IProfileService
     {
-        private readonly IUserRepository _user;
-        private readonly ILocalizationHelper _localization;
-
-        public ProfileService(IUserRepository user, ILocalizationHelper localization)
-        {
-            _user = user;
-            _localization = localization;
-        }
-
-
+        private readonly IUserRepository _user = user;
+        private readonly ILocalizationHelper _localization = localization;
 
         public string GetUserNickname(Guid userID)
         {

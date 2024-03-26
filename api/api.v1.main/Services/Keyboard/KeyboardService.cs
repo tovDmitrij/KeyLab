@@ -1,6 +1,6 @@
 ﻿using api.v1.main.DTOs;
 using api.v1.main.DTOs.Keyboard;
-using api.v1.main.Services.Base;
+using api.v1.main.Services.BaseAlgorithm;
 
 using component.v1.exceptions;
 
@@ -19,40 +19,23 @@ using helper.v1.time;
 
 namespace api.v1.main.Services.Keyboard
 {
-    public sealed class KeyboardService : IKeyboardService
+    public sealed class KeyboardService(
+        IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, IUserRepository user, IKeyboardRegexHelper rgx, 
+        ICacheHelper cache, IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch, 
+        ILocalizationHelper localization, IBaseAlgorithmService @base) : IKeyboardService
     {
-        private readonly IKeyboardRepository _keyboard;
-        private readonly IUserRepository _user;
-        private readonly IBoxRepository _box;
-        private readonly ISwitchRepository _switch;
+        private readonly IKeyboardRepository _keyboard = keyboard;
+        private readonly IUserRepository _user = user;
+        private readonly IBoxRepository _box = box;
+        private readonly ISwitchRepository _switch = @switch;
 
-        private readonly IFileConfigurationHelper _fileCfg;
-        private readonly IKeyboardRegexHelper _rgx;
-        private readonly ICacheHelper _cache;
-        private readonly IFileHelper _file;
-        private readonly ITimeHelper _time;
-        private readonly ILocalizationHelper _localization;
-        private readonly IBaseService _base;
-
-        public KeyboardService(IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, 
-                               IUserRepository user, IKeyboardRegexHelper rgx, ICacheHelper cache,
-                               IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
-                               ILocalizationHelper localization, IBaseService @base)
-        {
-            _file = file;
-            _time = time;
-            _keyboard = keyboard;
-            _user = user;
-            _rgx = rgx;
-            _cache = cache;
-            _fileCfg = fileCfg;
-            _box = box;
-            _switch = @switch;
-            _localization = localization;
-            _base = @base;
-        }
-
-
+        private readonly IBaseAlgorithmService _base = @base;
+        private readonly IKeyboardRegexHelper _rgx = rgx;
+        private readonly ICacheHelper _cache = cache;
+        private readonly IFileHelper _file = file;
+        private readonly ITimeHelper _time = time;
+        private readonly ILocalizationHelper _localization = localization;
+        private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
         public void AddKeyboard(PostKeyboardDTO body)
         {
@@ -125,6 +108,8 @@ namespace api.v1.main.Services.Keyboard
 
         public List<SelectKeyboardDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID)
         {
+            ValidateUserID(userID);
+
             var keyboards = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, _keyboard.SelectUserKeyboards);
             return keyboards;
         }
@@ -139,6 +124,8 @@ namespace api.v1.main.Services.Keyboard
 
         public int GetUserKeyboardsTotalPages(Guid userID, int pageSize)
         {
+            ValidateUserID(userID);
+
             var totalPages = _base.GetPaginationTotalPages(pageSize, userID, _keyboard.SelectCountOfKeyboards);
             return totalPages;
         }

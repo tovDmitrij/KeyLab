@@ -4,13 +4,9 @@ using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.User
 {
-    public sealed class UserRepository : IUserRepository
+    public sealed class UserRepository(IUserContext db) : IUserRepository
     {
-        private readonly IUserContext _db;
-
-        public UserRepository(IUserContext db) => _db = db;
-
-
+        private readonly IUserContext _db = db;
 
         public void InsertUserInfo(InsertUserDTO body)
         {

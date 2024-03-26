@@ -11,19 +11,15 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/profiles")]
-    public sealed class ProfileController : APIController
+    public sealed class ProfileController(IProfileService profiles, ILocalizationHelper localization) : APIController(localization)
     {
-        private readonly IProfileService _profiles;
-
-        public ProfileController(IProfileService profiles, ILocalizationHelper localization) : base(localization) => _profiles = profiles;
-
-
+        private readonly IProfileService _profiles = profiles;
 
         [HttpGet("nickname")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetUserNickname()
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
             var nickname = _profiles.GetUserNickname(userID);
             return Ok(nickname);
         }

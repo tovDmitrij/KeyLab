@@ -7,13 +7,9 @@ using System.Text;
 
 namespace component.v1.middlewares
 {
-    public sealed class ExceptionMiddleware
+    public sealed class ExceptionMiddleware(RequestDelegate request)
     {
-        private readonly RequestDelegate _request;
-
-        public ExceptionMiddleware(RequestDelegate request) => _request = request;
-
-
+        private readonly RequestDelegate _request = request;
 
         public async Task InvokeAsync(HttpContext context)
         {

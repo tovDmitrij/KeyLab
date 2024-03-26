@@ -6,9 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace helper.v1.regex
 {
-    public sealed partial class RegexHelper : IUserRegexHelper, IVerificationRegexHelper, IKeyboardRegexHelper, 
-                                              IBoxRegexHelper
+    public sealed partial class RegexHelper(ILocalizationHelper localization) : 
+        IUserRegexHelper, IVerificationRegexHelper, IKeyboardRegexHelper, IBoxRegexHelper
     {
+        private readonly ILocalizationHelper _localization = localization;
+
         [GeneratedRegex(@"^[\w\-\.]+\@[\-\w]+\.[\w]+$")]
         private partial Regex EmailRgx();
 
@@ -22,19 +24,7 @@ namespace helper.v1.regex
         private partial Regex KeyboardTitleRgx();
 
         [GeneratedRegex(@"^[\w]{3,}$")]
-        private partial Regex KeyboardDescriptionRgx();
-
-        [GeneratedRegex(@"^[\w]{3,}$")]
         private partial Regex BoxTitleRgx();
-
-        [GeneratedRegex(@"^[\w]{3,}$")]
-        private partial Regex BoxDescriptionRgx();
-
-
-
-        private readonly ILocalizationHelper _localization;
-
-        public RegexHelper(ILocalizationHelper localization) => _localization = localization;
 
 
 
@@ -62,27 +52,14 @@ namespace helper.v1.regex
             Validate(KeyboardTitleRgx(), title, txtError);
         }
 
-        public void ValidateKeyboardDescription(string description)
-        {
-            string txtError = _localization.KeyboardDescriptionIsNotValid();
-            Validate(KeyboardDescriptionRgx(), description, txtError);
-        }
-
         public void ValidateBoxTitle(string title)
         {
             string txtError = _localization.BoxTitleIsNotValid();
             Validate(BoxTitleRgx(), title, txtError);
         }
 
-        public void ValidateBoxDescription(string description)
-        {
-            string txtError = _localization.BoxDescriptionIsNotValid();
-            Validate(BoxDescriptionRgx(), description, txtError);
-        }
 
 
-
-        /// <exception cref="BadRequestException"></exception>
         private void Validate(Regex rgx, string value, string txtError)
         {
             if (!rgx.IsMatch(value))

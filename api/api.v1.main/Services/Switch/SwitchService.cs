@@ -1,5 +1,5 @@
 ﻿using api.v1.main.DTOs;
-using api.v1.main.Services.Base;
+using api.v1.main.Services.BaseAlgorithm;
 
 using db.v1.main.DTOs.Switch;
 using db.v1.main.Repositories.Switch;
@@ -8,20 +8,13 @@ using helper.v1.configuration.Interfaces;
 
 namespace api.v1.main.Services.Switch
 {
-    public sealed class SwitchService : ISwitchService
+    public sealed class SwitchService(ISwitchRepository switches, IFileConfigurationHelper fileCfg, 
+        IBaseAlgorithmService @base) : ISwitchService
     {
-        private readonly ISwitchRepository _switch;
-        private readonly IFileConfigurationHelper _fileCfg;
-        private readonly IBaseService _base;
+        private readonly ISwitchRepository _switch = switches;
 
-        public SwitchService(ISwitchRepository switches, IFileConfigurationHelper fileCfg, IBaseService @base)
-        {
-            _switch = switches;
-            _fileCfg = fileCfg;
-            _base = @base;
-        }
-
-
+        private readonly IBaseAlgorithmService _base = @base;
+        private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
         public byte[] GetSwitchFile(Guid switchID)
         {

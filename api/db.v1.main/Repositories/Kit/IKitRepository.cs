@@ -6,5 +6,7 @@ namespace db.v1.main.Repositories.Kit
     {
         public List<SelectKitDTO> SelectUserKits(int page, int pageSize, Guid userID);
         public int SelectCountOfKits(Guid userID);
+
+        public bool IsKitExist(Guid kitID);
     }
 }

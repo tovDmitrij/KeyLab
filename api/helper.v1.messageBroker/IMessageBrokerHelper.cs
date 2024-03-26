@@ -2,6 +2,6 @@
 {
     public interface IMessageBrokerHelper
     {
-        public Task SendData<T>(T data);
+        public Task PublishData<T>(T data);
     }
 }

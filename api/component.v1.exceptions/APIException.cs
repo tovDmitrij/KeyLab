@@ -2,10 +2,8 @@
 
 namespace component.v1.exceptions
 {
-    public abstract class APIException : Exception
+    public abstract class APIException(HttpStatusCode statusCode, string msg) : Exception(msg)
     {
-        public readonly HttpStatusCode StatusCode;
-
-        public APIException(HttpStatusCode statusCode, string msg) : base(msg) => StatusCode = statusCode;
+        public readonly HttpStatusCode StatusCode = statusCode;
     }
 }

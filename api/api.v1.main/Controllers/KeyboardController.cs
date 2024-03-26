@@ -14,14 +14,9 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/keyboards")]
-    public sealed class KeyboardController : APIController
+    public sealed class KeyboardController(IKeyboardService keyboard, ILocalizationHelper localization) : APIController(localization)
     {
-        private readonly IKeyboardService _keyboard;
-
-        public KeyboardController(IKeyboardService keyboard, ILocalizationHelper localization) : base(localization) => 
-            _keyboard = keyboard;
-
-
+        private readonly IKeyboardService _keyboard = keyboard;
 
         [HttpGet("default")]
         [AllowAnonymous]
@@ -36,7 +31,7 @@ namespace api.v1.main.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetUserKeyboardsList([Required] int page, [Required] int pageSize)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var keyboards = _keyboard.GetUserKeyboardsList(new(page, pageSize), userID);
 
@@ -55,7 +50,7 @@ namespace api.v1.main.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetUserKeyboardsTotalPages([Required] int pageSize)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
             var totalPages = _keyboard.GetUserKeyboardsTotalPages(userID, pageSize);
             return Ok(new { totalPages = totalPages });
         }
@@ -90,7 +85,7 @@ namespace api.v1.main.Controllers
             var switchTypeID = GetFormDataSwitchType();
             var boxTypeID = GetFormDataBoxType();
 
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var body = new PostKeyboardDTO(file, preview, title, userID, boxTypeID, switchTypeID);
             _keyboard.AddKeyboard(body);
@@ -109,7 +104,7 @@ namespace api.v1.main.Controllers
             var boxTypeID = GetFormDataBoxType();
             var keyboardID = GetFormDataKeyboardID();
 
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var body = new PutKeyboardDTO(file, preview, title, userID, keyboardID, boxTypeID, switchTypeID);
             _keyboard.UpdateKeyboard(body);
@@ -121,7 +116,7 @@ namespace api.v1.main.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult DeleteKeyboard([FromBody] DeleteKeyboardDTO body)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             _keyboard.DeleteKeyboard(body, userID);
 

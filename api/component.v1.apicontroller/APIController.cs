@@ -9,15 +9,13 @@ using System.Security.Claims;
 
 namespace component.v1.apicontroller
 {
-    public abstract class APIController : ControllerBase
+    public abstract class APIController(ILocalizationHelper localization) : ControllerBase
     {
-        protected readonly ILocalizationHelper _localization;
-
-        public APIController(ILocalizationHelper localization) => _localization = localization;
+        protected readonly ILocalizationHelper _localization = localization;
 
 
 
-        protected Guid GetUserIDFromAccessToken()
+        protected Guid GetAccessTokenUserID()
         {
             var accessToken = GetAccessToken();
             var claims = GetClaimsFromAccessToken(accessToken);

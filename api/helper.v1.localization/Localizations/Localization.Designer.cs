@@ -223,6 +223,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Набора кейкапов с заданными параметрами не существует.
+        /// </summary>
+        public static string Kit_IsNotExist {
+            get {
+                return ResourceManager.GetString("Kit_IsNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Номер страницы не валидный.
         /// </summary>
         public static string PaginationPage_NotValid {

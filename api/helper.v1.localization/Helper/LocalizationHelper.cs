@@ -4,13 +4,9 @@ using helper.v1.localization.Localizations;
 
 namespace helper.v1.localization.Helper
 {
-    public sealed class LocalizationHelper : ILocalizationHelper
+    public sealed class LocalizationHelper(IStringLocalizer<Localization> localization) : ILocalizationHelper
     {
-        private readonly IStringLocalizer<Localization> _localization;
-
-        public LocalizationHelper(IStringLocalizer<Localization> localization) => _localization = localization;
-
-
+        private readonly IStringLocalizer<Localization> _localization = localization;
 
         public string FileIsNotAttached() => _localization["File_IsNotAttached"];
         public string FileIsNotExist() => _localization["File_IsNotExist"];
@@ -37,14 +33,13 @@ namespace helper.v1.localization.Helper
         public string UserPasswordIsNotValid() => _localization["UserPassword_IsNotValid"];
         public string UserNicknameIsNotValid() => _localization["UserNickname_IsNotValid"];
 
-        public string UserSignInEmailLabel() => _localization["UserSignIn_EmailLabel"];
-        public string UserSignInEmailText() => _localization["UserSignIn_EmailText"];
-
         public string EndpointIsNotAcceptable() => _localization["Endpoint_IsNotAcceptable"];
 
         public string KeyboardTitleIsBusy() => _localization["KeyboardTitle_IsBusy"];
         public string KeyboardTitleIsNotValid() => _localization["KeyboardTitle_IsNotValid"];
         public string KeyboardDescriptionIsNotValid() => _localization["KeyboardDescription_IsNotValid"];
+
+        public string KitIsNotExist() => _localization["Kit_IsNotExist"];
 
         public string BoxTitleIsBusy() => _localization["BoxTitle_IsBusy"];
         public string BoxTypeIsNotExist() => _localization["BoxType_IsNotExist"];

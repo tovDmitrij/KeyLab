@@ -2,13 +2,9 @@
 
 namespace helper.v1.cache.Implements
 {
-    public sealed class MemoryCacheHelper : ICacheHelper
+    public sealed class MemoryCacheHelper(IMemoryCache cache) : ICacheHelper
     {
-        private readonly IMemoryCache _cache;
-
-        public MemoryCacheHelper(IMemoryCache cache) => _cache = cache;
-
-
+        private readonly IMemoryCache _cache = cache;
 
         public bool TryGetValue<T>(object key, out T? value) => _cache.TryGetValue(key, out value);
 
