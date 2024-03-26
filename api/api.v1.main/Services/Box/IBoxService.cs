@@ -19,9 +19,9 @@ namespace api.v1.main.Services.Box
 
 
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetBoxFile(Guid boxID);
+        public byte[] GetBoxFileBytes(Guid boxID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetBoxPreview(Guid boxID);
+        public string GetBoxBase64Preview(Guid boxID);
 
 
 

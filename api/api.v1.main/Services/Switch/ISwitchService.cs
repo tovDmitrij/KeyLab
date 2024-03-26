@@ -7,11 +7,11 @@ namespace api.v1.main.Services.Switch
     public interface ISwitchService
     {
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetSwitchFile(Guid switchID);
+        public byte[] GetSwitchFileBytes(Guid switchID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetSwitchSound(Guid switchID);
+        public string GetSwitchBase64Sound(Guid switchID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetSwitchPreview(Guid switchID);
+        public string GetSwitchBase64Preview(Guid switchID);
 
 
         /// <exception cref="BadRequestException"></exception>

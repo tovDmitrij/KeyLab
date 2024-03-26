@@ -23,14 +23,20 @@ namespace api.v1.main.Services.BaseAlgorithm
 
 
         public byte[] GetFile(
-            Guid fileID,
+            Guid param1,
             Func<Guid, string?> fileNameFunction,
             Func<string, string> filePathFunction);
         public byte[] GetFile(
-            Guid fileID,
+            Guid param1,
             Func<Guid, string?> fileNameFunction,
             Func<Guid, Guid?> userIDFunction,
             Func<Guid, string, string> filePathFunction);
+        public byte[] GetFile(
+            Guid param1,
+            Guid param2,
+            Func<Guid, string?> fileNameFunction,
+            Func<Guid, Guid?> userIDFunction,
+            Func<Guid, Guid, string, string> filePathFunction);
 
 
 

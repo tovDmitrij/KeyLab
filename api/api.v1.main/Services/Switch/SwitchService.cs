@@ -16,19 +16,19 @@ namespace api.v1.main.Services.Switch
         private readonly IBaseAlgorithmService _base = @base;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
-        public byte[] GetSwitchFile(Guid switchID)
+        public byte[] GetSwitchFileBytes(Guid switchID)
         {
             var file = _base.GetFile(switchID, _switch.SelectSwitchFileName, _fileCfg.GetSwitchFilePath);
             return file;
         }
 
-        public string GetSwitchSound(Guid switchID)
+        public string GetSwitchBase64Sound(Guid switchID)
         {
             var sound = _base.GetFile(switchID, _switch.SelectSwitchSoundName, _fileCfg.GetSwitchFilePath);
             return Convert.ToBase64String(sound);
         }
 
-        public string GetSwitchPreview(Guid switchID)
+        public string GetSwitchBase64Preview(Guid switchID)
         {
             var preview = _base.GetFile(switchID, _switch.SelectSwitchPreviewName, _fileCfg.GetSwitchFilePath);
             return Convert.ToBase64String(preview);

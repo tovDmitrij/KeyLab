@@ -32,5 +32,21 @@ namespace api.v1.main.Controllers
             var totalPages = _keycap.GetKeycapsTotalPages(pageSize, kitID);
             return Ok(new { totalPages = totalPages });
         }
+
+        [HttpGet("file")]
+        [AllowAnonymous]
+        public async Task GetKeycapFile([Required] Guid keycapID)
+        {
+            var file = _keycap.GetKeycapFileBytes(keycapID);
+            await Response.Body.WriteAsync(file);
+        }
+
+        [HttpGet("preview")]
+        [AllowAnonymous]
+        public IActionResult GetKeycapPreview([Required] Guid keycapID)
+        {
+            var preview = _keycap.GetKeycapBase64Preview(keycapID);
+            return Ok(new { previewBase64 = preview });
+        }
     }
 }

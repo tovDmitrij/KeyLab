@@ -16,5 +16,8 @@ namespace db.v1.main.Repositories.Kit
 
         public bool IsKitExist(Guid kitID) => _db.Kits
             .Any(kit => kit.ID == kitID);
+
+        public Guid? SelectKitOwnerID(Guid kitID) => _db.Kits
+            .FirstOrDefault(kit => kit.ID == kitID)?.OwnerID;
     }
 }

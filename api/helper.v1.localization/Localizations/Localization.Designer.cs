@@ -223,6 +223,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Клавиша с заданными параметрами не существует.
+        /// </summary>
+        public static string Keycap_IsNotExist {
+            get {
+                return ResourceManager.GetString("Keycap_IsNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Набора кейкапов с заданными параметрами не существует.
         /// </summary>
         public static string Kit_IsNotExist {

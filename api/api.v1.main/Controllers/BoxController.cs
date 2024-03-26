@@ -71,7 +71,7 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public async Task GetBoxFile([Required] Guid boxID)
         {
-            var file = _box.GetBoxFile(boxID);
+            var file = _box.GetBoxFileBytes(boxID);
             await Response.Body.WriteAsync(file);
         }
 
@@ -79,7 +79,7 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public IActionResult GetBoxPreview([Required] Guid boxID)
         {
-            var preview = _box.GetBoxPreview(boxID);
+            var preview = _box.GetBoxBase64Preview(boxID);
             return Ok(new { previewBase64 = preview });
         }
 

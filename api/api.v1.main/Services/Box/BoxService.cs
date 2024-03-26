@@ -79,13 +79,13 @@ namespace api.v1.main.Services.Box
 
 
 
-        public byte[] GetBoxFile(Guid boxID)
+        public byte[] GetBoxFileBytes(Guid boxID)
         {
             var file = _base.GetFile(boxID, _box.SelectBoxFileName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
             return file;
         }
 
-        public string GetBoxPreview(Guid boxID)
+        public string GetBoxBase64Preview(Guid boxID)
         {
             var preview = _base.GetFile(boxID, _box.SelectBoxPreviewName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
             return Convert.ToBase64String(preview);

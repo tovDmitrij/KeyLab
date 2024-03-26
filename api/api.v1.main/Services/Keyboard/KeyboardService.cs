@@ -85,13 +85,13 @@ namespace api.v1.main.Services.Keyboard
 
 
 
-        public byte[] GetKeyboardFile(Guid keyboardID)
+        public byte[] GetKeyboardFileBytes(Guid keyboardID)
         {
             var file = _base.GetFile(keyboardID, _keyboard.SelectKeyboardFileName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardFilePath);
             return file;
         }
 
-        public string GetKeyboardPreview(Guid keyboardID)
+        public string GetKeyboardBase64Preview(Guid keyboardID)
         {
             var preview = _base.GetFile(keyboardID, _keyboard.SelectKeyboardPreviewName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardFilePath);
             return Convert.ToBase64String(preview);

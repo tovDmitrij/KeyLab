@@ -36,6 +36,8 @@
 
         public string KitIsNotExist();
 
+        public string KeycapIsNotExist();
+
         public string BoxTitleIsBusy();
         public string BoxTypeIsNotExist();
         public string BoxTitleIsNotValid();

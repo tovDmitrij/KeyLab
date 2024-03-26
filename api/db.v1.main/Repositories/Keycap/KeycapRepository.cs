@@ -12,7 +12,25 @@ namespace db.v1.main.Repositories.Keycap
             .Select(keycap => new SelectKeycapDTO(keycap.ID, keycap.Title, keycap.CreationDate))
             .Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
+
+
         public int SelectCountOfKeycaps(Guid kitID) => _db.Keycaps
             .Count(keycap => keycap.KitID == kitID);
+
+
+
+        public string? SelectKeycapFileName(Guid keycapID) => _db.Keycaps
+            .FirstOrDefault(keycap => keycap.ID == keycapID)?.FileName;
+
+        public string? SelectKeycapPreviewName(Guid keycapID) => _db.Keycaps
+            .FirstOrDefault(keycap => keycap.ID == keycapID)?.PreviewName;
+
+        public Guid? SelectKitIDByKeycapID(Guid keycapID) => _db.Keycaps
+            .FirstOrDefault(keycap => keycap.ID == keycapID)?.KitID;
+
+
+
+        public bool IsKeycapExist(Guid keycapID) => _db.Keycaps
+            .Any(keycap => keycap.ID == keycapID);
     }
 }

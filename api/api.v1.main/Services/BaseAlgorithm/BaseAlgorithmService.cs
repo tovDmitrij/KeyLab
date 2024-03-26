@@ -22,11 +22,11 @@ namespace api.v1.main.Services.BaseAlgorithm
         private readonly IPreviewConfigurationHelper _previewCfg = previewCfg;
 
         public byte[] GetFile(
-            Guid fileID,
+            Guid param1,
             Func<Guid, string?> fileNameFunction,
             Func<string, string> filePathFunction)
         {
-            var fileName = fileNameFunction(fileID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var fileName = fileNameFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
             var filePath = filePathFunction(fileName);
 
             if (!_cache.TryGetValue(filePath, out byte[]? file))
@@ -42,15 +42,39 @@ namespace api.v1.main.Services.BaseAlgorithm
         }
 
         public byte[] GetFile(
-            Guid fileID,
+            Guid param1,
             Func<Guid, string?> fileNameFunction,
             Func<Guid, Guid?> userIDFunction,
             Func<Guid, string, string> filePathFunction)
         {
-            var fileName = fileNameFunction(fileID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = userIDFunction(fileID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var fileName = fileNameFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var userID = userIDFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
 
             var filePath = filePathFunction(userID, fileName);
+
+            if (!_cache.TryGetValue(filePath, out byte[]? file))
+            {
+                file = _file.GetFile(filePath);
+                if (file.Length == 0)
+                    throw new BadRequestException(_localization.FileIsNotExist());
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(filePath, file, minutes);
+            }
+            return file!;
+        }
+
+        public byte[] GetFile(
+            Guid param1,
+            Guid param2,
+            Func<Guid, string?> fileNameFunction,
+            Func<Guid, Guid?> userIDFunction,
+            Func<Guid, Guid, string, string> filePathFunction)
+        {
+            var fileName = fileNameFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var userID = userIDFunction(param2) ?? throw new BadRequestException(_localization.FileIsNotExist());
+
+            var filePath = filePathFunction(userID, param2, fileName);
 
             if (!_cache.TryGetValue(filePath, out byte[]? file))
             {

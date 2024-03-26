@@ -23,7 +23,7 @@ namespace api.v1.stats.Controllers
         [HttpGet("pages")]
         public IActionResult GetActivities()
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var activities = _activity.GetActivities(userID);
             return Ok(activities);

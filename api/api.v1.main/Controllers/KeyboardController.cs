@@ -61,7 +61,7 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public async Task GetKeyboardFile([Required] Guid keyboardID) 
         {
-            var file = _keyboard.GetKeyboardFile(keyboardID);
+            var file = _keyboard.GetKeyboardFileBytes(keyboardID);
             await Response.Body.WriteAsync(file);
         }
 
@@ -69,7 +69,7 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public IActionResult GetKeyboardPreview([Required] Guid keyboardID)
         {
-            var preview = _keyboard.GetKeyboardPreview(keyboardID);
+            var preview = _keyboard.GetKeyboardBase64Preview(keyboardID);
             return Ok(new { previewBase64 = preview });
         }
 

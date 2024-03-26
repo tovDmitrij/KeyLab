@@ -35,21 +35,21 @@ namespace api.v1.main.Controllers
         [HttpGet("file")]
         public async Task GetSwitchFile([Required] Guid switchID)
         {
-            var file = _switch.GetSwitchFile(switchID);
+            var file = _switch.GetSwitchFileBytes(switchID);
             await Response.Body.WriteAsync(file);
         }
 
         [HttpGet("sound")]
         public IActionResult GetSwitchSound([Required] Guid switchID)
         {
-            var sound = _switch.GetSwitchSound(switchID);
+            var sound = _switch.GetSwitchBase64Sound(switchID);
             return Ok(new { soundBase64 = sound });
         }
 
         [HttpGet("preview")]
         public IActionResult GetSwitchPreview([Required] Guid switchID)
         {
-            var preview = _switch.GetSwitchPreview(switchID);
+            var preview = _switch.GetSwitchBase64Preview(switchID);
             return Ok(new { previewBase64 = preview });
         }
     }

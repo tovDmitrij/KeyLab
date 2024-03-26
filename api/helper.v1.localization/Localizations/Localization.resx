@@ -171,6 +171,9 @@
   <data name="KeyboardTitle_IsNotValid" xml:space="preserve">
     <value>Наименование клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
   </data>
+  <data name="Keycap_IsNotExist" xml:space="preserve">
+    <value>Клавиша с заданными параметрами не существует</value>
+  </data>
   <data name="Kit_IsNotExist" xml:space="preserve">
     <value>Набора кейкапов с заданными параметрами не существует</value>
   </data>

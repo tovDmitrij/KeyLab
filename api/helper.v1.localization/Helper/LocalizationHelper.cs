@@ -41,6 +41,8 @@ namespace helper.v1.localization.Helper
 
         public string KitIsNotExist() => _localization["Kit_IsNotExist"];
 
+        public string KeycapIsNotExist() => _localization["Keycap_IsNotExist"];
+
         public string BoxTitleIsBusy() => _localization["BoxTitle_IsBusy"];
         public string BoxTypeIsNotExist() => _localization["BoxType_IsNotExist"];
         public string BoxTitleIsNotValid() => _localization["BoxTitle_IsNotValid"];
@@ -50,5 +52,6 @@ namespace helper.v1.localization.Helper
 
         public string PaginationPageIsNotValid() => _localization["PaginationPage_NotValid"];
         public string PaginationPageSizeIsNotValid() => _localization["PaginationPageSize_NotValid"];
+
     }
 }

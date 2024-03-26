@@ -18,9 +18,9 @@ namespace api.v1.main.Services.Keyboard
 
 
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetKeyboardFile(Guid keyboardID);
+        public byte[] GetKeyboardFileBytes(Guid keyboardID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetKeyboardPreview(Guid keyboardID);
+        public string GetKeyboardBase64Preview(Guid keyboardID);
 
 
 
