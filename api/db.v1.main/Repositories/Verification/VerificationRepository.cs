@@ -4,13 +4,9 @@ using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.Verification
 {
-    public sealed class VerificationRepository : IVerificationRepository
+    public sealed class VerificationRepository(IVerificationContext db) : IVerificationRepository
     {
-        private readonly IVerificationContext _db;
-
-        public VerificationRepository(IVerificationContext db) => _db = db;
-
-
+        private readonly IVerificationContext _db = db;
 
         public void InsertEmailCode(EmailVerificationDTO body)
         {

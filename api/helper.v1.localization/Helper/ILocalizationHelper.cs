@@ -28,14 +28,13 @@
         public string UserPasswordIsNotValid();
         public string UserNicknameIsNotValid();
 
-        public string UserSignInEmailLabel();
-        public string UserSignInEmailText();
-
         public string EndpointIsNotAcceptable();
 
         public string KeyboardTitleIsBusy();
         public string KeyboardTitleIsNotValid();
         public string KeyboardDescriptionIsNotValid();
+
+        public string KitIsNotExist();
 
         public string BoxTitleIsBusy();
         public string BoxTypeIsNotExist();

@@ -7,9 +7,9 @@ namespace api.v1.main.Services.Kit
     public interface IKitService
     {
         public List<SelectKitDTO> GetDefaultKits(PaginationDTO body);
-        public int GetDefaultKitsTotalPages(int pageSize);
-
         public List<SelectKitDTO> GetUserKits(PaginationDTO body, Guid userID);
+
+        public int GetDefaultKitsTotalPages(int pageSize);
         public int GetUserKitsTotalPages(int pageSize, Guid userID);
     }
 }

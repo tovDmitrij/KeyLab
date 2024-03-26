@@ -6,8 +6,5 @@ namespace helper.v1.regex.Interfaces
     {
         /// <exception cref="BadRequestException"></exception>
         public void ValidateBoxTitle(string title);
-
-        /// <exception cref="BadRequestException"></exception>
-        public void ValidateBoxDescription(string description);
     }
 }

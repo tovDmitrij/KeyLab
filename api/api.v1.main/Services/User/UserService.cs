@@ -14,41 +14,23 @@ using helper.v1.localization.Helper;
 using helper.v1.regex.Interfaces;
 using helper.v1.configuration.Interfaces;
 using helper.v1.messageBroker;
-using component.v1.email;
 
 namespace api.v1.main.Services.User
 {
-    public sealed class UserService : IUserService
+    public sealed class UserService(IUserRepository user, IVerificationRepository verification, IUserRegexHelper rgx, 
+        ISecurityHelper security, ITimeHelper time, IJWTHelper jwt, ILocalizationHelper localization, 
+        IJWTConfigurationHelper cfgJWT, IFileConfigurationHelper cfgFile) : IUserService
     {
-        private readonly IUserRepository _user;
-        private readonly IVerificationRepository _verification;
+        private readonly IUserRepository _user = user;
+        private readonly IVerificationRepository _verification = verification;
 
-        private readonly IUserRegexHelper _rgx;
-        private readonly ISecurityHelper _security;
-        private readonly ITimeHelper _time;
-        private readonly IJWTHelper _jwt;
-        private readonly ILocalizationHelper _localization;
-        private readonly IJWTConfigurationHelper _cfgJWT;
-        private readonly IFileConfigurationHelper _cfgFile;
-        private readonly IMessageBrokerHelper _broker;
-
-        public UserService(IUserRepository user, IVerificationRepository verification, IUserRegexHelper rgx, 
-                           ISecurityHelper security, ITimeHelper time, IJWTHelper jwt, ILocalizationHelper localization,
-                           IJWTConfigurationHelper cfgJWT, IFileConfigurationHelper cfgFile, IMessageBrokerHelper broker)
-        {
-            _user = user;
-            _verification = verification;
-            _rgx = rgx;
-            _security = security;
-            _time = time;
-            _jwt = jwt;
-            _localization = localization;
-            _cfgJWT = cfgJWT;
-            _cfgFile = cfgFile;
-            _broker = broker;
-        }
-
-
+        private readonly IUserRegexHelper _rgx = rgx;
+        private readonly ISecurityHelper _security = security;
+        private readonly ITimeHelper _time = time;
+        private readonly IJWTHelper _jwt = jwt;
+        private readonly ILocalizationHelper _localization = localization;
+        private readonly IJWTConfigurationHelper _cfgJWT = cfgJWT;
+        private readonly IFileConfigurationHelper _cfgFile = cfgFile;
 
         public void SignUp(PostSignUpDTO body)
         {
@@ -114,10 +96,6 @@ namespace api.v1.main.Services.User
 
             var refreshTokenBody = new RefreshTokenDTO(userID, refreshToken.Value, refreshToken.ExpireDate);
             _user.UpdateRefreshToken(refreshTokenBody);
-
-            //Спам почты
-            //var sendEmailBody = new SendEmailDTO(body.Email, _localization.UserSignInEmailLabel(), _localization.UserSignInEmailText());
-            //await _broker.SendData(sendEmailBody);
 
             return new(accessToken, refreshToken.Value, isAdmin);
         }

@@ -38,7 +38,9 @@ using helper.v1.cache.Implements;
 using component.v1.middlewares;
 using db.v1.main.Repositories.Kit;
 using api.v1.main.Services.Kit;
-using api.v1.main.Services.Base;
+using api.v1.main.Services.BaseAlgorithm;
+using db.v1.main.Repositories.Keycap;
+using api.v1.main.Services.Keycap;
 
 
 
@@ -141,6 +143,7 @@ void InitContexts()
     builder.Services.AddTransient<ISwitchContext, MainContext>();
     builder.Services.AddTransient<IBoxContext, MainContext>();
     builder.Services.AddTransient<IKitContext, MainContext>();
+    builder.Services.AddTransient<IKeycapContext, MainContext>();
 }
 
 void InitRepositories()
@@ -151,6 +154,7 @@ void InitRepositories()
     builder.Services.AddTransient<ISwitchRepository, SwitchRepository>();
     builder.Services.AddTransient<IBoxRepository, BoxRepository>();
     builder.Services.AddTransient<IKitRepository, KitRepository>();
+    builder.Services.AddTransient<IKeycapRepository, KeycapRepository>();
 }
 
 void InitHelpers()
@@ -184,6 +188,7 @@ void InitServices()
     builder.Services.AddTransient<IProfileService, ProfileService>();
     builder.Services.AddTransient<IBoxService, BoxService>();
     builder.Services.AddTransient<IKitService, KitService>();
+    builder.Services.AddTransient<IKeycapService, KeycapService>();
 }
 
 #endregion

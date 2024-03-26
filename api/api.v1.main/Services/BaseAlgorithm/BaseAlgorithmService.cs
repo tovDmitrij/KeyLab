@@ -9,29 +9,17 @@ using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
 
-namespace api.v1.main.Services.Base
+namespace api.v1.main.Services.BaseAlgorithm
 {
-    public sealed class BaseAlgorithmService : IBaseAlgorithmService
+    public sealed class BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, 
+        ICacheConfigurationHelper cacheCfg, IFileHelper file, IPreviewConfigurationHelper previewCfg) : IBaseAlgorithmService
     {
-        private readonly ILocalizationHelper _localization;
-        private readonly IUserRepository _user;
-        private readonly ICacheHelper _cache;
-        private readonly ICacheConfigurationHelper _cacheCfg;
-        private readonly IFileHelper _file;
-        private readonly IPreviewConfigurationHelper _previewCfg;
-
-        public BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, ICacheConfigurationHelper cacheCfg, 
-                           IFileHelper file, IPreviewConfigurationHelper previewCfg)
-        {
-            _localization = localization;
-            _user = user;
-            _cache = cache;
-            _cacheCfg = cacheCfg;
-            _file = file;
-            _previewCfg = previewCfg;
-        }
-
-
+        private readonly ILocalizationHelper _localization = localization;
+        private readonly IUserRepository _user = user;
+        private readonly ICacheHelper _cache = cache;
+        private readonly IFileHelper _file = file;
+        private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
+        private readonly IPreviewConfigurationHelper _previewCfg = previewCfg;
 
         public byte[] GetFile(
             Guid fileID,
@@ -172,29 +160,27 @@ namespace api.v1.main.Services.Base
         public List<Object> GetPaginationListOfObjects<Object>(
             int page,
             int pageSize,
-            Guid userID,
+            Guid param1,
             Func<int, int, Guid, List<Object>> repositoryFunction)
         {
-            ValidateUserID(userID);
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, userID);
+            var objects = repositoryFunction(page, pageSize, param1);
             return objects;
         }
 
         public List<Object> GetPaginationListOfObjects<Object>(
             int page,
             int pageSize,
-            Guid userID,
-            Guid objectTypeID,
+            Guid param1,
+            Guid param2,
             Func<int, int, Guid, Guid, List<Object>> repositoryFunction)
         {
-            ValidateUserID(userID);
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, objectTypeID, userID);
+            var objects = repositoryFunction(page, pageSize, param1, param2);
             return objects;
         }
 
@@ -208,12 +194,11 @@ namespace api.v1.main.Services.Base
             return GetTotalPages(count, pageSize);
         }
 
-        public int GetPaginationTotalPages(int pageSize, Guid userID, Func<Guid, int> repositoryFunction)
+        public int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> repositoryFunction)
         {
             ValidatePageSize(pageSize);
 
-            ValidateUserID(userID);
-            var count = repositoryFunction(userID);
+            var count = repositoryFunction(param);
             return GetTotalPages(count, pageSize);
         }
 

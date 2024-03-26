@@ -2,8 +2,5 @@
 
 namespace component.v1.exceptions
 {
-    public sealed class NotAcceptableException : APIException
-    {
-        public NotAcceptableException(string msg) : base(HttpStatusCode.NotAcceptable, msg) { }
-    }
+    public sealed class NotAcceptableException(string msg) : APIException(HttpStatusCode.NotAcceptable, msg) { }
 }

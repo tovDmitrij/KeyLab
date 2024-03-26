@@ -2,8 +2,5 @@
 
 namespace component.v1.exceptions
 {
-    public sealed class BadRequestException : APIException
-    {
-        public BadRequestException(string msg) : base(HttpStatusCode.BadRequest, msg) { }
-    }
+    public sealed class BadRequestException(string msg) : APIException(HttpStatusCode.BadRequest, msg) { }
 }

@@ -5,13 +5,9 @@ using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.Box
 {
-    public sealed class BoxRepository : IBoxRepository
+    public sealed class BoxRepository(IBoxContext db) : IBoxRepository
     {
-        private readonly IBoxContext _db;
-
-        public BoxRepository(IBoxContext db) => _db = db;
-
-
+        private readonly IBoxContext _db = db;
 
         public Guid InsertBoxInfo(InsertBoxDTO body)
         {

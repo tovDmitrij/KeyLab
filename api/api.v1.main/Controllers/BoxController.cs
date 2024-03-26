@@ -14,14 +14,9 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/boxes")]
-    public sealed class BoxController : APIController
+    public sealed class BoxController(IBoxService box, ILocalizationHelper localization) : APIController(localization)
     {
-        private readonly IBoxService _box;
-
-        public BoxController(IBoxService box, ILocalizationHelper localization) : base(localization) =>
-            _box = box;
-
-
+        private readonly IBoxService _box = box;
 
         [HttpGet("types")]
         [AllowAnonymous]
@@ -45,7 +40,7 @@ namespace api.v1.main.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult GetUserBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var boxes = _box.GetUserBoxesList(new(page, pageSize, typeID), userID);
             return Ok(boxes);
@@ -65,7 +60,7 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public IActionResult GetUserBoxesTotalPages([Required] int pageSize)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
             var totalPages = _box.GetUserBoxesTotalPages(userID, pageSize);
             return Ok(new { totalPages = totalPages });
         }
@@ -98,7 +93,7 @@ namespace api.v1.main.Controllers
             var preview = GetFormDataBoxPreview();
             var title = GetFormDataBoxTitle();
             var typeID = GetFormDataBoxTypeID();
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var body = new PostBoxDTO(file, preview, title, typeID, userID);
 
@@ -114,7 +109,7 @@ namespace api.v1.main.Controllers
             var file = GetFormDataBoxFile();
             var preview = GetFormDataBoxPreview();
             var title = GetFormDataBoxTitle();
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
             var boxID = GetFormDataBoxID();
 
             var body = new PutBoxDTO(file, preview, title, userID, boxID);
@@ -127,7 +122,7 @@ namespace api.v1.main.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult DeleteBoxFile([FromBody] DeleteBoxDTO body)
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             _box.DeleteBox(body, userID);
             return Ok(_localization.FileIsSuccessfullDeleted());

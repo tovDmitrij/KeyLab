@@ -13,45 +13,24 @@ using helper.v1.time;
 using helper.v1.localization.Helper;
 using helper.v1.file;
 using db.v1.main.DTOs.BoxType;
-using api.v1.main.Services.Base;
+using api.v1.main.Services.BaseAlgorithm;
 
 namespace api.v1.main.Services.Box
 {
-    public sealed class BoxService : IBoxService
-    {
-        private readonly IBoxRepository _box;
-        private readonly IUserRepository _user;
-
-        private readonly ICacheHelper _cache;
-        private readonly IFileConfigurationHelper _fileCfg;
-        private readonly ICacheConfigurationHelper _cacheCfg;
-        private readonly IPreviewConfigurationHelper _previewCfg;
-        private readonly IFileHelper _file;
-        private readonly IBoxRegexHelper _rgx;
-        private readonly ITimeHelper _time;
-        private readonly ILocalizationHelper _localization;
-        private readonly IBaseAlgorithmService _base;
-
-        public BoxService(IBoxRepository boxes, IUserRepository users, ICacheHelper cache,
+    public sealed class BoxService(IBoxRepository box, IUserRepository user, ICacheHelper cache,
                           IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx,
-                          ITimeHelper time, ICacheConfigurationHelper cacheCfg, ILocalizationHelper localization, 
-                          IPreviewConfigurationHelper previewCfg, IBaseAlgorithmService @base)
-        {
-            _box = boxes;
-            _user = users;
-            _cache = cache;
-            _fileCfg = fileCfg;
-            _file = file;
-            _rgx = rgx;
-            _time = time;
-            _cacheCfg = cacheCfg;
-            _localization = localization;
-            _previewCfg = previewCfg;
-            _file = file;
-            _base = @base;
-        }
+                          ITimeHelper time, ILocalizationHelper localization, IBaseAlgorithmService @base) : IBoxService
+    {
+        private readonly IBoxRepository _box = box;
+        private readonly IUserRepository _user = user;
 
-
+        private readonly IBaseAlgorithmService _base = @base;
+        private readonly ICacheHelper _cache = cache;
+        private readonly IFileHelper _file = file;
+        private readonly IBoxRegexHelper _rgx = rgx;
+        private readonly ITimeHelper _time = time;
+        private readonly IFileConfigurationHelper _fileCfg = fileCfg;
+        private readonly ILocalizationHelper _localization = localization;
 
         public void AddBox(PostBoxDTO body)
         {
@@ -118,13 +97,16 @@ namespace api.v1.main.Services.Box
         {
             ValidateBoxType(body.TypeID);
             var userID = _fileCfg.GetDefaultModelsUserID();
-            var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, body.TypeID, _box.SelectUserBoxes);
+
+            var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, body.TypeID, userID, _box.SelectUserBoxes);
             return boxes;
         }
         public List<SelectBoxDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID)
         {
             ValidateBoxType(body.TypeID);
-            var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, body.TypeID, _box.SelectUserBoxes);
+            ValidateUserID(userID);
+
+            var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, body.TypeID, userID, _box.SelectUserBoxes);
             return boxes;
         }
 
@@ -138,6 +120,8 @@ namespace api.v1.main.Services.Box
 
         public int GetUserBoxesTotalPages(Guid userID, int pageSize)
         {
+            ValidateUserID(userID);
+
             var totalPages = _base.GetPaginationTotalPages(pageSize, userID, _box.SelectCountOfBoxes);
             return totalPages;
         }

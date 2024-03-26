@@ -4,13 +4,7 @@
     {
         private readonly DateTime _epoch = DateTime.UnixEpoch;
 
-        public double GetUNIXTime(DateTime dateTime)
-        {
-            dateTime = dateTime.ToUniversalTime();
 
-            var UNIXTime = dateTime.Subtract(_epoch);
-            return UNIXTime.TotalSeconds;
-        }
 
         public double GetCurrentUNIXTime()
         {

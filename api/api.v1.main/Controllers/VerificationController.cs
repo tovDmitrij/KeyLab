@@ -13,14 +13,9 @@ namespace api.v1.main.Controllers
     [ApiController]
     [AllowAnonymous]
     [Route("api/v1/verifications")]
-    public sealed class VerificationController : APIController
+    public sealed class VerificationController(IVerificationService verification, ILocalizationHelper localization) : APIController(localization)
     {
-        private readonly IVerificationService _verification;
-
-        public VerificationController(IVerificationService verification, ILocalizationHelper localization) : base(localization) => 
-            _verification = verification;
-
-
+        private readonly IVerificationService _verification = verification;
 
         [HttpPost("email")]
         public IActionResult VerificateEmail([FromBody] ConfirmEmailDTO body)

@@ -3,13 +3,9 @@ using db.v1.main.DTOs.Kit;
 
 namespace db.v1.main.Repositories.Kit
 {
-    public sealed class KitRepository : IKitRepository
+    public sealed class KitRepository(IKitContext db) : IKitRepository
     {
-        private readonly IKitContext _db;
-
-        public KitRepository(IKitContext db) => _db = db;
-
-
+        private readonly IKitContext _db = db;
 
         public List<SelectKitDTO> SelectUserKits(int page, int pageSize, Guid userID) => _db.Kits
             .Where(kit => kit.OwnerID == userID).Skip((page - 1) * pageSize).Take(pageSize)
@@ -17,5 +13,8 @@ namespace db.v1.main.Repositories.Kit
 
         public int SelectCountOfKits(Guid userID) => _db.Kits
             .Count(kit => kit.OwnerID == userID);
+
+        public bool IsKitExist(Guid kitID) => _db.Kits
+            .Any(kit => kit.ID == kitID);
     }
 }

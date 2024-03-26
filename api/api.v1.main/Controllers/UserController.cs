@@ -14,13 +14,9 @@ namespace api.v1.main.Controllers
     [ApiController]
     [AllowAnonymous]
     [Route("api/v1/users")]
-    public sealed class UserController : APIController
+    public sealed class UserController(IUserService user, ILocalizationHelper localization) : APIController(localization)
     {
-        private readonly IUserService _user;
-
-        public UserController(IUserService user, ILocalizationHelper localization) : base(localization) => _user = user;
-
-
+        private readonly IUserService _user = user;
 
         [HttpPost("signUp")]
         public IActionResult SignUp([FromBody] PostSignUpDTO body)

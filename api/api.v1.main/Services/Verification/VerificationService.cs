@@ -15,31 +15,18 @@ using helper.v1.time;
 
 namespace api.v1.main.Services.Verification
 {
-    public sealed class VerificationService : IVerificationService
+    public sealed class VerificationService(IVerificationRepository verigication, IVerificationRegexHelper rgx, 
+        ISecurityHelper security, IUserRepository user, ILocalizationHelper localization, ITimeHelper time, 
+        IMessageBrokerHelper broker) : IVerificationService
     {
-        private readonly IVerificationRepository _verification;
-        private readonly IUserRepository _user;
+        private readonly IVerificationRepository _verification = verigication;
+        private readonly IUserRepository _user = user;
 
-        private readonly IVerificationRegexHelper _rgx;
-        private readonly ISecurityHelper _security;
-        private readonly ILocalizationHelper _localization;
-        private readonly ITimeHelper _time;
-        private readonly IMessageBrokerHelper _broker;
-
-        public VerificationService(IVerificationRepository verigication, IVerificationRegexHelper rgx,
-                                   ISecurityHelper security, IUserRepository user, ILocalizationHelper localization, 
-                                   ITimeHelper time, IMessageBrokerHelper broker)
-        {
-            _verification = verigication;
-            _rgx = rgx;
-            _security = security;
-            _user = user;
-            _localization = localization;
-            _time = time;
-            _broker = broker;
-        }
-
-
+        private readonly IVerificationRegexHelper _rgx = rgx;
+        private readonly ISecurityHelper _security = security;
+        private readonly ILocalizationHelper _localization = localization;
+        private readonly ITimeHelper _time = time;
+        private readonly IMessageBrokerHelper _broker = broker;
 
         public async Task SendVerificationEmailCode(ConfirmEmailDTO body)
         {
@@ -58,7 +45,7 @@ namespace api.v1.main.Services.Verification
             var msgText = _localization.EmailVerificationEmailText(securityCode.Value);
             var sendEmailBody = new SendEmailDTO(body.Email, msgTitle, msgText);
 
-            await _broker.SendData(sendEmailBody);
+            await _broker.PublishData(sendEmailBody);
         }
     }
 }

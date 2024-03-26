@@ -1,6 +1,6 @@
 ﻿using api.v1.main.DTOs;
 
-namespace api.v1.main.Services.Base
+namespace api.v1.main.Services.BaseAlgorithm
 {
     public interface IBaseAlgorithmService
     {
@@ -41,18 +41,18 @@ namespace api.v1.main.Services.Base
         public List<Object> GetPaginationListOfObjects<Object>(
             int page,
             int pageSize,
-            Guid userID,
+            Guid param1,
             Func<int, int, Guid, List<Object>> repositoryFunction);
         public List<Object> GetPaginationListOfObjects<Object>(
             int page,
             int pageSize,
-            Guid userID,
-            Guid objectTypeID,
+            Guid param1,
+            Guid param2,
             Func<int, int, Guid, Guid, List<Object>> repositoryFunction);
 
 
 
         public int GetPaginationTotalPages(int pageSize, Func<int> repositoryFunction);
-        public int GetPaginationTotalPages(int pageSize, Guid userID, Func<Guid, int> repositoryFunction);
+        public int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> repositoryFunction);
     }
 }

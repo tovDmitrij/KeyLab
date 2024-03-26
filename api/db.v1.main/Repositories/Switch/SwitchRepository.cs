@@ -3,13 +3,9 @@ using db.v1.main.DTOs.Switch;
 
 namespace db.v1.main.Repositories.Switch
 {
-    public sealed class SwitchRepository : ISwitchRepository
+    public sealed class SwitchRepository(ISwitchContext db) : ISwitchRepository
     {
-        private readonly ISwitchContext _db;
-
-        public SwitchRepository(ISwitchContext db) => _db = db;
-
-
+        private readonly ISwitchContext _db = db;
 
         public bool IsSwitchExist(Guid switchID) => _db.Switches
             .Any(@switch => @switch.ID == switchID);
