@@ -37,6 +37,10 @@ namespace db.v1.main.Repositories.Keycap
             _db.SaveChanges();
         }
 
+        public List<SelectKeycapDTO> SelectKeycaps(Guid kitID) => _db.Keycaps
+            .Where(keycap => keycap.KitID == kitID)
+            .Select(keycap => new SelectKeycapDTO(keycap.ID, keycap.Title, keycap.CreationDate)).ToList();
+
         public List<SelectKeycapDTO> SelectKeycaps(int page, int pageSize, Guid kitID) => _db.Keycaps
             .Where(keycap => keycap.KitID == kitID)
             .Select(keycap => new SelectKeycapDTO(keycap.ID, keycap.Title, keycap.CreationDate))

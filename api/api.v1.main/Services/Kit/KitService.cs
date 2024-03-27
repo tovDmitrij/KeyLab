@@ -5,10 +5,12 @@ using api.v1.main.Services.BaseAlgorithm;
 using component.v1.exceptions;
 
 using db.v1.main.DTOs.Kit;
+using db.v1.main.Repositories.Keycap;
 using db.v1.main.Repositories.Kit;
 using db.v1.main.Repositories.User;
 
 using helper.v1.configuration.Interfaces;
+using helper.v1.file;
 using helper.v1.localization.Helper;
 using helper.v1.regex.Interfaces;
 using helper.v1.time;
@@ -16,14 +18,17 @@ using helper.v1.time;
 namespace api.v1.main.Services.Kit
 {
     public sealed class KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, IBaseAlgorithmService @base, 
-        ILocalizationHelper localization, IUserRepository user, ITimeHelper time, IKitRegexHelper rgx) : IKitService
+        ILocalizationHelper localization, IUserRepository user, ITimeHelper time, IKitRegexHelper rgx, 
+        IFileHelper file, IKeycapRepository keycap) : IKitService
     {
         private readonly IKitRepository _kit = kit;
+        private readonly IKeycapRepository _keycap = keycap;
         private readonly IUserRepository _user = user;
 
         private readonly IBaseAlgorithmService _base = @base;
         private readonly ITimeHelper _time = time;
         private readonly IKitRegexHelper _rgx = rgx;
+        private readonly IFileHelper _file = file;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
         private readonly ILocalizationHelper _localization = localization;
 
@@ -46,8 +51,24 @@ namespace api.v1.main.Services.Kit
         }
 
         public void DeleteKit(DeleteKitDTO body, Guid userID) 
-        { 
-            throw new NotImplementedException();
+        {
+            ValidateKitOwner(body.KitID, userID);
+
+            var keycaps = _keycap.SelectKeycaps(body.KitID);
+            foreach (var keycap in keycaps)
+            {
+                var fileName = _keycap.SelectKeycapFileName(keycap.ID);
+                var filePath = _fileCfg.GetKeycapFilePath(userID, body.KitID, fileName!);
+                _file.DeleteFile(filePath);
+
+                var previewName = _keycap.SelectKeycapPreviewName(keycap.ID);
+                var previewPath = _fileCfg.GetKeycapFilePath(userID, body.KitID, previewName!);
+                _file.DeleteFile(previewPath);
+
+                _keycap.DeleteKeycap(keycap.ID);
+            }
+
+            _kit.DeleteKit(body.KitID);
         }
 
 

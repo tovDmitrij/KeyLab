@@ -13,6 +13,7 @@ namespace db.v1.main.Repositories.Keycap
 
         public Guid? SelectKitIDByKeycapID(Guid keycapID);
 
+        public List<SelectKeycapDTO> SelectKeycaps(Guid kitID);
         public List<SelectKeycapDTO> SelectKeycaps(int page, int pageSize, Guid kitID);
 
         public int SelectCountOfKeycaps(Guid kitID);
