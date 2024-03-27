@@ -2,10 +2,20 @@
 
 using db.v1.main.DTOs.Keycap;
 
+using component.v1.exceptions;
+using api.v1.main.DTOs.Keycap;
+
 namespace api.v1.main.Services.Keycap
 {
     public interface IKeycapService
     {
+        /// <exception cref="BadRequestException"></exception>
+        public void AddKeycap(PostKeycapDTO body);
+        /// <exception cref="BadRequestException"></exception>
+        public void UpdateKeycap(PutKeycapDTO body);
+
+
+
         /// <exception cref="BadRequestException"></exception>
         public byte[] GetKeycapFileBytes(Guid keycapID);
         /// <exception cref="BadRequestException"></exception>

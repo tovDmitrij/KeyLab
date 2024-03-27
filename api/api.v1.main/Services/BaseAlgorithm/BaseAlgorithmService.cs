@@ -21,61 +21,8 @@ namespace api.v1.main.Services.BaseAlgorithm
         private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
         private readonly IPreviewConfigurationHelper _previewCfg = previewCfg;
 
-        public byte[] GetFile(
-            Guid param1,
-            Func<Guid, string?> fileNameFunction,
-            Func<string, string> filePathFunction)
+        public byte[] GetFile(string filePath)
         {
-            var fileName = fileNameFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var filePath = filePathFunction(fileName);
-
-            if (!_cache.TryGetValue(filePath, out byte[]? file))
-            {
-                file = _file.GetFile(filePath);
-                if (file.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(filePath, file, minutes);
-            }
-            return file!;
-        }
-
-        public byte[] GetFile(
-            Guid param1,
-            Func<Guid, string?> fileNameFunction,
-            Func<Guid, Guid?> userIDFunction,
-            Func<Guid, string, string> filePathFunction)
-        {
-            var fileName = fileNameFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = userIDFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
-
-            var filePath = filePathFunction(userID, fileName);
-
-            if (!_cache.TryGetValue(filePath, out byte[]? file))
-            {
-                file = _file.GetFile(filePath);
-                if (file.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(filePath, file, minutes);
-            }
-            return file!;
-        }
-
-        public byte[] GetFile(
-            Guid param1,
-            Guid param2,
-            Func<Guid, string?> fileNameFunction,
-            Func<Guid, Guid?> userIDFunction,
-            Func<Guid, Guid, string, string> filePathFunction)
-        {
-            var fileName = fileNameFunction(param1) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = userIDFunction(param2) ?? throw new BadRequestException(_localization.FileIsNotExist());
-
-            var filePath = filePathFunction(userID, param2, fileName);
-
             if (!_cache.TryGetValue(filePath, out byte[]? file))
             {
                 file = _file.GetFile(filePath);
@@ -113,6 +60,40 @@ namespace api.v1.main.Services.BaseAlgorithm
             var fileType = _previewCfg.GetPreviewFileType();
             var previewName = $"{title}.{fileType}";
             var previewPath = filePathFunction(userID, previewName);
+            using (var ms = new MemoryStream())
+            {
+                preview!.CopyTo(ms);
+                var imgBytes = ms.ToArray();
+                _file.AddFile(imgBytes, previewPath);
+            }
+
+            return new(fileName, previewName);
+        }
+
+        public InitFileDTO AddFile(
+            IFormFile? file,
+            IFormFile? preview,
+            Guid userID,
+            Guid objectID,
+            string title,
+            Func<Guid, Guid, string, string> filePathFunction)
+        {
+            ValidateUserID(userID);
+            ValidateFile(file);
+            ValidatePreview(preview);
+
+            var fileName = $"{title}.glb";
+            var filePath = filePathFunction(userID, objectID, fileName);
+            using (var ms = new MemoryStream())
+            {
+                file!.CopyTo(ms);
+                var modelBytes = ms.ToArray();
+                _file.AddFile(modelBytes, filePath);
+            }
+
+            var fileType = _previewCfg.GetPreviewFileType();
+            var previewName = $"{title}.{fileType}";
+            var previewPath = filePathFunction(userID, objectID, previewName);
             using (var ms = new MemoryStream())
             {
                 preview!.CopyTo(ms);

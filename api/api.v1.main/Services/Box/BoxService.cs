@@ -81,13 +81,23 @@ namespace api.v1.main.Services.Box
 
         public byte[] GetBoxFileBytes(Guid boxID)
         {
-            var file = _base.GetFile(boxID, _box.SelectBoxFileName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
+            ValidateBoxID(boxID);
+            var fileName = _box.SelectBoxFileName(boxID);
+            var userID = _box.SelectBoxOwnerID(boxID);
+            var filePath = _fileCfg.GetBoxFilePath((Guid)userID!, fileName!);
+
+            var file = _base.GetFile(filePath);
             return file;
         }
 
         public string GetBoxBase64Preview(Guid boxID)
         {
-            var preview = _base.GetFile(boxID, _box.SelectBoxPreviewName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
+            ValidateBoxID(boxID);
+            var previewName = _box.SelectBoxPreviewName(boxID);
+            var userID = _box.SelectBoxOwnerID(boxID);
+            var previewPath = _fileCfg.GetBoxFilePath((Guid)userID!, previewName!);
+
+            var preview = _base.GetFile(previewPath);
             return Convert.ToBase64String(preview);
         }
 
@@ -135,6 +145,12 @@ namespace api.v1.main.Services.Box
         }
 
 
+
+        private void ValidateBoxID(Guid boxID)
+        {
+            if (!_box.IsBoxExist(boxID))
+                throw new BadRequestException(_localization.FileIsNotExist());
+        }
 
         private void ValidateUserID(Guid userID)
         {

@@ -22,6 +22,7 @@
         public string UserAccessTokenIsExpired();
         public string UserIsNotKeyboardOwner();
         public string UserIsNotBoxOwner();
+        public string UserIsNotKitOwner();
         public string UserPasswordsIsNotEqual();
         public string UserEmailIsBusy();
         public string UserEmailIsNotValid();
@@ -35,6 +36,7 @@
         public string KeyboardDescriptionIsNotValid();
 
         public string KitIsNotExist();
+        public string KitTitleIsNotValid();
 
         public string KeycapIsNotExist();
 

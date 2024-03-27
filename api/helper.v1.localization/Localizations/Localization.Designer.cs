@@ -241,6 +241,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Наименование набора кейкапов не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа.
+        /// </summary>
+        public static string KitTitle_IsNotValid {
+            get {
+                return ResourceManager.GetString("KitTitle_IsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Номер страницы не валидный.
         /// </summary>
         public static string PaginationPage_NotValid {
@@ -300,6 +309,15 @@ namespace helper.v1.localization.Localizations {
         public static string User_IsNotKeyboardOwner {
             get {
                 return ResourceManager.GetString("User_IsNotKeyboardOwner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Текущему пользователю не принадлежит набор кейкапов с указанными параметрами.
+        /// </summary>
+        public static string User_IsNotKitOwner {
+            get {
+                return ResourceManager.GetString("User_IsNotKitOwner", resourceCulture);
             }
         }
         

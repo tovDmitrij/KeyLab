@@ -1,11 +1,41 @@
 ﻿using db.v1.main.Contexts.Interfaces;
 using db.v1.main.DTOs.Keycap;
+using db.v1.main.Entities;
 
 namespace db.v1.main.Repositories.Keycap
 {
     public sealed class KeycapRepository(IKeycapContext db) : IKeycapRepository
     {
         private readonly IKeycapContext _db = db;
+
+        public Guid InsertKeycap(InsertKeycapDTO body)
+        {
+            var keycap = new KeycapEntity(body.KitID, body.Title, body.FileName, body.PreviewName, body.CreationDate);
+
+            _db.Keycaps.Add(keycap);
+            _db.SaveChanges();
+
+            return keycap.ID;
+        }
+
+        public void UpdateKeycap(UpdateKeycapDTO body)
+        {
+            var keycap = _db.Keycaps.First(keycap => keycap.ID == body.KeycapID);
+            keycap.Title = body.Title;
+            keycap.FileName = body.FileName;
+            keycap.PreviewName = body.PreviewName;
+
+            _db.Keycaps.Update(keycap);
+            _db.SaveChanges();
+        }
+
+        public void DeleteKeycap(Guid keycapID)
+        {
+            var keycap = _db.Keycaps.First(keycap =>  keycap.ID == keycapID);
+
+            _db.Keycaps.Remove(keycap);
+            _db.SaveChanges();
+        }
 
         public List<SelectKeycapDTO> SelectKeycaps(int page, int pageSize, Guid kitID) => _db.Keycaps
             .Where(keycap => keycap.KitID == kitID)

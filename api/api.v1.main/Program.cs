@@ -176,6 +176,7 @@ void InitHelpers()
     builder.Services.AddSingleton<IVerificationRegexHelper, RegexHelper>();
     builder.Services.AddSingleton<IKeyboardRegexHelper, RegexHelper>();
     builder.Services.AddSingleton<IBoxRegexHelper, RegexHelper>();
+    builder.Services.AddSingleton<IKitRegexHelper, RegexHelper>();
 }
 
 void InitServices()

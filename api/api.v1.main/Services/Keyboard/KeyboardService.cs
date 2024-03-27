@@ -87,13 +87,25 @@ namespace api.v1.main.Services.Keyboard
 
         public byte[] GetKeyboardFileBytes(Guid keyboardID)
         {
-            var file = _base.GetFile(keyboardID, _keyboard.SelectKeyboardFileName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardFilePath);
+            ValidateKeyboardID(keyboardID);
+
+            var fileName = _keyboard.SelectKeyboardFileName(keyboardID);
+            var userID = _keyboard.SelectKeyboardOwnerID(keyboardID);
+            var filePath = _fileCfg.GetKeyboardFilePath((Guid)userID!, fileName!);
+
+            var file = _base.GetFile(filePath);
             return file;
         }
 
         public string GetKeyboardBase64Preview(Guid keyboardID)
         {
-            var preview = _base.GetFile(keyboardID, _keyboard.SelectKeyboardPreviewName, _keyboard.SelectKeyboardOwnerID, _fileCfg.GetKeyboardFilePath);
+            ValidateKeyboardID(keyboardID);
+
+            var previewName = _keyboard.SelectKeyboardPreviewName(keyboardID);
+            var userID = _keyboard.SelectKeyboardOwnerID(keyboardID);
+            var filePath = _fileCfg.GetKeyboardFilePath((Guid)userID!, previewName!);
+
+            var preview = _base.GetFile(filePath);
             return Convert.ToBase64String(preview);
         }
 
@@ -131,6 +143,12 @@ namespace api.v1.main.Services.Keyboard
         }
 
 
+
+        private void ValidateKeyboardID(Guid keyboardID)
+        {
+            if (!_keyboard.IsKeyboardExist(keyboardID))
+                throw new BadRequestException(_localization.FileIsNotExist());
+        }
 
         private void ValidateUserID(Guid userID)
         {

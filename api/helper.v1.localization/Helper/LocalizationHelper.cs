@@ -27,6 +27,7 @@ namespace helper.v1.localization.Helper
         public string UserAccessTokenIsExpired() => _localization["UserAccessToken_IsExpired"];
         public string UserIsNotKeyboardOwner() => _localization["User_IsNotKeyboardOwner"];
         public string UserIsNotBoxOwner() => _localization["User_IsNoxBoxOwner"];
+        public string UserIsNotKitOwner() => _localization["User_IsNotKitOwner"];
         public string UserPasswordsIsNotEqual() => _localization["UserPasswords_IsNotEqual"];
         public string UserEmailIsBusy() => _localization["UserEmail_IsBusy"];
         public string UserEmailIsNotValid() => _localization["UserEmail_IsNotValid"];
@@ -40,6 +41,7 @@ namespace helper.v1.localization.Helper
         public string KeyboardDescriptionIsNotValid() => _localization["KeyboardDescription_IsNotValid"];
 
         public string KitIsNotExist() => _localization["Kit_IsNotExist"];
+        public string KitTitleIsNotValid() => _localization["KitTitle_IsNotValid"];
 
         public string KeycapIsNotExist() => _localization["Keycap_IsNotExist"];
 
@@ -52,6 +54,5 @@ namespace helper.v1.localization.Helper
 
         public string PaginationPageIsNotValid() => _localization["PaginationPage_NotValid"];
         public string PaginationPageSizeIsNotValid() => _localization["PaginationPageSize_NotValid"];
-
     }
 }
