@@ -18,8 +18,26 @@ namespace api.v1.stats.Controllers
     {
         private readonly IStatService _stat = stat;
 
+        [HttpPost("attendance/time/plot")]
+        public IActionResult GetAttendanceTimePlot([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] PostAttendanceStatDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var plot = _stat.GetAttendanceTimePlot(body, userID);
+            return Ok(plot);
+        }
+
+        [HttpPost("attendance/time/atom")]
+        public IActionResult GetAttendanceTimeAtom([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] PostAttendanceStatDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var value = _stat.GetAttendanceTimeAtom(body, userID);
+            return Ok(new { value });
+        }
+
+
+
         [HttpPost("attendance/quantity/plot")]
-        public IActionResult GetAttendanceQuantityPlot([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)]PostAttendanceStatDTO body)
+        public IActionResult GetAttendanceQuantityPlot([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] PostAttendanceStatDTO body)
         {
             var userID = GetAccessTokenUserID();
             var plot = _stat.GetAttendanceQuantityPlot(body, userID);

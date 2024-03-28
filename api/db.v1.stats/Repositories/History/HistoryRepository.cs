@@ -1,4 +1,5 @@
 ﻿using db.v1.stats.Contexts.Interfaces;
+using db.v1.stats.DTOs;
 using db.v1.stats.Entities;
 
 namespace db.v1.stats.Repositories.History
@@ -13,6 +14,10 @@ namespace db.v1.stats.Repositories.History
             _db.Histories.Add(history);
             _db.SaveChanges();
         }
+
+        public List<SelectHistoryDTO> SelectHistoriesByPeriod(double leftDate, double rightDate) => _db.Histories
+            .Where(activity => leftDate <= activity.Date && activity.Date <= rightDate)
+            .Select(activity => new SelectHistoryDTO(activity.UserID, activity.Date)).ToList();
 
         public int SelectDistinctCountOfUserIDByPeriod(double leftDate, double rightDate) => _db.Histories
             .Where(activity => leftDate <= activity.Date && activity.Date <= rightDate)

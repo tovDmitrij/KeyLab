@@ -5,7 +5,7 @@ namespace helper.v1.configuration
 {
     public sealed class ConfigurationHelper(IConfiguration cfg) : 
         IEmailConfigurationHelper, IJWTConfigurationHelper, IFileConfigurationHelper, ICacheConfigurationHelper, 
-        IAdminConfigurationHelper, IActivityConfigurationHelper
+        IAdminConfigurationHelper, IActivityConfigurationHelper, IStatConfigurationHelper
     {
         private readonly IConfiguration _cfg = cfg;
 
@@ -64,5 +64,8 @@ namespace helper.v1.configuration
             throw new ArgumentNullException("Activities:EditKeycap отсутствует в конфигурационном файле");
         public string GetSeeSwitchActivityTag() => _cfg["Activities:SeeSwitch"] ??
             throw new ArgumentNullException("Activities:SeeSwitch отсутствует в конфигурационном файле");
+
+        public int GetStatisticAliveTimeSeconds() => Convert.ToInt32(_cfg["Statistic:AliveTimeSeconds"] ??
+            throw new ArgumentNullException("Statistic:AliveTimeSeconds отсутствует в конфигурационном файле"));
     }
 }

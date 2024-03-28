@@ -13,13 +13,78 @@ using helper.v1.localization.Helper;
 namespace api.v1.stats.Services.Stat
 {
     public sealed class StatService(IIntervalRepository interval, IAdminConfigurationHelper adminCfg, IHistoryRepository history,
-        ICacheHelper cache, ILocalizationHelper localization) : IStatService
+        ICacheHelper cache, ILocalizationHelper localization, IStatConfigurationHelper statCfg) : IStatService
     {
         private readonly IIntervalRepository _interval = interval;
-        private readonly IAdminConfigurationHelper _adminCfg = adminCfg;
         private readonly IHistoryRepository _history = history;
         private readonly ICacheHelper _cache = cache;
         private readonly ILocalizationHelper _localization = localization;
+        private readonly IAdminConfigurationHelper _adminCfg = adminCfg;
+        private readonly IStatConfigurationHelper _statCfg = statCfg;
+
+        public List<AttendancePlotDTO> GetAttendanceTimePlot(PostAttendanceStatDTO body, Guid userID)
+        {
+            var periods = ValidateBodyAndGetPeriods(body, userID);
+
+            var timePlotData = new List<AttendancePlotDTO>();
+            foreach (var period in periods)
+            {
+                try 
+                {
+                    var activities = _history.SelectHistoriesByPeriod(period.LeftDate, period.RightDate).OrderBy(x => x.UserID).ThenBy(x => x.Date);
+                    var users = activities.Select(x => x.UserID).Distinct();
+                    var userTimes = new List<double>();
+                    foreach (var user in users)
+                    {
+                        var userActivity = activities.Where(x => x.UserID == user);
+                        var aliveTime = userActivity.Last().Date - userActivity.First().Date;
+                        if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                        {
+                            userTimes.Add(aliveTime);
+                        }
+                    }
+                    timePlotData.Add(new(period.LeftDate, period.RightDate, userTimes.Average()));
+                }
+                catch
+                {
+                    timePlotData.Add(new(period.LeftDate, period.RightDate, 0.0));
+                }
+            }
+            return timePlotData;
+        }
+
+        public double GetAttendanceTimeAtom(PostAttendanceStatDTO body, Guid userID)
+        {
+            var periods = ValidateBodyAndGetPeriods(body, userID);
+
+            var timePlotData = new List<double>();
+            foreach (var period in periods)
+            {
+                try
+                {
+                    var activities = _history.SelectHistoriesByPeriod(period.LeftDate, period.RightDate).OrderBy(x => x.UserID).ThenBy(x => x.Date);
+                    var users = activities.Select(x => x.UserID).Distinct();
+                    var userTimes = new List<double>();
+                    foreach (var user in users)
+                    {
+                        var userActivity = activities.Where(x => x.UserID == user);
+                        var aliveTime = userActivity.Last().Date - userActivity.First().Date;
+                        if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                        {
+                            userTimes.Add(aliveTime);
+                        }
+                    }
+                    timePlotData.Add(userTimes.Average());
+                }
+                catch
+                {
+                    timePlotData.Add(0.0);
+                }
+            }
+            return timePlotData.Average();
+        }
+
+
 
         public List<AttendancePlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body, Guid userID)
         {

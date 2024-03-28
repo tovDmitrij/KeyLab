@@ -38,6 +38,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("/configurations/db.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/stats.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
@@ -143,6 +144,7 @@ void InitHelpers()
 {
     builder.Services.AddSingleton<IAdminConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<IStatConfigurationHelper, ConfigurationHelper>();
 
     builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
     builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
