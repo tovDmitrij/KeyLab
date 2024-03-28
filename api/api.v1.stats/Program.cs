@@ -2,6 +2,7 @@ using api.v1.stats.Consumers;
 using api.v1.stats.Services.Activity;
 using api.v1.stats.Services.History;
 using api.v1.stats.Services.Interval;
+using api.v1.stats.Services.Stat;
 
 using component.v1.middlewares;
 
@@ -153,6 +154,7 @@ void InitServices()
     builder.Services.AddTransient<IIntervalService, IntervalService>();
     builder.Services.AddTransient<IActivityService, ActivityService>();
     builder.Services.AddTransient<IHistoryService, HistoryService>();
+    builder.Services.AddTransient<IStatService, StatService>();
 }
 
 #endregion

@@ -196,6 +196,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Временного интервала с заданными параметрами не существует.
+        /// </summary>
+        public static string Interval_IsNotExist {
+            get {
+                return ResourceManager.GetString("Interval_IsNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Описание клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа.
         /// </summary>
         public static string KeyboardDescription_IsNotValid {
@@ -273,6 +282,15 @@ namespace helper.v1.localization.Localizations {
         public static string Preview_IsNotAttached {
             get {
                 return ResourceManager.GetString("Preview_IsNotAttached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Левая дата периода больше правой.
+        /// </summary>
+        public static string Stats_LeftDateGreaterThanRightDate {
+            get {
+                return ResourceManager.GetString("Stats_LeftDateGreaterThanRightDate", resourceCulture);
             }
         }
         

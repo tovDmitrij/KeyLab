@@ -10,6 +10,9 @@ namespace db.v1.stats.Repositories.Interval
         public List<SelectIntervalDTO> SelectIntervals() => _db.Intervals
             .Select(interval => new SelectIntervalDTO(interval.ID, interval.Title)).ToList();
 
+        public int SelectIntervalSeconds(Guid intervalID) => _db.Intervals
+            .FirstOrDefault(interval => intervalID == interval.ID).Seconds;
+
         public bool IsIntervalExist(Guid intervalID) => _db.Intervals
             .Any(interval => interval.ID == intervalID);
     }

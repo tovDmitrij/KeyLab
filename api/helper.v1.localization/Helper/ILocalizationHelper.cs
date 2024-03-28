@@ -49,5 +49,8 @@
 
         public string PaginationPageIsNotValid();
         public string PaginationPageSizeIsNotValid();
+
+        public string StatsLeftDateGreaterThanRightDate();
+        public string IntervalIsNotExist();
     }
 }

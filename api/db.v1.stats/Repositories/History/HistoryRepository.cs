@@ -13,5 +13,10 @@ namespace db.v1.stats.Repositories.History
             _db.Histories.Add(history);
             _db.SaveChanges();
         }
+
+        public int SelectDistinctCountOfUserIDByPeriod(double leftDate, double rightDate) => _db.Histories
+            .Where(activity => leftDate <= activity.Date && activity.Date <= rightDate)
+            .Select(activity => activity.UserID)
+            .Distinct().Count();
     }
 }

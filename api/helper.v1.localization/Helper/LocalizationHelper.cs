@@ -54,5 +54,9 @@ namespace helper.v1.localization.Helper
 
         public string PaginationPageIsNotValid() => _localization["PaginationPage_NotValid"];
         public string PaginationPageSizeIsNotValid() => _localization["PaginationPageSize_NotValid"];
+
+        public string StatsLeftDateGreaterThanRightDate() => _localization["Stats_LeftDateGreaterThanRightDate"];
+
+        public string IntervalIsNotExist() => _localization["Interval_IsNotExist"];
     }
 }
