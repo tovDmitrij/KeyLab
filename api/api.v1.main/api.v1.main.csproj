@@ -7,13 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.3" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\component.v1.activity\component.v1.activity.csproj" />
     <ProjectReference Include="..\component.v1.apicontroller\component.v1.apicontroller.csproj" />
     <ProjectReference Include="..\component.v1.email\component.v1.email.csproj" />
     <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />

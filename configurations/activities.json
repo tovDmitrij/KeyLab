@@ -1,5 +1,12 @@
 {
-    "Activities": [
-        "refresh", "see_keyboard", "edit_keyboard", "see_box", "edit_box", "see_keycap", "edit_keycap", "see_switch"
-    ]
+    "Activities": {
+        "Refresh": "refresh", 
+        "SeeKeyboard": "see_keyboard", 
+        "EditKeyboard": "edit_keyboard", 
+        "SeeBox": "see_box", 
+        "EditBox": "edit_box", 
+        "SeeKeycap": "see_keycap", 
+        "EditKeycap": "edit_keycap", 
+        "SeeSwitch": "see_switch"
+    }
 }

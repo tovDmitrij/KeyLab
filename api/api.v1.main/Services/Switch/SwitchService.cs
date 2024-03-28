@@ -12,21 +12,23 @@ using helper.v1.localization.Helper;
 namespace api.v1.main.Services.Switch
 {
     public sealed class SwitchService(ISwitchRepository switches, IFileConfigurationHelper fileCfg, 
-        IBaseAlgorithmService @base, ILocalizationHelper localization) : ISwitchService
+        IBaseAlgorithmService @base, ILocalizationHelper localization, IActivityConfigurationHelper activityCfg) : ISwitchService
     {
         private readonly ISwitchRepository _switch = switches;
 
         private readonly IBaseAlgorithmService _base = @base;
         private readonly ILocalizationHelper _localization = localization;
+        private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
-        public byte[] GetSwitchFileBytes(Guid switchID)
+        public async Task<byte[]> GetSwitchFileBytes(Guid switchID, Guid statsID)
         {
             ValidateSwitchID(switchID);
             var fileName = _switch.SelectSwitchFileName(switchID);
             var filePath = _fileCfg.GetSwitchFilePath(fileName!);
 
             var file = _base.GetFile(filePath);
+            await _base.PublishActivity(statsID, _activityCfg.GetSeeSwitchActivityTag);
             return file;
         }
 
@@ -52,9 +54,11 @@ namespace api.v1.main.Services.Switch
 
 
 
-        public List<SelectSwitchDTO> GetSwitches(PaginationDTO body)
+        public async Task<List<SelectSwitchDTO>> GetSwitches(PaginationDTO body, Guid statsID)
         {
             var switches = _base.GetPaginationListOfObjects(body.Page, body.PageSize, _switch.SelectSwitches);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetSeeSwitchActivityTag);
             return switches;
         }
 

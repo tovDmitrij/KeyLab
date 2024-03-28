@@ -25,6 +25,12 @@ namespace component.v1.apicontroller
             return Guid.Parse(userID);
         }
 
+        protected Guid GetStatsID()
+        {
+            var statsID = Request.Cookies["stats_uuid"]!;
+            return Guid.Parse(statsID);
+        }
+
 
 
         private string GetAccessToken()

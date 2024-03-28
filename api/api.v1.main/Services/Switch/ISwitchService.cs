@@ -7,7 +7,7 @@ namespace api.v1.main.Services.Switch
     public interface ISwitchService
     {
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetSwitchFileBytes(Guid switchID);
+        public Task<byte[]> GetSwitchFileBytes(Guid switchID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
         public string GetSwitchBase64Sound(Guid switchID);
         /// <exception cref="BadRequestException"></exception>
@@ -15,7 +15,7 @@ namespace api.v1.main.Services.Switch
 
 
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectSwitchDTO> GetSwitches(PaginationDTO body);
+        public Task<List<SelectSwitchDTO>> GetSwitches(PaginationDTO body, Guid statsID);
 
 
 

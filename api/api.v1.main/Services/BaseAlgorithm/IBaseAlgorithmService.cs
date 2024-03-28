@@ -1,5 +1,7 @@
 ﻿using api.v1.main.DTOs;
 
+using component.v1.activity;
+
 namespace api.v1.main.Services.BaseAlgorithm
 {
     public interface IBaseAlgorithmService
@@ -53,5 +55,9 @@ namespace api.v1.main.Services.BaseAlgorithm
 
         public int GetPaginationTotalPages(int pageSize, Func<int> repositoryFunction);
         public int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> repositoryFunction);
+
+
+
+        public Task PublishActivity(Guid statsID, Func<string> activityTagFunction);
     }
 }

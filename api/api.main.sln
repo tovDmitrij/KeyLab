@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "component.v1.middlewares", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "component.v1.apicontroller", "component.v1.apicontroller\component.v1.apicontroller.csproj", "{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "component.v1.activity", "component.v1.activity\component.v1.activity.csproj", "{C9130C8C-6C72-45DD-A46F-57F901B9F2C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4E75AA5-B8C8-4DCD-9C9B-21EDACF4AE26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9130C8C-6C72-45DD-A46F-57F901B9F2C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9130C8C-6C72-45DD-A46F-57F901B9F2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9130C8C-6C72-45DD-A46F-57F901B9F2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9130C8C-6C72-45DD-A46F-57F901B9F2C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,17 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\component.v1.activity\component.v1.activity.csproj" />
     <ProjectReference Include="..\component.v1.apicontroller\component.v1.apicontroller.csproj" />
     <ProjectReference Include="..\component.v1.middlewares\component.v1.middlewares.csproj" />
     <ProjectReference Include="..\db.v1.stats\db.v1.stats.csproj" />
     <ProjectReference Include="..\helper.v1.cache\helper.v1.cache.csproj" />
     <ProjectReference Include="..\helper.v1.configuration\helper.v1.configuration.csproj" />
+    <ProjectReference Include="..\helper.v1.time\helper.v1.time.csproj" />
   </ItemGroup>
 
 </Project>

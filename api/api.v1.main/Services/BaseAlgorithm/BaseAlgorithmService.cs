@@ -1,5 +1,6 @@
 ﻿using api.v1.main.DTOs;
 
+using component.v1.activity;
 using component.v1.exceptions;
 
 using db.v1.main.Repositories.User;
@@ -8,18 +9,19 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
+using helper.v1.messageBroker;
 
 namespace api.v1.main.Services.BaseAlgorithm
 {
     public sealed class BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, 
-        ICacheConfigurationHelper cacheCfg, IFileHelper file, IPreviewConfigurationHelper previewCfg) : IBaseAlgorithmService
+        ICacheConfigurationHelper cacheCfg, IFileHelper file, IMessageBrokerHelper broker) : IBaseAlgorithmService
     {
         private readonly ILocalizationHelper _localization = localization;
         private readonly IUserRepository _user = user;
         private readonly ICacheHelper _cache = cache;
         private readonly IFileHelper _file = file;
+        private readonly IMessageBrokerHelper _broker = broker;
         private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
-        private readonly IPreviewConfigurationHelper _previewCfg = previewCfg;
 
         public byte[] GetFile(string filePath)
         {
@@ -57,8 +59,7 @@ namespace api.v1.main.Services.BaseAlgorithm
                 _file.AddFile(modelBytes, filePath);
             }
 
-            var fileType = _previewCfg.GetPreviewFileType();
-            var previewName = $"{title}.{fileType}";
+            var previewName = $"{title}.jpeg";
             var previewPath = filePathFunction(userID, previewName);
             using (var ms = new MemoryStream())
             {
@@ -91,8 +92,7 @@ namespace api.v1.main.Services.BaseAlgorithm
                 _file.AddFile(modelBytes, filePath);
             }
 
-            var fileType = _previewCfg.GetPreviewFileType();
-            var previewName = $"{title}.{fileType}";
+            var previewName = $"{title}.jpeg";
             var previewPath = filePathFunction(userID, objectID, previewName);
             using (var ms = new MemoryStream())
             {
@@ -132,8 +132,7 @@ namespace api.v1.main.Services.BaseAlgorithm
 
             var oldPreviewFileName = previewNameFunction(objectID)!;
             var oldPreviewFilePath = filePathFunction(userID, oldPreviewFileName);
-            var fileType = _previewCfg.GetPreviewFileType();
-            var newPreviewName = $"{title}.{fileType}";
+            var newPreviewName = $"{title}.jpeg";
             var newPreviewPath = filePathFunction(userID, newPreviewName);
             using (var memoryStream = new MemoryStream())
             {
@@ -205,6 +204,15 @@ namespace api.v1.main.Services.BaseAlgorithm
 
             var count = repositoryFunction(param);
             return GetTotalPages(count, pageSize);
+        }
+
+
+
+        public async Task PublishActivity(Guid statsID, Func<string> activityTagFunction)
+        {
+            var activityTag = activityTagFunction();
+            var activityBody = new ActivityDTO(statsID, activityTag);
+            await _broker.PublishData(activityBody);
         }
 
 

@@ -20,7 +20,7 @@ namespace api.v1.main.Controllers
 
         [HttpPost, DisableRequestSizeLimit]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult AddKeycap()
+        public async Task<IActionResult> AddKeycap()
         {
             var file = GetFormDataKeycapFile();
             var preview = GetFormDataKeycapPreview();
@@ -30,14 +30,15 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var body = new PostKeycapDTO(file, preview, title, kitID, userID);
-            _keycap.AddKeycap(body);
+            var statsID = GetStatsID();
+            await _keycap.AddKeycap(body, statsID);
 
             return Ok(_localization.FileIsSuccessfullUploaded());
         }
 
         [HttpPut, DisableRequestSizeLimit]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult UpdateKeycap()
+        public async Task<IActionResult> UpdateKeycap()
         {
             var file = GetFormDataKeycapFile();
             var preview = GetFormDataKeycapPreview();
@@ -47,7 +48,8 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var body = new PutKeycapDTO(file, preview, title, keycapID, userID);
-            _keycap.UpdateKeycap(body);
+            var statsID = GetStatsID();
+            await _keycap.UpdateKeycap(body, statsID);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
         }
@@ -56,9 +58,10 @@ namespace api.v1.main.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetKeycapsList([Required] int page, [Required] int pageSize, [Required] Guid kitID)
+        public async Task<IActionResult> GetKeycapsList([Required] int page, [Required] int pageSize, [Required] Guid kitID)
         {
-            var keycaps = _keycap.GetKeycaps(new(page, pageSize), kitID);
+            var statsID = GetStatsID();
+            var keycaps = await _keycap.GetKeycaps(new(page, pageSize), kitID, statsID);
             return Ok(keycaps);
         }
 
@@ -67,7 +70,7 @@ namespace api.v1.main.Controllers
         public IActionResult GetKeycapsTotalPages([Required] int pageSize, [Required] Guid kitID)
         {
             var totalPages = _keycap.GetKeycapsTotalPages(pageSize, kitID);
-            return Ok(new { totalPages = totalPages });
+            return Ok(new { totalPages });
         }
 
 
@@ -76,7 +79,8 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public async Task GetKeycapFile([Required] Guid keycapID)
         {
-            var file = _keycap.GetKeycapFileBytes(keycapID);
+            var statsID = GetStatsID();
+            var file = await _keycap.GetKeycapFileBytes(keycapID, statsID);
             await Response.Body.WriteAsync(file);
         }
 
@@ -84,8 +88,8 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public IActionResult GetKeycapPreview([Required] Guid keycapID)
         {
-            var preview = _keycap.GetKeycapBase64Preview(keycapID);
-            return Ok(new { previewBase64 = preview });
+            var previewBase64 = _keycap.GetKeycapBase64Preview(keycapID);
+            return Ok(new { previewBase64 });
         }
 
 

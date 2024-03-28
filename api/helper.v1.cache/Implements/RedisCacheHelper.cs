@@ -10,7 +10,7 @@ namespace helper.v1.cache.Implements
 
         public bool TryGetValue<T>(object key, out T? value)
         {
-            var json = _cache.GetString(key.ToString());
+            var json = _cache.GetString(key.ToString()!);
 
             if (json == null)
             {
@@ -22,7 +22,7 @@ namespace helper.v1.cache.Implements
             return true;
         }
 
-        public void DeleteValue(object key) => _cache.Remove(key.ToString());
+        public void DeleteValue(object key) => _cache.Remove(key.ToString()!);
 
         public void SetValue<T>(object key, T value, int minutes)
         {
@@ -32,7 +32,7 @@ namespace helper.v1.cache.Implements
             };
 
             var json = JsonSerializer.Serialize(value);
-            _cache.SetString(key.ToString(), json, options);
+            _cache.SetString(key.ToString()!, json, options);
         }
     }
 }

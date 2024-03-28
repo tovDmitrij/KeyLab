@@ -10,21 +10,21 @@ namespace api.v1.main.Services.Keycap
     public interface IKeycapService
     {
         /// <exception cref="BadRequestException"></exception>
-        public void AddKeycap(PostKeycapDTO body);
+        public Task AddKeycap(PostKeycapDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public void UpdateKeycap(PutKeycapDTO body);
+        public Task UpdateKeycap(PutKeycapDTO body, Guid statsID);
 
 
 
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetKeycapFileBytes(Guid keycapID);
+        public Task<byte[]> GetKeycapFileBytes(Guid keycapID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
         public string GetKeycapBase64Preview(Guid keycapID);
 
 
 
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectKeycapDTO> GetKeycaps(PaginationDTO body, Guid kitID);
+        public Task<List<SelectKeycapDTO>> GetKeycaps(PaginationDTO body, Guid kitID, Guid statsID);
 
 
 

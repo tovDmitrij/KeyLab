@@ -1,15 +1,14 @@
 ﻿using db.v1.stats.Contexts.Interfaces;
 using db.v1.stats.DTOs;
 
-using System.Linq.Expressions;
-
 namespace db.v1.stats.Repositories.Activity
 {
-    public sealed class ActivityRepository : IActivityRepository
+    public sealed class ActivityRepository(IActivityContext db) : IActivityRepository
     {
-        private readonly IActivityContext _db;
+        private readonly IActivityContext _db = db;
 
-        public ActivityRepository(IActivityContext db) => _db = db;
+        public Guid? SelectActivityIDByTag(string tag) => _db.Activities
+            .FirstOrDefault(activity => activity.Tag == tag)?.ID;
 
 
 
@@ -19,6 +18,8 @@ namespace db.v1.stats.Repositories.Activity
         public List<SelectActivityDTO> SelectActivities(List<string> notEqualTags) => _db.Activities
             .Where(activity => !notEqualTags.Contains(activity.Tag))
             .Select(activity => new SelectActivityDTO(activity.ID, activity.Title)).ToList();
+
+
 
         public bool IsActivityExistByID(Guid activityID) => _db.Activities
             .Any(activity => activity.ID == activityID);

@@ -19,7 +19,7 @@ namespace api.v1.main.Services.Kit
 {
     public sealed class KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, IBaseAlgorithmService @base, 
         ILocalizationHelper localization, IUserRepository user, ITimeHelper time, IKitRegexHelper rgx, 
-        IFileHelper file, IKeycapRepository keycap) : IKitService
+        IFileHelper file, IKeycapRepository keycap, IActivityConfigurationHelper activityCfg) : IKitService
     {
         private readonly IKitRepository _kit = kit;
         private readonly IKeycapRepository _keycap = keycap;
@@ -30,27 +30,30 @@ namespace api.v1.main.Services.Kit
         private readonly IKitRegexHelper _rgx = rgx;
         private readonly IFileHelper _file = file;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
+        private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
         private readonly ILocalizationHelper _localization = localization;
 
-        public Guid CreateKit(PostKitDTO body, Guid userID)
+        public async Task<Guid> CreateKit(PostKitDTO body, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
             ValidateKitTitle(body.Title);
 
             var currentTime = _time.GetCurrentUNIXTime();
             var kitID =  _kit.InsertKit(userID, body.Title, currentTime);
+            await _base.PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
             return kitID;
         }
 
-        public void UpdateKit(PutKitDTO body, Guid userID)
+        public async Task UpdateKit(PutKitDTO body, Guid userID, Guid statsID)
         {
             ValidateKitOwner(body.KitID, userID);
             ValidateKitTitle(body.Title);
 
             _kit.UpdateKit(body.KitID, body.Title);
+            await _base.PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
         }
 
-        public void DeleteKit(DeleteKitDTO body, Guid userID) 
+        public async Task DeleteKit(DeleteKitDTO body, Guid userID, Guid statsID) 
         {
             ValidateKitOwner(body.KitID, userID);
 
@@ -69,21 +72,24 @@ namespace api.v1.main.Services.Kit
             }
 
             _kit.DeleteKit(body.KitID);
+            await _base.PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
         }
 
 
 
-        public List<SelectKitDTO> GetDefaultKits(PaginationDTO body)
+        public async Task<List<SelectKitDTO>> GetDefaultKits(PaginationDTO body, Guid statsID)
         {
             var kits = _base.GetPaginationListOfObjects(body.Page, body.PageSize, _fileCfg.GetDefaultModelsUserID(), _kit.SelectUserKits);
+            await _base.PublishActivity(statsID, _activityCfg.GetSeeKeycapActivityTag);
             return kits;
         }
 
-        public List<SelectKitDTO> GetUserKits(PaginationDTO body, Guid userID)
+        public async Task<List<SelectKitDTO>> GetUserKits(PaginationDTO body, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
 
             var kits = _base.GetPaginationListOfObjects(body.Page, body.PageSize, userID, _kit.SelectUserKits);
+            await _base.PublishActivity(statsID, _activityCfg.GetSeeKeycapActivityTag);
             return kits;
         }
 

@@ -49,12 +49,12 @@ using api.v1.main.Services.Keycap;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("/configurations/db.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/preview.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/activities.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -170,7 +170,7 @@ void InitHelpers()
     builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
     builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
-    builder.Services.AddSingleton<IPreviewConfigurationHelper, ConfigurationHelper>();
+    builder.Services.AddSingleton<IActivityConfigurationHelper, ConfigurationHelper>();
 
     builder.Services.AddSingleton<IUserRegexHelper, RegexHelper>();
     builder.Services.AddSingleton<IVerificationRegexHelper, RegexHelper>();

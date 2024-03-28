@@ -14,12 +14,15 @@ using helper.v1.localization.Helper;
 using helper.v1.regex.Interfaces;
 using helper.v1.configuration.Interfaces;
 using helper.v1.messageBroker;
+using component.v1.activity;
+using api.v1.main.Services.BaseAlgorithm;
 
 namespace api.v1.main.Services.User
 {
     public sealed class UserService(IUserRepository user, IVerificationRepository verification, IUserRegexHelper rgx, 
         ISecurityHelper security, ITimeHelper time, IJWTHelper jwt, ILocalizationHelper localization, 
-        IJWTConfigurationHelper cfgJWT, IFileConfigurationHelper cfgFile) : IUserService
+        IJWTConfigurationHelper cfgJWT, IFileConfigurationHelper cfgFile, IBaseAlgorithmService @base,
+        IActivityConfigurationHelper activityCfg) : IUserService
     {
         private readonly IUserRepository _user = user;
         private readonly IVerificationRepository _verification = verification;
@@ -28,9 +31,11 @@ namespace api.v1.main.Services.User
         private readonly ISecurityHelper _security = security;
         private readonly ITimeHelper _time = time;
         private readonly IJWTHelper _jwt = jwt;
+        private readonly IBaseAlgorithmService _base = @base;
         private readonly ILocalizationHelper _localization = localization;
         private readonly IJWTConfigurationHelper _cfgJWT = cfgJWT;
         private readonly IFileConfigurationHelper _cfgFile = cfgFile;
+        private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
 
         public void SignUp(PostSignUpDTO body)
         {
@@ -57,7 +62,7 @@ namespace api.v1.main.Services.User
             _user.InsertUserInfo(signUpBody);
         }
 
-        public SignInDTO SignIn(PostSignInDTO body)
+        public async Task<SignInDTO> SignIn(PostSignInDTO body, Guid statsID)
         {
             _rgx.ValidateUserEmail(body.Email);
             _rgx.ValidateUserPassword(body.Password);
@@ -97,10 +102,11 @@ namespace api.v1.main.Services.User
             var refreshTokenBody = new RefreshTokenDTO(userID, refreshToken.Value, refreshToken.ExpireDate);
             _user.UpdateRefreshToken(refreshTokenBody);
 
+            await _base.PublishActivity(statsID, _activityCfg.GetRefreshActivityTag);
             return new(accessToken, refreshToken.Value, isAdmin);
         }
 
-        public string UpdateAccessToken(string refreshToken)
+        public async Task<string> UpdateAccessToken(string refreshToken, Guid statsID)
         {
             var userID = _user.SelectUserIDByRefreshToken(refreshToken) ??
                 throw new UnauthorizedException(_localization.UserRefreshTokenIsExpired());
@@ -120,6 +126,8 @@ namespace api.v1.main.Services.User
             var accessExpireDate = _time.GetCurrentDateTimeWithAddedSeconds(accessTime);
 
             var accessToken = _jwt.CreateAccessToken(userID, secretKey, issuer, audience, accessExpireDate);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetRefreshActivityTag);
             return accessToken;
         }
     }

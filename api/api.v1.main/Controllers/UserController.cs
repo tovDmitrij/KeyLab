@@ -26,18 +26,20 @@ namespace api.v1.main.Controllers
         }
 
         [HttpPost("signIn")]
-        public IActionResult SignIn([FromBody] PostSignInDTO body)
+        public async Task<IActionResult> SignIn([FromBody] PostSignInDTO body)
         {
-            var response = _user.SignIn(body);
+            var statsID = GetStatsID();
+            var response = await _user.SignIn(body, statsID);
             SetRefreshTokenInCookie(response.RefreshToken);
             return Ok(new { response.AccessToken, response.IsAdmin });
         }
 
         [HttpGet("refresh")]
-        public IActionResult UpdateAccessToken()
+        public async Task<IActionResult> UpdateAccessToken()
         {
             var refreshToken = GetRefreshTokenFromCookies();
-            var accessToken = _user.UpdateAccessToken(refreshToken);
+            var statsID = GetStatsID();
+            var accessToken = await _user.UpdateAccessToken(refreshToken, statsID);
             return Ok(new { AccessToken = accessToken });
         }
 

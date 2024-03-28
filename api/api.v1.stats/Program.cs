@@ -1,4 +1,6 @@
+using api.v1.stats.Consumers;
 using api.v1.stats.Services.Activity;
+using api.v1.stats.Services.History;
 using api.v1.stats.Services.Interval;
 
 using component.v1.middlewares;
@@ -6,6 +8,7 @@ using component.v1.middlewares;
 using db.v1.stats.Contexts;
 using db.v1.stats.Contexts.Interfaces;
 using db.v1.stats.Repositories.Activity;
+using db.v1.stats.Repositories.History;
 using db.v1.stats.Repositories.Interval;
 
 using helper.v1.cache;
@@ -13,6 +16,9 @@ using helper.v1.cache.Implements;
 using helper.v1.configuration;
 using helper.v1.configuration.Interfaces;
 using helper.v1.localization.Helper;
+using helper.v1.time;
+
+using MassTransit;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -33,8 +39,29 @@ builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, r
 builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
+
+var rabbitHost = cfg["RabbitMQ:Host"];
+var rabbitUsername = cfg["RabbitMQ:Username"];
+var rabbitPassword = cfg["RabbitMQ:Password"];
+builder.Services.AddMassTransit(options =>
+{
+    options.AddConsumer<ActivityConsumer>();
+    options.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(rabbitHost, host =>
+        {
+            host.Username(rabbitUsername);
+            host.Password(rabbitPassword);
+        });
+        cfg.ReceiveEndpoint("activity", e =>
+        {
+            e.Consumer<ActivityConsumer>(context);
+        });
+    });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -98,15 +125,17 @@ InitServices();
 
 void InitContexts()
 {
-    builder.Services.AddDbContext<StatContext>(options => options.UseNpgsql(cfg["PostgreSQL:Stats"]), ServiceLifetime.Scoped);
-    builder.Services.AddScoped<IIntervalContext, StatContext>();
-    builder.Services.AddScoped<IActivityContext, StatContext>();
+    builder.Services.AddDbContext<StatContext>(options => options.UseNpgsql(cfg["PostgreSQL:Stats"]), ServiceLifetime.Transient);
+    builder.Services.AddTransient<IIntervalContext, StatContext>();
+    builder.Services.AddTransient<IActivityContext, StatContext>();
+    builder.Services.AddTransient<IHistoryContext, StatContext>();
 }
 
 void InitRepositories()
 {
-    builder.Services.AddScoped<IIntervalRepository, IntervalRepository>();
-    builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
+    builder.Services.AddTransient<IIntervalRepository, IntervalRepository>();
+    builder.Services.AddTransient<IActivityRepository, ActivityRepository>();
+    builder.Services.AddTransient<IHistoryRepository, HistoryRepository>();
 }
 
 void InitHelpers()
@@ -116,12 +145,14 @@ void InitHelpers()
 
     builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
     builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
+    builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
 }
 
 void InitServices()
 {
-    builder.Services.AddScoped<IIntervalService, IntervalService>();
-    builder.Services.AddScoped<IActivityService, ActivityService>();
+    builder.Services.AddTransient<IIntervalService, IntervalService>();
+    builder.Services.AddTransient<IActivityService, ActivityService>();
+    builder.Services.AddTransient<IHistoryService, HistoryService>();
 }
 
 #endregion

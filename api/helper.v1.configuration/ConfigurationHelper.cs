@@ -5,7 +5,7 @@ namespace helper.v1.configuration
 {
     public sealed class ConfigurationHelper(IConfiguration cfg) : 
         IEmailConfigurationHelper, IJWTConfigurationHelper, IFileConfigurationHelper, ICacheConfigurationHelper, 
-        IPreviewConfigurationHelper, IAdminConfigurationHelper
+        IAdminConfigurationHelper, IActivityConfigurationHelper
     {
         private readonly IConfiguration _cfg = cfg;
 
@@ -39,17 +39,30 @@ namespace helper.v1.configuration
             throw new ArgumentNullException("File:KeyboardFilePath отсутствует в конфигурационном файле"), userID, fileName);
         public string GetBoxFilePath(Guid userID, string fileName) => string.Format(_cfg["File:BoxFilePath"] ??
             throw new ArgumentNullException("File:BoxFilePath отсутствует в конфигурационном файле"), userID, fileName);
-
         public string GetKeycapFilePath(Guid userID, Guid kitID, string fileName) => string.Format(_cfg["File:KeycapFilePath"] ??
             throw new ArgumentNullException("File:KeycapFilePath отсутствует в конфигурационном файле"), userID, kitID, fileName);
 
         public int GetCacheExpirationMinutes() => Convert.ToInt32(_cfg["Cache:ExpirationMinutes"] ?? 
             throw new ArgumentNullException("Cache:ExpirationMinutes отсутствует в конфигурационном файле"));
 
-        public string GetPreviewFileType() => _cfg["FilePreview:ImageType"] ??
-            throw new ArgumentNullException("FilePreview:ImageType отсутствует в конфигурационном файле");
-
         public Guid GetDefaultUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"] ??
             throw new ArgumentNullException("File:DefaultModelsUserID отсутствует в конфигурационном файле"));
+
+        public string GetRefreshActivityTag() => _cfg["Activities:Refresh"] ??
+            throw new ArgumentNullException("Activities:Refresh отсутствует в конфигурационном файле");
+        public string GetSeeKeyboardActivityTag() => _cfg["Activities:SeeKeyboard"] ??
+            throw new ArgumentNullException("Activities:SeeKeyboard отсутствует в конфигурационном файле");
+        public string GetEditKeyboardActivityTag() => _cfg["Activities:EditKeyboard"] ??
+            throw new ArgumentNullException("Activities:EditKeyboard отсутствует в конфигурационном файле");
+        public string GetSeeBoxActivityTag() => _cfg["Activities:SeeBox"] ??
+            throw new ArgumentNullException("Activities:SeeBox отсутствует в конфигурационном файле");
+        public string GetEditBoxActivityTag() => _cfg["Activities:EditBox"] ??
+            throw new ArgumentNullException("Activities:EditBox отсутствует в конфигурационном файле");
+        public string GetSeeKeycapActivityTag() => _cfg["Activities:SeeKeycap"] ??
+            throw new ArgumentNullException("Activities:SeeKeycap отсутствует в конфигурационном файле");
+        public string GetEditKeycapActivityTag() => _cfg["Activities:EditKeycap"] ??
+            throw new ArgumentNullException("Activities:EditKeycap отсутствует в конфигурационном файле");
+        public string GetSeeSwitchActivityTag() => _cfg["Activities:SeeSwitch"] ??
+            throw new ArgumentNullException("Activities:SeeSwitch отсутствует в конфигурационном файле");
     }
 }

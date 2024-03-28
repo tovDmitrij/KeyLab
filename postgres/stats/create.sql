@@ -22,3 +22,12 @@ copy activities(title, tag)
 from '/postgres/stats/init/activities.csv'
 delimiter ','
 csv header;
+
+create table if not exists histories(
+    id uuid default uuid_generate_v4() primary key,
+    activity_id uuid not null references activities(id),
+    user_id uuid not null,
+    date numeric not null
+);
+create index on histories(activity_id);
+create index on histories(user_id);

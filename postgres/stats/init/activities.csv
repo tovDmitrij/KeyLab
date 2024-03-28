@@ -1,9 +1,9 @@
 title,tag
-���������� ������,refresh
-�������� ���������,see_keyboard
-�������� ���������,edit_keyboard
-�������� ������,see_box
-�������� ������,edit_box
-�������� ��������,see_keycap
-�������� ��������,edit_keycap
-�������� �������,see_switch
+Обновление токена,refresh
+Просмотр клавиатуры,see_keyboard
+Редактирование клавиатуры,edit_keyboard
+Просмотр бокса,see_box
+Редактирование бокса,edit_box
+Просмотр кейкапов,see_keycap
+Редактирование кейкапов,edit_keycap
+Просмотр свитчей,see_switch
