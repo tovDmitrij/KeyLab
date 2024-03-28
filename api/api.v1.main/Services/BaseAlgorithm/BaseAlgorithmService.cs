@@ -157,8 +157,12 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize);
-            return objects;
+            var cacheKey = $"{page}-{pageSize}-{repositoryFunction.GetHashCode()}";
+            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
+            {
+                objects = repositoryFunction(page, pageSize);
+            }
+            return objects!;
         }
 
         public List<Object> GetPaginationListOfObjects<Object>(
@@ -170,8 +174,12 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, param1);
-            return objects;
+            var cacheKey = $"{page}-{pageSize}-{param1}-{repositoryFunction.GetHashCode()}";
+            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
+            {
+                objects = repositoryFunction(page, pageSize, param1);
+            }
+            return objects!;
         }
 
         public List<Object> GetPaginationListOfObjects<Object>(
@@ -184,8 +192,12 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, param1, param2);
-            return objects;
+            var cacheKey = $"{page}-{pageSize}-{param1}-{param2}-{repositoryFunction.GetHashCode()}";
+            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
+            {
+                objects = repositoryFunction(page, pageSize, param1, param2);
+            }
+            return objects!;
         }
 
 

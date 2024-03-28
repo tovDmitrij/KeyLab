@@ -63,8 +63,8 @@ namespace api.v1.main.Services.Keyboard
             ValidateSwitchType(body.SwitchTypeID);
             ValidateKeyboardOwner(body.KeyboardID, body.UserID);
 
-            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.KeyboardID, body.Title, 
-                                         _keyboard.SelectKeyboardFileName, _keyboard.SelectKeyboardPreviewName, _fileCfg.GetKeyboardFilePath);
+            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.KeyboardID, body.Title!, 
+                                         _keyboard.SelectKeyboardFileName!, _keyboard.SelectKeyboardPreviewName!, _fileCfg.GetKeyboardFilePath);
 
             var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title!, names.FileName, names.PreviewName);
             _keyboard.UpdateKeyboardInfo(updateKeyboardBody);

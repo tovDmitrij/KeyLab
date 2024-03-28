@@ -57,7 +57,8 @@ namespace api.v1.main.Services.Box
             ValidateBoxTitle(body.UserID, body.Title);
             ValidateBoxOwner(body.BoxID, body.UserID);
 
-            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.BoxID, body.Title!, _box.SelectBoxFileName, _box.SelectBoxPreviewName, _fileCfg.GetBoxFilePath);
+            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.BoxID, body.Title!, 
+                _box.SelectBoxFileName!, _box.SelectBoxPreviewName!, _fileCfg.GetBoxFilePath);
 
             var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title!, names.FileName, names.PreviewName);
             _box.UpdateBoxInfo(updateBoxBody);
