@@ -6,8 +6,10 @@ namespace db.v1.stats.Repositories.History
     {
         public void InsertHistory(Guid activityID, Guid userID, double date);
 
-        public List<SelectHistoryDTO> SelectHistoriesByPeriod(double leftDate, double rightDate);
+        public List<SelectHistoryDTO> SelectHistories(double leftDate, double rightDate);
+        public List<SelectHistoryDTO> SelectHistories(double leftDate, double rightDate, Guid activityID);
 
-        public int SelectDistinctCountOfUserIDByPeriod(double leftDate, double rightDate);
+        public int SelectCountOfDistinctUserID(double leftDate, double rightDate);
+        public int SelectCountOfDistinctUserID(double leftDate, double rightDate, Guid activityID);
     }
 }

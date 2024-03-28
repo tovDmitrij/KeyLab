@@ -61,6 +61,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Страницы с указанными параметрами не существует.
+        /// </summary>
+        public static string Activity_IsNotExist {
+            get {
+                return ResourceManager.GetString("Activity_IsNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Описание бокса клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа.
         /// </summary>
         public static string BoxDescription_IsNotValid {

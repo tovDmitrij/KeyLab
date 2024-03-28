@@ -1,4 +1,5 @@
 ﻿using api.v1.stats.DTOs.Attendance;
+using api.v1.stats.DTOs.Page;
 using api.v1.stats.Services.Stat;
 
 using component.v1.apicontroller;
@@ -49,6 +50,42 @@ namespace api.v1.stats.Controllers
         {
             var userID = GetAccessTokenUserID();
             var value = _stat.GetAttendanceQuantityAtom(body, userID);
+            return Ok(new { value });
+        }
+
+
+
+        [HttpPost("pages/time/plot")]
+        public IActionResult GetPageTimePlot([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] PostPageStatDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var plot = _stat.GetPageTimePlot(body, userID);
+            return Ok(plot);
+        }
+
+        [HttpPost("pages/time/atom")]
+        public IActionResult GetPageTimeAtom([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] PostPageStatDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var value = _stat.GetPageTimeAtom(body, userID);
+            return Ok(new { value });
+        }
+
+
+
+        [HttpPost("pages/quantity/plot")]
+        public IActionResult GetPageQuantityPlot([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] PostPageStatDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var plot = _stat.GetPageQuantityPlot(body, userID);
+            return Ok(plot);
+        }
+
+        [HttpPost("pages/quantity/atom")]
+        public IActionResult GetPageQuantityAtom([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] PostPageStatDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var value = _stat.GetPageQuantityAtom(body, userID);
             return Ok(new { value });
         }
     }

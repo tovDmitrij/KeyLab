@@ -58,5 +58,7 @@ namespace helper.v1.localization.Helper
         public string StatsLeftDateGreaterThanRightDate() => _localization["Stats_LeftDateGreaterThanRightDate"];
 
         public string IntervalIsNotExist() => _localization["Interval_IsNotExist"];
+
+        public string ActivityIsNotExist() => _localization["Activity_IsNotExist"];
     }
 }

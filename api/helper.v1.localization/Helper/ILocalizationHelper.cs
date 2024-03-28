@@ -52,5 +52,6 @@
 
         public string StatsLeftDateGreaterThanRightDate();
         public string IntervalIsNotExist();
+        public string ActivityIsNotExist();
     }
 }
