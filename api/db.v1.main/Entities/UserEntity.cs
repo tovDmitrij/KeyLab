@@ -11,16 +11,16 @@ namespace db.v1.main.Entities
         public Guid ID { get; set; }
 
         [Column("email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = "";
 
         [Column("salt")]
-        public string Salt { get; set; }
+        public string Salt { get; set; } = "";
 
         [Column("password")]
-        public string Password { get; set; }
+        public string Password { get; set; } = "";
 
         [Column("nickname")]
-        public string Nickname { get; set; }
+        public string Nickname { get; set; } = "";
 
         [Column("token")]
         public string? Token { get; set; }

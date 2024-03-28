@@ -4,6 +4,8 @@ namespace db.v1.stats.Repositories.Activity
 {
     public interface IActivityRepository
     {
+        public Guid? SelectActivityIDByTag(string tag);
+
         public List<SelectActivityDTO> SelectActivities();
         public List<SelectActivityDTO> SelectActivities(List<string> notEqualTags);
 

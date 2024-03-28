@@ -9,25 +9,25 @@ namespace api.v1.main.Services.Keyboard
     public interface IKeyboardService
     {
         /// <exception cref="BadRequestException"></exception>
-        public void AddKeyboard(PostKeyboardDTO body);
+        public Task AddKeyboard(PostKeyboardDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public void UpdateKeyboard(PutKeyboardDTO body);
+        public Task UpdateKeyboard(PutKeyboardDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public void DeleteKeyboard(DeleteKeyboardDTO body, Guid userID);
+        public Task DeleteKeyboard(DeleteKeyboardDTO body, Guid userID, Guid statsID);
 
 
 
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetKeyboardFile(Guid keyboardID);
+        public Task<byte[]> GetKeyboardFileBytes(Guid keyboardID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetKeyboardPreview(Guid keyboardID);
+        public string GetKeyboardBase64Preview(Guid keyboardID);
 
 
 
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectKeyboardDTO> GetDefaultKeyboardsList(PaginationDTO body);
+        public Task<List<SelectKeyboardDTO>> GetDefaultKeyboardsList(PaginationDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectKeyboardDTO> GetUserKeyboardsList(PaginationDTO body, Guid userID);
+        public Task<List<SelectKeyboardDTO>> GetUserKeyboardsList(PaginationDTO body, Guid userID, Guid statsID);
 
 
 

@@ -30,19 +30,21 @@ namespace api.v1.main.Controllers
 
         [HttpGet("default")]
         [AllowAnonymous]
-        public IActionResult GetDefaultBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
+        public async Task<IActionResult> GetDefaultBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
         {
-            var boxes = _box.GetDefaultBoxesList(new(page, pageSize, typeID));
+            var statsID = GetStatsID();
+            var boxes = await _box.GetDefaultBoxesList(new(page, pageSize, typeID), statsID);
             return Ok(boxes);
         }
 
         [HttpGet("auth")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GetUserBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
+        public async Task<IActionResult> GetUserBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
         {
             var userID = GetAccessTokenUserID();
+            var statsID = GetStatsID();
 
-            var boxes = _box.GetUserBoxesList(new(page, pageSize, typeID), userID);
+            var boxes = await _box.GetUserBoxesList(new(page, pageSize, typeID), userID, statsID);
             return Ok(boxes);
         }
 
@@ -53,7 +55,7 @@ namespace api.v1.main.Controllers
         public IActionResult GetDefaultBoxesTotalPages([Required] int pageSize)
         {
             var totalPages = _box.GetDefaultBoxesTotalPages(pageSize);
-            return Ok(new { totalPages = totalPages });
+            return Ok(new { totalPages });
         }
 
         [HttpGet("auth/totalPages")]
@@ -62,7 +64,7 @@ namespace api.v1.main.Controllers
         {
             var userID = GetAccessTokenUserID();
             var totalPages = _box.GetUserBoxesTotalPages(userID, pageSize);
-            return Ok(new { totalPages = totalPages });
+            return Ok(new { totalPages });
         }
 
 
@@ -71,7 +73,8 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public async Task GetBoxFile([Required] Guid boxID)
         {
-            var file = _box.GetBoxFile(boxID);
+            var statsID = GetStatsID();
+            var file = await _box.GetBoxFileBytes(boxID, statsID);
             await Response.Body.WriteAsync(file);
         }
 
@@ -79,15 +82,15 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public IActionResult GetBoxPreview([Required] Guid boxID)
         {
-            var preview = _box.GetBoxPreview(boxID);
-            return Ok(new { previewBase64 = preview });
+            var previewBase64 = _box.GetBoxBase64Preview(boxID);
+            return Ok(new { previewBase64 });
         }
 
 
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult AddBoxFile()
+        public async Task<IActionResult> AddBoxFile()
         {
             var file = GetFormDataBoxFile();
             var preview = GetFormDataBoxPreview();
@@ -97,14 +100,15 @@ namespace api.v1.main.Controllers
 
             var body = new PostBoxDTO(file, preview, title, typeID, userID);
 
-            _box.AddBox(body);
+            var statsID = GetStatsID();
+            await _box.AddBox(body, statsID);
 
             return Ok(_localization.FileIsSuccessfullUploaded());
         }
 
         [HttpPut]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult UpdateBoxFile()
+        public async Task<IActionResult> UpdateBoxFile()
         {
             var file = GetFormDataBoxFile();
             var preview = GetFormDataBoxPreview();
@@ -113,18 +117,20 @@ namespace api.v1.main.Controllers
             var boxID = GetFormDataBoxID();
 
             var body = new PutBoxDTO(file, preview, title, userID, boxID);
-            _box.UpdateBox(body);
+            var statsID = GetStatsID();
+            await _box.UpdateBox(body, statsID);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
         }
 
         [HttpDelete]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult DeleteBoxFile([FromBody] DeleteBoxDTO body)
+        public async Task<IActionResult> DeleteBoxFile([FromBody] DeleteBoxDTO body)
         {
             var userID = GetAccessTokenUserID();
 
-            _box.DeleteBox(body, userID);
+            var statsID = GetStatsID();
+            await _box.DeleteBox(body, userID, statsID);
             return Ok(_localization.FileIsSuccessfullDeleted());
         }
 

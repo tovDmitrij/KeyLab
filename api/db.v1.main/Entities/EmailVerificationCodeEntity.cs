@@ -11,10 +11,10 @@ namespace db.v1.main.Entities
         public long ID { get; set; }
 
         [Column("email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = "";
 
         [Column("code")]
-        public string Code { get; set; }
+        public string Code { get; set; } = "";
 
         [Column("expire_date")]
         public double ExpireDate { get; set; }

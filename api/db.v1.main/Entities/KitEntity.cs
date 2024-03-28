@@ -14,7 +14,7 @@ namespace db.v1.main.Entities
         public Guid OwnerID { get; set; }
 
         [Column("title")]
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
 
         [Column("creation_date")]
         public double CreationDate { get; set; }

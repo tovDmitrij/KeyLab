@@ -9,25 +9,14 @@ using helper.v1.localization.Helper;
 
 namespace api.v1.stats.Services.Interval
 {
-    public sealed class IntervalService : IIntervalService
+    public sealed class IntervalService(IIntervalRepository interval, IAdminConfigurationHelper cfg, 
+        ILocalizationHelper localization, ICacheHelper cache, ICacheConfigurationHelper cacheCfg) : IIntervalService
     {
-        private readonly IIntervalRepository _interval;
-        private readonly IAdminConfigurationHelper _adminCfg;
-        private readonly ILocalizationHelper _localization;
-        private readonly ICacheHelper _cache;
-        private readonly ICacheConfigurationHelper _cacheCfg;
-
-        public IntervalService(IIntervalRepository interval, IAdminConfigurationHelper cfg, ILocalizationHelper localization,
-                               ICacheHelper cache, ICacheConfigurationHelper cacheCfg)
-        {
-            _interval = interval;
-            _adminCfg = cfg;
-            _localization = localization;
-            _cache = cache;
-            _cacheCfg = cacheCfg;
-        }
-
-
+        private readonly IIntervalRepository _interval = interval;
+        private readonly IAdminConfigurationHelper _adminCfg = cfg;
+        private readonly ILocalizationHelper _localization = localization;
+        private readonly ICacheHelper _cache = cache;
+        private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
 
         public List<SelectIntervalDTO> GetIntervals(Guid userID)
         {
@@ -42,7 +31,7 @@ namespace api.v1.stats.Services.Interval
                 _cache.SetValue("intervals", intervals, minutes);
             }
 
-            return intervals;
+            return intervals!;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace db.v1.main.Entities
         public Guid ID { get; set; }
 
         [Column("title")]
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
 
         public BoxTypeEntity(Guid id, string title)
         {

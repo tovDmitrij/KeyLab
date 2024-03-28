@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace helper.v1.regex
 {
     public sealed partial class RegexHelper(ILocalizationHelper localization) : 
-        IUserRegexHelper, IVerificationRegexHelper, IKeyboardRegexHelper, IBoxRegexHelper
+        IUserRegexHelper, IVerificationRegexHelper, IKeyboardRegexHelper, IBoxRegexHelper, IKitRegexHelper
     {
         private readonly ILocalizationHelper _localization = localization;
 
@@ -25,6 +25,9 @@ namespace helper.v1.regex
 
         [GeneratedRegex(@"^[\w]{3,}$")]
         private partial Regex BoxTitleRgx();
+
+        [GeneratedRegex(@"^[\w]{3,}$")]
+        private partial Regex KitTitleRgx();
 
 
 
@@ -56,6 +59,12 @@ namespace helper.v1.regex
         {
             string txtError = _localization.BoxTitleIsNotValid();
             Validate(BoxTitleRgx(), title, txtError);
+        }
+
+        public void ValidateKitTitle(string title)
+        {
+            string txtError = _localization.KitTitleIsNotValid();
+            Validate(KitTitleRgx(), title, txtError);
         }
 
 

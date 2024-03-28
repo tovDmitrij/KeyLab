@@ -6,18 +6,10 @@ using MassTransit;
 
 namespace api.v1.email.Consumers
 {
-    public sealed class EmailConsumer : IConsumer<SendEmailDTO>
+    public sealed class EmailConsumer(IEmailService email, ILogger<EmailConsumer> logger) : IConsumer<SendEmailDTO>
     { 
-        private readonly IEmailService _email;
-        private readonly ILogger<EmailConsumer> _logger;
-
-        public EmailConsumer(IEmailService email, ILogger<EmailConsumer> logger) 
-        { 
-            _email = email; 
-            _logger = logger;
-        }
-
-
+        private readonly IEmailService _email = email;
+        private readonly ILogger<EmailConsumer> _logger = logger;
 
         public async Task Consume(ConsumeContext<SendEmailDTO> context)
         {

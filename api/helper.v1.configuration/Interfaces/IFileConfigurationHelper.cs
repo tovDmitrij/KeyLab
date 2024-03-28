@@ -9,9 +9,14 @@
         public string GetSwitchFilePath(string fileName);
         /// <exception cref="ArgumentNullException"></exception>
         public string GetSwitchSoundFilePath(string fileName);
+
         /// <exception cref="ArgumentNullException"></exception>
         public string GetKeyboardFilePath(Guid userID, string fileName);
+
         /// <exception cref="ArgumentNullException"></exception>
         public string GetBoxFilePath(Guid userID, string fileName);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        public string GetKeycapFilePath(Guid userID, Guid kitID, string fileName);
     }
 }

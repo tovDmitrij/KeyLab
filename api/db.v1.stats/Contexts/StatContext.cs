@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace db.v1.stats.Contexts
 {
-    public sealed class StatContext : DbContext, IIntervalContext, IActivityContext
+    public sealed class StatContext(DbContextOptions options) : DbContext(options), IIntervalContext, IActivityContext, 
+        IHistoryContext
     {
         public DbSet<IntervalEntity> Intervals { get; set; }
         public DbSet<ActivityEntity> Activities { get; set; }
-
-        public StatContext(DbContextOptions options) : base(options) { }
+        public DbSet<HistoryEntity> Histories { get; set; }
     }
 }

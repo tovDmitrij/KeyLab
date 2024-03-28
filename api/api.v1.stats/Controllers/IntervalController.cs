@@ -23,7 +23,7 @@ namespace api.v1.stats.Controllers
         [HttpGet("intervals")]
         public IActionResult GetIntervals()
         {
-            var userID = GetUserIDFromAccessToken();
+            var userID = GetAccessTokenUserID();
 
             var intervals = _interval.GetIntervals(userID);
             return Ok(intervals);

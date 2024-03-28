@@ -2,11 +2,10 @@
     "File": {
         "DefaultModelsUserID": "dced1acd-b907-47e0-9659-77cb2c95e0aa",
 
-        "SwitchModelFilePath": "/files/switches/models/{0}",
-        "SwitchSoundFilePath": "/files/switches/sounds/{0}",
-        "KeyboardModelFilePath": "/files/{0}/keyboards/{1}",
-        "BoxModelFilePath": "/files/{0}/boxes/{1}",
-
-        "ErrorImageFilePath": "/files/another/noImage.jpeg"
+        "SwitchFilePath": "/files/switches/models/{0}",
+        "SwitchSoundPath": "/files/switches/sounds/{0}",
+        "KeyboardFilePath": "/files/{0}/keyboards/{1}",
+        "BoxFilePath": "/files/{0}/boxes/{1}",
+        "KeycapFilePath": "/files/{0}/kits/{1}/{2}"
     }
 }

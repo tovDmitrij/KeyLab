@@ -1,8 +1,8 @@
 ﻿namespace helper.v1.configuration.Interfaces
 {
-    public interface IPreviewConfigurationHelper
+    public interface IAdminConfigurationHelper
     {
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetPreviewFileType();
+        public Guid GetDefaultUserID();
     }
 }

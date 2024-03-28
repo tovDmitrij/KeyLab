@@ -14,12 +14,13 @@ using helper.v1.localization.Helper;
 using helper.v1.file;
 using db.v1.main.DTOs.BoxType;
 using api.v1.main.Services.BaseAlgorithm;
+using MassTransit.Courier.Contracts;
 
 namespace api.v1.main.Services.Box
 {
     public sealed class BoxService(IBoxRepository box, IUserRepository user, ICacheHelper cache,
-                          IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx,
-                          ITimeHelper time, ILocalizationHelper localization, IBaseAlgorithmService @base) : IBoxService
+        IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx, ITimeHelper time, ILocalizationHelper localization, 
+        IBaseAlgorithmService @base, IActivityConfigurationHelper activityCfg) : IBoxService
     {
         private readonly IBoxRepository _box = box;
         private readonly IUserRepository _user = user;
@@ -31,8 +32,9 @@ namespace api.v1.main.Services.Box
         private readonly ITimeHelper _time = time;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
         private readonly ILocalizationHelper _localization = localization;
+        private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
 
-        public void AddBox(PostBoxDTO body)
+        public async Task AddBox(PostBoxDTO body, Guid statsID)
         {
             ValidateUserID(body.UserID);
             ValidateBoxFile(body.File);
@@ -45,21 +47,26 @@ namespace api.v1.main.Services.Box
             var currentTime = _time.GetCurrentUNIXTime();
             var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title!, names.FileName, names.PreviewName, currentTime);
             _box.InsertBoxInfo(insertBoxBody);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
         }
 
-        public void UpdateBox(PutBoxDTO body)
+        public async Task UpdateBox(PutBoxDTO body, Guid statsID)
         {
             ValidateBoxExist(body.BoxID);
             ValidateBoxTitle(body.UserID, body.Title);
             ValidateBoxOwner(body.BoxID, body.UserID);
 
-            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.BoxID, body.Title!, _box.SelectBoxFileName, _box.SelectBoxPreviewName, _fileCfg.GetBoxFilePath);
+            var names = _base.UpdateFile(body.File, body.Preview, body.UserID, body.BoxID, body.Title!, 
+                _box.SelectBoxFileName!, _box.SelectBoxPreviewName!, _fileCfg.GetBoxFilePath);
 
             var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title!, names.FileName, names.PreviewName);
             _box.UpdateBoxInfo(updateBoxBody);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
         }
 
-        public void DeleteBox(DeleteBoxDTO body, Guid userID)
+        public async Task DeleteBox(DeleteBoxDTO body, Guid userID, Guid statsID)
         {
             ValidateBoxExist(body.BoxID);
             ValidateUserID(userID);
@@ -75,38 +82,56 @@ namespace api.v1.main.Services.Box
             _file.DeleteFile(imgFilePath);
             _cache.DeleteValue(body.BoxID);
             _box.DeleteBoxInfo(body.BoxID);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
         }
 
 
 
-        public byte[] GetBoxFile(Guid boxID)
+        public async Task<byte[]> GetBoxFileBytes(Guid boxID, Guid statsID)
         {
-            var file = _base.GetFile(boxID, _box.SelectBoxFileName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
+            ValidateBoxID(boxID);
+            var fileName = _box.SelectBoxFileName(boxID);
+            var userID = _box.SelectBoxOwnerID(boxID);
+            var filePath = _fileCfg.GetBoxFilePath((Guid)userID!, fileName!);
+
+            var file = _base.GetFile(filePath);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetSeeBoxActivityTag);
             return file;
         }
 
-        public string GetBoxPreview(Guid boxID)
+        public string GetBoxBase64Preview(Guid boxID)
         {
-            var preview = _base.GetFile(boxID, _box.SelectBoxPreviewName, _box.SelectBoxOwnerID, _fileCfg.GetBoxFilePath);
+            ValidateBoxID(boxID);
+            var previewName = _box.SelectBoxPreviewName(boxID);
+            var userID = _box.SelectBoxOwnerID(boxID);
+            var previewPath = _fileCfg.GetBoxFilePath((Guid)userID!, previewName!);
+
+            var preview = _base.GetFile(previewPath);
             return Convert.ToBase64String(preview);
         }
 
 
 
-        public List<SelectBoxDTO> GetDefaultBoxesList(BoxPaginationDTO body)
+        public async Task<List<SelectBoxDTO>> GetDefaultBoxesList(BoxPaginationDTO body, Guid statsID)
         {
             ValidateBoxType(body.TypeID);
             var userID = _fileCfg.GetDefaultModelsUserID();
 
             var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, body.TypeID, userID, _box.SelectUserBoxes);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetSeeBoxActivityTag);
             return boxes;
         }
-        public List<SelectBoxDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID)
+        public async Task<List<SelectBoxDTO>> GetUserBoxesList(BoxPaginationDTO body, Guid userID, Guid statsID)
         {
             ValidateBoxType(body.TypeID);
             ValidateUserID(userID);
 
             var boxes = _base.GetPaginationListOfObjects(body.Page, body.PageSize, body.TypeID, userID, _box.SelectUserBoxes);
+
+            await _base.PublishActivity(statsID, _activityCfg.GetSeeBoxActivityTag);
             return boxes;
         }
 
@@ -135,6 +160,12 @@ namespace api.v1.main.Services.Box
         }
 
 
+
+        private void ValidateBoxID(Guid boxID)
+        {
+            if (!_box.IsBoxExist(boxID))
+                throw new BadRequestException(_localization.FileIsNotExist());
+        }
 
         private void ValidateUserID(Guid userID)
         {

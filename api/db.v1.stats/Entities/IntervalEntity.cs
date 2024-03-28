@@ -11,7 +11,7 @@ namespace db.v1.stats.Entities
         public Guid ID { get; set; }
 
         [Column("title")]
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
 
         [Column("seconds")]
         public int Seconds { get; set; }

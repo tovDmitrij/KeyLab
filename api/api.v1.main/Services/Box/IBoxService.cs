@@ -10,25 +10,25 @@ namespace api.v1.main.Services.Box
     public interface IBoxService
     {
         /// <exception cref="BadRequestException"></exception>
-        public void AddBox(PostBoxDTO body);
+        public Task AddBox(PostBoxDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public void UpdateBox(PutBoxDTO body);
+        public Task UpdateBox(PutBoxDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public void DeleteBox(DeleteBoxDTO body, Guid userID);
+        public Task DeleteBox(DeleteBoxDTO body, Guid userID, Guid statsID);
 
 
 
         /// <exception cref="BadRequestException"></exception>
-        public byte[] GetBoxFile(Guid boxID);
+        public Task<byte[]> GetBoxFileBytes(Guid boxID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetBoxPreview(Guid boxID);
+        public string GetBoxBase64Preview(Guid boxID);
 
 
 
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectBoxDTO> GetDefaultBoxesList(BoxPaginationDTO body);
+        public Task<List<SelectBoxDTO>> GetDefaultBoxesList(BoxPaginationDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public List<SelectBoxDTO> GetUserBoxesList(BoxPaginationDTO body, Guid userID);
+        public Task<List<SelectBoxDTO>> GetUserBoxesList(BoxPaginationDTO body, Guid userID, Guid statsID);
 
 
 

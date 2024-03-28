@@ -17,13 +17,13 @@ namespace db.v1.main.Entities
         public Guid TypeID { get; set; }
 
         [Column("title")]
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
 
         [Column("file_name")]
-        public string FileName { get; set; }
+        public string FileName { get; set; } = "";
 
         [Column("preview_name")]
-        public string PreviewName { get; set; }
+        public string PreviewName { get; set; } = "";
 
         [Column("creation_date")]
         public double CreationDate { get; set; }

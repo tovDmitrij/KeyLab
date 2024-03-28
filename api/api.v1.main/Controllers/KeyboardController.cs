@@ -20,21 +20,20 @@ namespace api.v1.main.Controllers
 
         [HttpGet("default")]
         [AllowAnonymous]
-        public IActionResult GetDefaultKeyboardsList([Required] int page, [Required] int pageSize)
+        public async Task<IActionResult> GetDefaultKeyboardsList([Required] int page, [Required] int pageSize)
         {
-            var keyboards = _keyboard.GetDefaultKeyboardsList(new(page, pageSize));
-
+            var statsID = GetStatsID();
+            var keyboards = await _keyboard.GetDefaultKeyboardsList(new(page, pageSize), statsID);
             return Ok(keyboards);
         }
 
         [HttpGet("auth")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GetUserKeyboardsList([Required] int page, [Required] int pageSize)
+        public async Task<IActionResult> GetUserKeyboardsList([Required] int page, [Required] int pageSize)
         {
             var userID = GetAccessTokenUserID();
-
-            var keyboards = _keyboard.GetUserKeyboardsList(new(page, pageSize), userID);
-
+            var statsID = GetStatsID();
+            var keyboards = await _keyboard.GetUserKeyboardsList(new(page, pageSize), userID, statsID);
             return Ok(keyboards);
         }
 
@@ -43,7 +42,7 @@ namespace api.v1.main.Controllers
         public IActionResult GetDefaultKeyboardsTotalPages([Required] int pageSize)
         {
             var totalPages = _keyboard.GetDefaultKeyboardsTotalPages(pageSize);
-            return Ok(new { totalPages = totalPages });
+            return Ok(new { totalPages });
         }
 
         [HttpGet("auth/totalPages")]
@@ -52,7 +51,7 @@ namespace api.v1.main.Controllers
         {
             var userID = GetAccessTokenUserID();
             var totalPages = _keyboard.GetUserKeyboardsTotalPages(userID, pageSize);
-            return Ok(new { totalPages = totalPages });
+            return Ok(new { totalPages });
         }
 
 
@@ -61,7 +60,8 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public async Task GetKeyboardFile([Required] Guid keyboardID) 
         {
-            var file = _keyboard.GetKeyboardFile(keyboardID);
+            var statsID = GetStatsID();
+            var file = await _keyboard.GetKeyboardFileBytes(keyboardID, statsID);
             await Response.Body.WriteAsync(file);
         }
 
@@ -69,15 +69,15 @@ namespace api.v1.main.Controllers
         [AllowAnonymous]
         public IActionResult GetKeyboardPreview([Required] Guid keyboardID)
         {
-            var preview = _keyboard.GetKeyboardPreview(keyboardID);
-            return Ok(new { previewBase64 = preview });
+            var previewBase64 = _keyboard.GetKeyboardBase64Preview(keyboardID);
+            return Ok(new { previewBase64 });
         }
 
 
 
         [HttpPost, DisableRequestSizeLimit]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult AddKeyboard()
+        public async Task<IActionResult> AddKeyboard()
         {
             var file = GetFormDataKeyboardFile();
             var preview = GetFormDataKeyboardPreview();
@@ -88,14 +88,16 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var body = new PostKeyboardDTO(file, preview, title, userID, boxTypeID, switchTypeID);
-            _keyboard.AddKeyboard(body);
+
+            var statsID = GetStatsID();
+            await _keyboard.AddKeyboard(body, statsID);
 
             return Ok(_localization.FileIsSuccessfullUploaded());
         }
 
         [HttpPut, DisableRequestSizeLimit]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult UpdateKeyboard()
+        public async Task<IActionResult> UpdateKeyboard()
         {
             var file = GetFormDataKeyboardFile();
             var preview = GetFormDataKeyboardPreview();
@@ -107,18 +109,20 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var body = new PutKeyboardDTO(file, preview, title, userID, keyboardID, boxTypeID, switchTypeID);
-            _keyboard.UpdateKeyboard(body);
+            var statsID = GetStatsID();
+            await _keyboard.UpdateKeyboard(body, statsID);
 
             return Ok(_localization.FileIsSuccessfullUpdated());
         }
 
         [HttpDelete]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult DeleteKeyboard([FromBody] DeleteKeyboardDTO body)
+        public async Task<IActionResult> DeleteKeyboard([FromBody] DeleteKeyboardDTO body)
         {
             var userID = GetAccessTokenUserID();
 
-            _keyboard.DeleteKeyboard(body, userID);
+            var statsID = GetStatsID();
+            await _keyboard.DeleteKeyboard(body, userID, statsID);
 
             return Ok(_localization.FileIsSuccessfullDeleted());
         }

@@ -1,5 +1,6 @@
 ﻿using api.v1.main.DTOs;
 
+using component.v1.activity;
 using component.v1.exceptions;
 
 using db.v1.main.Repositories.User;
@@ -8,50 +9,22 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
+using helper.v1.messageBroker;
 
 namespace api.v1.main.Services.BaseAlgorithm
 {
     public sealed class BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, 
-        ICacheConfigurationHelper cacheCfg, IFileHelper file, IPreviewConfigurationHelper previewCfg) : IBaseAlgorithmService
+        ICacheConfigurationHelper cacheCfg, IFileHelper file, IMessageBrokerHelper broker) : IBaseAlgorithmService
     {
         private readonly ILocalizationHelper _localization = localization;
         private readonly IUserRepository _user = user;
         private readonly ICacheHelper _cache = cache;
         private readonly IFileHelper _file = file;
+        private readonly IMessageBrokerHelper _broker = broker;
         private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
-        private readonly IPreviewConfigurationHelper _previewCfg = previewCfg;
 
-        public byte[] GetFile(
-            Guid fileID,
-            Func<Guid, string?> fileNameFunction,
-            Func<string, string> filePathFunction)
+        public byte[] GetFile(string filePath)
         {
-            var fileName = fileNameFunction(fileID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var filePath = filePathFunction(fileName);
-
-            if (!_cache.TryGetValue(filePath, out byte[]? file))
-            {
-                file = _file.GetFile(filePath);
-                if (file.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(filePath, file, minutes);
-            }
-            return file!;
-        }
-
-        public byte[] GetFile(
-            Guid fileID,
-            Func<Guid, string?> fileNameFunction,
-            Func<Guid, Guid?> userIDFunction,
-            Func<Guid, string, string> filePathFunction)
-        {
-            var fileName = fileNameFunction(fileID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = userIDFunction(fileID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-
-            var filePath = filePathFunction(userID, fileName);
-
             if (!_cache.TryGetValue(filePath, out byte[]? file))
             {
                 file = _file.GetFile(filePath);
@@ -86,9 +59,41 @@ namespace api.v1.main.Services.BaseAlgorithm
                 _file.AddFile(modelBytes, filePath);
             }
 
-            var fileType = _previewCfg.GetPreviewFileType();
-            var previewName = $"{title}.{fileType}";
+            var previewName = $"{title}.jpeg";
             var previewPath = filePathFunction(userID, previewName);
+            using (var ms = new MemoryStream())
+            {
+                preview!.CopyTo(ms);
+                var imgBytes = ms.ToArray();
+                _file.AddFile(imgBytes, previewPath);
+            }
+
+            return new(fileName, previewName);
+        }
+
+        public InitFileDTO AddFile(
+            IFormFile? file,
+            IFormFile? preview,
+            Guid userID,
+            Guid objectID,
+            string title,
+            Func<Guid, Guid, string, string> filePathFunction)
+        {
+            ValidateUserID(userID);
+            ValidateFile(file);
+            ValidatePreview(preview);
+
+            var fileName = $"{title}.glb";
+            var filePath = filePathFunction(userID, objectID, fileName);
+            using (var ms = new MemoryStream())
+            {
+                file!.CopyTo(ms);
+                var modelBytes = ms.ToArray();
+                _file.AddFile(modelBytes, filePath);
+            }
+
+            var previewName = $"{title}.jpeg";
+            var previewPath = filePathFunction(userID, objectID, previewName);
             using (var ms = new MemoryStream())
             {
                 preview!.CopyTo(ms);
@@ -127,8 +132,7 @@ namespace api.v1.main.Services.BaseAlgorithm
 
             var oldPreviewFileName = previewNameFunction(objectID)!;
             var oldPreviewFilePath = filePathFunction(userID, oldPreviewFileName);
-            var fileType = _previewCfg.GetPreviewFileType();
-            var newPreviewName = $"{title}.{fileType}";
+            var newPreviewName = $"{title}.jpeg";
             var newPreviewPath = filePathFunction(userID, newPreviewName);
             using (var memoryStream = new MemoryStream())
             {
@@ -153,8 +157,12 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize);
-            return objects;
+            var cacheKey = $"{page}-{pageSize}-{repositoryFunction.GetHashCode()}";
+            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
+            {
+                objects = repositoryFunction(page, pageSize);
+            }
+            return objects!;
         }
 
         public List<Object> GetPaginationListOfObjects<Object>(
@@ -166,8 +174,12 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, param1);
-            return objects;
+            var cacheKey = $"{page}-{pageSize}-{param1}-{repositoryFunction.GetHashCode()}";
+            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
+            {
+                objects = repositoryFunction(page, pageSize, param1);
+            }
+            return objects!;
         }
 
         public List<Object> GetPaginationListOfObjects<Object>(
@@ -180,8 +192,12 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, param1, param2);
-            return objects;
+            var cacheKey = $"{page}-{pageSize}-{param1}-{param2}-{repositoryFunction.GetHashCode()}";
+            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
+            {
+                objects = repositoryFunction(page, pageSize, param1, param2);
+            }
+            return objects!;
         }
 
 
@@ -200,6 +216,15 @@ namespace api.v1.main.Services.BaseAlgorithm
 
             var count = repositoryFunction(param);
             return GetTotalPages(count, pageSize);
+        }
+
+
+
+        public async Task PublishActivity(Guid statsID, Func<string> activityTagFunction)
+        {
+            var activityTag = activityTagFunction();
+            var activityBody = new ActivityDTO(statsID, activityTag);
+            await _broker.PublishData(activityBody);
         }
 
 

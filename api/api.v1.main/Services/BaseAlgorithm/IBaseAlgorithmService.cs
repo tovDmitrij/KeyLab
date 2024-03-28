@@ -1,5 +1,7 @@
 ﻿using api.v1.main.DTOs;
 
+using component.v1.activity;
+
 namespace api.v1.main.Services.BaseAlgorithm
 {
     public interface IBaseAlgorithmService
@@ -10,6 +12,13 @@ namespace api.v1.main.Services.BaseAlgorithm
             Guid userID,
             string title,
             Func<Guid, string, string> filePathFunction);
+        public InitFileDTO AddFile(
+            IFormFile? file,
+            IFormFile? preview,
+            Guid userID,
+            Guid objectID,
+            string title,
+            Func<Guid, Guid, string, string> filePathFunction);
         public InitFileDTO UpdateFile(
             IFormFile? file,
             IFormFile? preview,
@@ -22,15 +31,7 @@ namespace api.v1.main.Services.BaseAlgorithm
 
 
 
-        public byte[] GetFile(
-            Guid fileID,
-            Func<Guid, string?> fileNameFunction,
-            Func<string, string> filePathFunction);
-        public byte[] GetFile(
-            Guid fileID,
-            Func<Guid, string?> fileNameFunction,
-            Func<Guid, Guid?> userIDFunction,
-            Func<Guid, string, string> filePathFunction);
+        public byte[] GetFile(string filePath);
 
 
 
@@ -54,5 +55,9 @@ namespace api.v1.main.Services.BaseAlgorithm
 
         public int GetPaginationTotalPages(int pageSize, Func<int> repositoryFunction);
         public int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> repositoryFunction);
+
+
+
+        public Task PublishActivity(Guid statsID, Func<string> activityTagFunction);
     }
 }
