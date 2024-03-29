@@ -34,11 +34,9 @@ using helper.v1.regex;
 using helper.v1.localization.Helper;
 using helper.v1.file;
 using helper.v1.messageBroker;
-using helper.v1.cache.Implements;
 using component.v1.middlewares;
 using db.v1.main.Repositories.Kit;
 using api.v1.main.Services.Kit;
-using api.v1.main.Services.BaseAlgorithm;
 using db.v1.main.Repositories.Keycap;
 using api.v1.main.Services.Keycap;
 
@@ -48,13 +46,7 @@ using api.v1.main.Services.Keycap;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("/configurations/db.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/activities.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/api.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -64,7 +56,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = cfg["RedisMain:Configuration"];
+    options.Configuration = cfg["Redis:Main"];
 });
 
 var rabbitHost = cfg["RabbitMQ:Host"];
@@ -84,12 +76,16 @@ builder.Services.AddMassTransit(options =>
 
 builder.Services.AddAntiforgery(options =>
 {
-    options.FormFieldName = "KeyboardAntiforgery";
-    options.HeaderName = "X-CSRF-TOKEN-KEYBOARD";
+    options.FormFieldName = "KeylabAntiforgery";
+    options.HeaderName = "X-CSRF-TOKEN-KEYLAB";
     options.SuppressXFrameOptionsHeader = false;
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -122,75 +118,54 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        name: "ProtectedPolicy",
-        policy => policy.WithOrigins("http://localhost:5173/").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-    options.AddPolicy(
         name: "PublicPolicy",
         policy => policy.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 });
 
-InitContexts();
-InitRepositories();
-InitHelpers();
-InitServices();
+builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg["PostgreSQL:Main"]), ServiceLifetime.Transient);
+builder.Services.AddTransient<IUserContext, MainContext>();
+builder.Services.AddTransient<IVerificationContext, MainContext>();
+builder.Services.AddTransient<IKeyboardContext, MainContext>();
+builder.Services.AddTransient<ISwitchContext, MainContext>();
+builder.Services.AddTransient<IBoxContext, MainContext>();
+builder.Services.AddTransient<IKitContext, MainContext>();
+builder.Services.AddTransient<IKeycapContext, MainContext>();
 
-void InitContexts()
-{
-    builder.Services.AddDbContext<MainContext>(options => options.UseNpgsql(cfg["PostgreSQL:Main"]), ServiceLifetime.Transient);
-    builder.Services.AddTransient<IUserContext, MainContext>();
-    builder.Services.AddTransient<IVerificationContext, MainContext>();
-    builder.Services.AddTransient<IKeyboardContext, MainContext>();
-    builder.Services.AddTransient<ISwitchContext, MainContext>();
-    builder.Services.AddTransient<IBoxContext, MainContext>();
-    builder.Services.AddTransient<IKitContext, MainContext>();
-    builder.Services.AddTransient<IKeycapContext, MainContext>();
-}
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IVerificationRepository, VerificationRepository>();
+builder.Services.AddTransient<IKeyboardRepository, KeyboardRepository>();
+builder.Services.AddTransient<ISwitchRepository, SwitchRepository>();
+builder.Services.AddTransient<IBoxRepository, BoxRepository>();
+builder.Services.AddTransient<IKitRepository, KitRepository>();
+builder.Services.AddTransient<IKeycapRepository, KeycapRepository>();
 
-void InitRepositories()
-{
-    builder.Services.AddTransient<IUserRepository, UserRepository>();
-    builder.Services.AddTransient<IVerificationRepository, VerificationRepository>();
-    builder.Services.AddTransient<IKeyboardRepository, KeyboardRepository>();
-    builder.Services.AddTransient<ISwitchRepository, SwitchRepository>();
-    builder.Services.AddTransient<IBoxRepository, BoxRepository>();
-    builder.Services.AddTransient<IKitRepository, KitRepository>();
-    builder.Services.AddTransient<IKeycapRepository, KeycapRepository>();
-}
+builder.Services.AddSingleton<IJWTHelper, JWTHelper>();
+builder.Services.AddSingleton<IFileHelper, FileHelper>();
+builder.Services.AddSingleton<ISecurityHelper, SecurityHelper>();
+builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
+builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
+builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
+builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
 
-void InitHelpers()
-{
-    builder.Services.AddSingleton<IJWTHelper, JWTHelper>();
-    builder.Services.AddSingleton<IFileHelper, FileHelper>();
-    builder.Services.AddSingleton<ISecurityHelper, SecurityHelper>();
-    builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
-    builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
-    builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
-    builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
+builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
+builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
+builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
+builder.Services.AddSingleton<IActivityConfigurationHelper, ConfigurationHelper>();
 
-    builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
-    builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
-    builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
-    builder.Services.AddSingleton<IActivityConfigurationHelper, ConfigurationHelper>();
+builder.Services.AddSingleton<IUserRegexHelper, RegexHelper>();
+builder.Services.AddSingleton<IVerificationRegexHelper, RegexHelper>();
+builder.Services.AddSingleton<IKeyboardRegexHelper, RegexHelper>();
+builder.Services.AddSingleton<IBoxRegexHelper, RegexHelper>();
+builder.Services.AddSingleton<IKitRegexHelper, RegexHelper>();
 
-    builder.Services.AddSingleton<IUserRegexHelper, RegexHelper>();
-    builder.Services.AddSingleton<IVerificationRegexHelper, RegexHelper>();
-    builder.Services.AddSingleton<IKeyboardRegexHelper, RegexHelper>();
-    builder.Services.AddSingleton<IBoxRegexHelper, RegexHelper>();
-    builder.Services.AddSingleton<IKitRegexHelper, RegexHelper>();
-}
-
-void InitServices()
-{
-    builder.Services.AddTransient<IBaseAlgorithmService, BaseAlgorithmService>();
-    builder.Services.AddTransient<IUserService, UserService>();
-    builder.Services.AddTransient<IVerificationService, VerificationService>();
-    builder.Services.AddTransient<IKeyboardService, KeyboardService>();
-    builder.Services.AddTransient<ISwitchService, SwitchService>();
-    builder.Services.AddTransient<IProfileService, ProfileService>();
-    builder.Services.AddTransient<IBoxService, BoxService>();
-    builder.Services.AddTransient<IKitService, KitService>();
-    builder.Services.AddTransient<IKeycapService, KeycapService>();
-}
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IVerificationService, VerificationService>();
+builder.Services.AddTransient<IKeyboardService, KeyboardService>();
+builder.Services.AddTransient<ISwitchService, SwitchService>();
+builder.Services.AddTransient<IProfileService, ProfileService>();
+builder.Services.AddTransient<IBoxService, BoxService>();
+builder.Services.AddTransient<IKitService, KitService>();
+builder.Services.AddTransient<IKeycapService, KeycapService>();
 
 #endregion
 
@@ -202,8 +177,8 @@ var app = builder.Build();
 app.UseCors("PublicPolicy");
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<StatisticMiddleware>();
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
 

@@ -34,8 +34,6 @@ namespace helper.v1.localization.Helper
         public string UserPasswordIsNotValid() => _localization["UserPassword_IsNotValid"];
         public string UserNicknameIsNotValid() => _localization["UserNickname_IsNotValid"];
 
-        public string EndpointIsNotAcceptable() => _localization["Endpoint_IsNotAcceptable"];
-
         public string KeyboardTitleIsBusy() => _localization["KeyboardTitle_IsBusy"];
         public string KeyboardTitleIsNotValid() => _localization["KeyboardTitle_IsNotValid"];
         public string KeyboardDescriptionIsNotValid() => _localization["KeyboardDescription_IsNotValid"];

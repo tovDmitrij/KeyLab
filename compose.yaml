@@ -136,5 +136,7 @@ services:
     container_name: adminer
     image: adminer:4.8.1
     restart: always
+    environment:
+      ADMINER_DESIGN: 'nette'
     ports:
       - 6041:8080

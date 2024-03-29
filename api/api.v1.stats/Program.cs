@@ -13,7 +13,6 @@ using db.v1.stats.Repositories.History;
 using db.v1.stats.Repositories.Interval;
 
 using helper.v1.cache;
-using helper.v1.cache.Implements;
 using helper.v1.configuration;
 using helper.v1.configuration.Interfaces;
 using helper.v1.localization.Helper;
@@ -35,13 +34,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("/configurations/db.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/jwt.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/file.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/stats.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/redis.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/cache.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/api.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -71,17 +64,21 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = cfg["RedisStats:Configuration"];
+    options.Configuration = cfg["Redis:Stats"];
 });
 
 builder.Services.AddAntiforgery(options =>
 {
-    options.FormFieldName = "KeyboardAntiforgery";
-    options.HeaderName = "X-CSRF-TOKEN-KEYBOARD";
+    options.FormFieldName = "KeylabAntiforgery";
+    options.HeaderName = "X-CSRF-TOKEN-KEYLAB";
     options.SuppressXFrameOptionsHeader = false;
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -113,51 +110,30 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        name: "ProtectedPolicy",
-        policy => policy.WithOrigins("http://localhost:5173/").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-    options.AddPolicy(
         name: "PublicPolicy",
         policy => policy.SetIsOriginAllowed(origin => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 });
 
-InitContexts();
-InitRepositories();
-InitHelpers();
-InitServices();
+builder.Services.AddDbContext<StatContext>(options => options.UseNpgsql(cfg["PostgreSQL:Stats"]), ServiceLifetime.Transient);
+builder.Services.AddTransient<IIntervalContext, StatContext>();
+builder.Services.AddTransient<IActivityContext, StatContext>();
+builder.Services.AddTransient<IHistoryContext, StatContext>();
 
-void InitContexts()
-{
-    builder.Services.AddDbContext<StatContext>(options => options.UseNpgsql(cfg["PostgreSQL:Stats"]), ServiceLifetime.Transient);
-    builder.Services.AddTransient<IIntervalContext, StatContext>();
-    builder.Services.AddTransient<IActivityContext, StatContext>();
-    builder.Services.AddTransient<IHistoryContext, StatContext>();
-}
+builder.Services.AddTransient<IIntervalRepository, IntervalRepository>();
+builder.Services.AddTransient<IActivityRepository, ActivityRepository>();
+builder.Services.AddTransient<IHistoryRepository, HistoryRepository>();
 
-void InitRepositories()
-{
-    builder.Services.AddTransient<IIntervalRepository, IntervalRepository>();
-    builder.Services.AddTransient<IActivityRepository, ActivityRepository>();
-    builder.Services.AddTransient<IHistoryRepository, HistoryRepository>();
-}
+builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
+builder.Services.AddSingleton<IStatConfigurationHelper, ConfigurationHelper>();
 
-void InitHelpers()
-{
-    builder.Services.AddSingleton<IAdminConfigurationHelper, ConfigurationHelper>();
-    builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
-    builder.Services.AddSingleton<IStatConfigurationHelper, ConfigurationHelper>();
+builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
+builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
+builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
 
-    builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
-    builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
-    builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
-}
-
-void InitServices()
-{
-    builder.Services.AddTransient<IIntervalService, IntervalService>();
-    builder.Services.AddTransient<IActivityService, ActivityService>();
-    builder.Services.AddTransient<IHistoryService, HistoryService>();
-    builder.Services.AddTransient<IStatService, StatService>();
-}
+builder.Services.AddTransient<IIntervalService, IntervalService>();
+builder.Services.AddTransient<IActivityService, ActivityService>();
+builder.Services.AddTransient<IHistoryService, HistoryService>();
+builder.Services.AddTransient<IStatService, StatService>();
 
 #endregion
 
@@ -169,8 +145,8 @@ var app = builder.Build();
 app.UseCors("PublicPolicy");
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<StatisticMiddleware>();
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
 

@@ -13,8 +13,7 @@ namespace component.v1.apicontroller
     {
         protected readonly ILocalizationHelper _localization = localization;
 
-
-
+        /// <exception cref="UnauthorizedException"></exception>
         protected Guid GetAccessTokenUserID()
         {
             var accessToken = GetAccessToken();
@@ -27,7 +26,9 @@ namespace component.v1.apicontroller
 
         protected Guid GetStatsID()
         {
-            var statsID = Request.Cookies["stats_uuid"]!;
+            var statsID = Request.Cookies["stats_uuid"];
+            if (statsID == null)
+                return Guid.Empty;
             return Guid.Parse(statsID);
         }
 

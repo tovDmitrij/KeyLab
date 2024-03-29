@@ -29,8 +29,6 @@
         public string UserPasswordIsNotValid();
         public string UserNicknameIsNotValid();
 
-        public string EndpointIsNotAcceptable();
-
         public string KeyboardTitleIsBusy();
         public string KeyboardTitleIsNotValid();
         public string KeyboardDescriptionIsNotValid();

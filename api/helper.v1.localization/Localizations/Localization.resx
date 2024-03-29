@@ -147,9 +147,6 @@
   <data name="Email_SendVerificationCode" xml:space="preserve">
     <value>Код подтверждения аккаунта был успешно отправлен на указанную почту</value>
   </data>
-  <data name="Endpoint_IsNotAcceptable" xml:space="preserve">
-    <value>Доступ запрещён</value>
-  </data>
   <data name="File_IsNotAttached" xml:space="preserve">
     <value>Файл повреждён или не был прикреплён</value>
   </data>

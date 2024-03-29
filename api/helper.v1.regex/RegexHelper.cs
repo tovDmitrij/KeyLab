@@ -69,7 +69,7 @@ namespace helper.v1.regex
 
 
 
-        private void Validate(Regex rgx, string value, string txtError)
+        private static void Validate(Regex rgx, string value, string txtError)
         {
             if (!rgx.IsMatch(value))
                 throw new BadRequestException(txtError);

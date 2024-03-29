@@ -46,16 +46,16 @@ namespace api.v1.main.Controllers
         }
 
         [HttpGet("sound")]
-        public IActionResult GetSwitchSound([Required] Guid switchID)
+        public async Task<IActionResult> GetSwitchSound([Required] Guid switchID)
         {
-            var soundBase64 = _switch.GetSwitchBase64Sound(switchID);
+            var soundBase64 = await _switch.GetSwitchBase64Sound(switchID);
             return Ok(new { soundBase64 });
         }
 
         [HttpGet("preview")]
-        public IActionResult GetSwitchPreview([Required] Guid switchID)
+        public async Task<IActionResult> GetSwitchPreview([Required] Guid switchID)
         {
-            var previewBase64 = _switch.GetSwitchBase64Preview(switchID);
+            var previewBase64 = await _switch.GetSwitchBase64Preview(switchID);
             return Ok(new { previewBase64 });
         }
     }

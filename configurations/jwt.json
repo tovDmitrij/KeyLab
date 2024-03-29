@@ -1,9 +1,0 @@
-{
-    "JWT": {
-        "SecretKey": "nemu6eTh2Uf9gOELJnemu6eTh2Uf9gOELJnemu6eTh2Uf9gOELJnemu6eTh2Uf9gOELJ",
-        "AccessExpireDate": 60,
-        "RefreshExpireDate": 1814400,
-        "Issuer": "AO Keyboard",
-        "Audience": "Some user"
-    }
-}

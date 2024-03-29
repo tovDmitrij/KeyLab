@@ -9,17 +9,17 @@ namespace helper.v1.jwt.Helper
 {
     public sealed class JWTHelper : IJWTHelper
     {
-        public string CreateAccessToken(Guid userID, string secretKey, string issuer, string audience, DateTime expireDate)
+        public string CreateAccessToken(Guid userID, string userRole, string secretKey, string issuer, string audience, DateTime expireDate)
         {
-            var secretKeyViaBytes = Encoding.UTF8.GetBytes(secretKey);
-
             var claimsList = new List<Claim> 
             { 
                 new(JwtRegisteredClaimNames.Name, userID.ToString()),
                 new(JwtRegisteredClaimNames.Iss, issuer),
-                new(JwtRegisteredClaimNames.Aud, audience)
+                new(JwtRegisteredClaimNames.Aud, audience),
+                new(ClaimTypes.Role, userRole)
             };
 
+            var secretKeyViaBytes = Encoding.UTF8.GetBytes(secretKey);
             var credentials = new SigningCredentials(
                 new SymmetricSecurityKey(secretKeyViaBytes),
                 SecurityAlgorithms.HmacSha512Signature);

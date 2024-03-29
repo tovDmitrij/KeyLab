@@ -12,8 +12,7 @@ using api.v1.email.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("/configurations/email.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("/configurations/rabbitmq.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/configurations/api.json", optional: false, reloadOnChange: true);
 
 var cfg = builder.Configuration;
 
@@ -39,23 +38,21 @@ builder.Services.AddMassTransit(options =>
 
 builder.Services.AddAntiforgery(options =>
 {
-    options.FormFieldName = "KeyboardAntiforgery";
-    options.HeaderName = "X-CSRF-TOKEN-KEYBOARD";
+    options.FormFieldName = "KeylabAntiforgery";
+    options.HeaderName = "X-CSRF-TOKEN-KEYLAB";
     options.SuppressXFrameOptionsHeader = false;
 });
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        name: "ProtectedPolicy",
-        policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithOrigins("some"));
-    options.AddPolicy(
         name: "PublicPolicy",
         policy => policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(origin => true));
 });
 
-builder.Services.AddSingleton<IEmailConfigurationHelper, ConfigurationHelper>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
+
+builder.Services.AddSingleton<IEmailConfigurationHelper, ConfigurationHelper>();
 
 #endregion
 

@@ -2,6 +2,7 @@
 {
     public interface IStatConfigurationHelper
     {
+        /// <exception cref="ArgumentNullException"></exception>
         public int GetStatisticAliveTimeSeconds();
     }
 }

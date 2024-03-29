@@ -28,10 +28,10 @@ namespace db.v1.main.Entities
         [Column("creation_date")]
         public double CreationDate { get; set; }
 
-        public BoxEntity(Guid ID, Guid ownerID, Guid typeID, string title, 
+        public BoxEntity(Guid id, Guid ownerID, Guid typeID, string title, 
                          string fileName, string previewName, double creationDate)
         {
-            this.ID = ID;
+            ID = id;
             OwnerID = ownerID;
             TypeID = typeID;
             Title = title;

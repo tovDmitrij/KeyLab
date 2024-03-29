@@ -4,6 +4,6 @@ namespace api.v1.stats.Services.Interval
 {
     public interface IIntervalService
     {
-        public List<SelectIntervalDTO> GetIntervals(Guid userID);
+        public List<SelectIntervalDTO> GetIntervals();
     }
 }

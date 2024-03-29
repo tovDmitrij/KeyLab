@@ -19,7 +19,7 @@ namespace api.v1.main.Controllers
         private readonly IKeycapService _keycap = keycap;
 
         [HttpPost, DisableRequestSizeLimit]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> AddKeycap()
         {
             var file = GetFormDataKeycapFile();
@@ -37,7 +37,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpPut, DisableRequestSizeLimit]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> UpdateKeycap()
         {
             var file = GetFormDataKeycapFile();
@@ -86,19 +86,24 @@ namespace api.v1.main.Controllers
 
         [HttpGet("preview")]
         [AllowAnonymous]
-        public IActionResult GetKeycapPreview([Required] Guid keycapID)
+        public async Task<IActionResult> GetKeycapPreview([Required] Guid keycapID)
         {
-            var previewBase64 = _keycap.GetKeycapBase64Preview(keycapID);
+            var previewBase64 = await _keycap.GetKeycapBase64Preview(keycapID);
             return Ok(new { previewBase64 });
         }
 
 
 
+        [NonAction]
         private IFormFile? GetFormDataKeycapFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
+
+        [NonAction]
         private IFormFile? GetFormDataKeycapPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
 
+        [NonAction]
         private string? GetFormDataKeycapTitle() => Request.Form["title"];
 
+        [NonAction]
         private Guid GetFormDataKitID()
         {
             if (!Guid.TryParse(Request.Form["kitID"], out Guid result))
@@ -106,6 +111,7 @@ namespace api.v1.main.Controllers
             return result;
         }
 
+        [NonAction]
         private Guid GetFormDataKeycapID()
         {
             if (!Guid.TryParse(Request.Form["keycapID"], out Guid result))

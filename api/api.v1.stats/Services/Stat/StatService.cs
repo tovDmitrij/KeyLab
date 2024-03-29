@@ -1,6 +1,6 @@
 ﻿using api.v1.stats.DTOs;
 using api.v1.stats.DTOs.Attendance;
-using api.v1.stats.DTOs.Page;
+using api.v1.stats.DTOs.Activity;
 
 using component.v1.exceptions;
 
@@ -15,29 +15,30 @@ using helper.v1.localization.Helper;
 
 namespace api.v1.stats.Services.Stat
 {
-    public sealed class StatService(IIntervalRepository interval, IAdminConfigurationHelper adminCfg, IHistoryRepository history,
+    public sealed class StatService(IIntervalRepository interval, IHistoryRepository history,
         ICacheHelper cache, ILocalizationHelper localization, IStatConfigurationHelper statCfg, ICacheConfigurationHelper cacheCfg,
         IActivityRepository activity) : IStatService
     {
         private readonly IIntervalRepository _interval = interval;
         private readonly IActivityRepository _activity = activity;
         private readonly IHistoryRepository _history = history;
+
         private readonly ICacheHelper _cache = cache;
         private readonly ILocalizationHelper _localization = localization;
-        private readonly IAdminConfigurationHelper _adminCfg = adminCfg;
         private readonly IStatConfigurationHelper _statCfg = statCfg;
         private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
 
-        public List<AttendancePlotDTO> GetAttendanceTimePlot(PostAttendanceStatDTO body, Guid userID)
+        public List<AttendancePlotDTO> GetAttendanceTimePlot(PostAttendanceStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var timePlotData = new List<AttendancePlotDTO>();
+            var plotData = new List<AttendancePlotDTO>();
             foreach (var period in periods)
             {
                 try
                 {
-                    var cacheKey = $"{period.LeftDate}-{period.RightDate}-AttendanceTimePlot";
+                    var cacheKey = _cacheCfg.GetAttendanceTimeCacheKey(period.LeftDate, period.RightDate);
                     if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                     {
                         activities = _history.SelectHistories(period.LeftDate, period.RightDate)
@@ -47,37 +48,38 @@ namespace api.v1.stats.Services.Stat
                         _cache.SetValue(cacheKey, activities, minutes);
                     }
 
-                    var users = activities!.Select(x => x.UserID).Distinct();
-                    var userTimes = new List<double>();
-                    foreach (var user in users)
+                    var userIDs = activities!.Select(x => x.UserID).Distinct();
+                    var times = new List<double>();
+                    foreach (var userID in userIDs)
                     {
-                        var userActivity = activities!.Where(x => x.UserID == user);
-                        var aliveTime = userActivity.Last().Date - userActivity.First().Date;
+                        var currentUserActivities = activities!.Where(x => x.UserID == userID);
+                        var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
                         if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
                         {
-                            userTimes.Add(aliveTime);
+                            times.Add(aliveTime);
                         }
                     }
-                    timePlotData.Add(new(period.LeftDate, period.RightDate, userTimes.Average()));
+                    plotData.Add(new(period.LeftDate, period.RightDate, times.Average()));
                 }
                 catch
                 {
-                    timePlotData.Add(new(period.LeftDate, period.RightDate, 0.0));
+                    plotData.Add(new(period.LeftDate, period.RightDate, 0.0));
                 }
             }
-            return timePlotData;
+            return plotData;
         }
 
-        public double GetAttendanceTimeAtom(PostAttendanceStatDTO body, Guid userID)
+        public double GetAttendanceTimeAtom(PostAttendanceStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var timePlotData = new List<double>();
+            var plotData = new List<double>();
             foreach (var period in periods)
             {
                 try
                 {
-                    var cacheKey = $"{period.LeftDate}-{period.RightDate}-AttendanceTimeAtom";
+                    var cacheKey = _cacheCfg.GetAttendanceTimeCacheKey(period.LeftDate, period.RightDate);
                     if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                     {
                         activities = _history.SelectHistories(period.LeftDate, period.RightDate)
@@ -87,37 +89,38 @@ namespace api.v1.stats.Services.Stat
                         _cache.SetValue(cacheKey, activities, minutes);
                     }
 
-                    var users = activities!.Select(x => x.UserID).Distinct();
-                    var userTimes = new List<double>();
-                    foreach (var user in users)
+                    var userIDs = activities!.Select(x => x.UserID).Distinct();
+                    var times = new List<double>();
+                    foreach (var userID in userIDs)
                     {
-                        var userActivity = activities!.Where(x => x.UserID == user);
-                        var aliveTime = userActivity.Last().Date - userActivity.First().Date;
+                        var currentUserActivities = activities!.Where(x => x.UserID == userID);
+                        var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
                         if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
                         {
-                            userTimes.Add(aliveTime);
+                            times.Add(aliveTime);
                         }
                     }
-                    timePlotData.Add(userTimes.Average());
+                    plotData.Add(times.Average());
                 }
                 catch
                 {
-                    timePlotData.Add(0.0);
+                    plotData.Add(0.0);
                 }
             }
-            return timePlotData.Average();
+            return plotData.Average();
         }
 
 
 
-        public List<AttendancePlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body, Guid userID)
+        public List<AttendancePlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var quantityPlotData = new List<AttendancePlotDTO>();
+            var plotData = new List<AttendancePlotDTO>();
             foreach (var period in periods)
             {
-                var cacheKey = $"{period.LeftDate}-{period.RightDate}-AttendanceQuantityPlot";
+                var cacheKey = _cacheCfg.GetAttendanceQuantityCacheKey(period.LeftDate, period.RightDate);
                 if (!_cache.TryGetValue(cacheKey, out int count))
                 {
                     count = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate);
@@ -125,19 +128,20 @@ namespace api.v1.stats.Services.Stat
                     var minutes = _cacheCfg.GetCacheExpirationMinutes();
                     _cache.SetValue(cacheKey, count, minutes);
                 }
-                quantityPlotData.Add(new(period.LeftDate, period.RightDate, count));
+                plotData.Add(new(period.LeftDate, period.RightDate, count));
             }
-            return quantityPlotData;
+            return plotData;
         }
 
-        public double GetAttendanceQuantityAtom(PostAttendanceStatDTO body, Guid userID)
+        public double GetAttendanceQuantityAtom(PostAttendanceStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var quantityPlotData = new List<int>();
+            var plotData = new List<int>();
             foreach (var period in periods)
             {
-                var cacheKey = $"{period.LeftDate}-{period.RightDate}-AttendanceQuantityAtom";
+                var cacheKey = _cacheCfg.GetAttendanceQuantityCacheKey(period.LeftDate, period.RightDate);
                 if (!_cache.TryGetValue(cacheKey, out int count))
                 {
                     count = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate);
@@ -145,204 +149,193 @@ namespace api.v1.stats.Services.Stat
                     var minutes = _cacheCfg.GetCacheExpirationMinutes();
                     _cache.SetValue(cacheKey, count, minutes);
                 }
-                quantityPlotData.Add(count);
+                plotData.Add(count);
             }
-            return quantityPlotData.Average();
+            return plotData.Average();
         }
 
 
 
-        public List<PagePlotDTO> GetPageTimePlot(PostPageStatDTO body, Guid userID)
+        public List<ActivityPlotDTO> GetActivityTimePlot(PostActivityStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var timePlotData = new List<PagePlotDTO>();
+            var plotData = new List<ActivityPlotDTO>();
             foreach (var period in periods)
             {
-                var pageTimes = new Dictionary<Guid, double>();
-                foreach (var pageID in body.PageIDs)
+                var activityTimes = new Dictionary<Guid, double>();
+                foreach (var activityID in body.ActivityIDs)
                 {
                     try
                     {
-                        var cacheKey = $"{period.LeftDate}-{period.RightDate}-PageTimePlot";
+                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate);
                         if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                         {
-                            activities = _history.SelectHistories(period.LeftDate, period.RightDate, pageID)
+                            activities = _history.SelectHistories(period.LeftDate, period.RightDate, activityID)
                                 .OrderBy(x => x.UserID).ThenBy(x => x.Date).ToList();
 
                             var minutes = _cacheCfg.GetCacheExpirationMinutes();
                             _cache.SetValue(cacheKey, activities, minutes);
                         }
 
-                        var users = activities!.Select(x => x.UserID).Distinct();
-                        var userTimes = new List<double>();
-                        foreach (var user in users)
+                        var userIDs = activities!.Select(x => x.UserID).Distinct();
+                        var times = new List<double>();
+                        foreach (var userID in userIDs)
                         {
-                            var userActivity = activities!.Where(x => x.UserID == user);
-                            var aliveTime = userActivity.Last().Date - userActivity.First().Date;
+                            var currentUserActivities = activities!.Where(x => x.UserID == userID);
+                            var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
                             if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
                             {
-                                userTimes.Add(aliveTime);
+                                times.Add(aliveTime);
                             }
                         }
-                        pageTimes.Add(pageID, userTimes.Average());
+                        activityTimes.Add(activityID, times.Average());
                     }
                     catch
                     {
-                        pageTimes.Add(pageID, 0);
+                        activityTimes.Add(activityID, 0);
                     }
                 }
-                timePlotData.Add(new(period.LeftDate, period.RightDate, pageTimes));
+                plotData.Add(new(period.LeftDate, period.RightDate, activityTimes));
             }
-            return timePlotData;
+            return plotData;
         }
 
-        public double GetPageTimeAtom(PostPageStatDTO body, Guid userID)
+        public double GetActivityTimeAtom(PostActivityStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var timePlotData = new List<double>();
+            var plotData = new List<double>();
             foreach (var period in periods)
             {
-                var pageTimes = new List<double>();
-                foreach (var pageID in body.PageIDs)
+                var activityTimes = new List<double>();
+                foreach (var activityID in body.ActivityIDs)
                 {
                     try
                     {
-                        var cacheKey = $"{period.LeftDate}-{period.RightDate}-PageTimeAtom";
+                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate);
                         if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                         {
-                            activities = _history.SelectHistories(period.LeftDate, period.RightDate, pageID)
+                            activities = _history.SelectHistories(period.LeftDate, period.RightDate, activityID)
                                 .OrderBy(x => x.UserID).ThenBy(x => x.Date).ToList();
 
                             var minutes = _cacheCfg.GetCacheExpirationMinutes();
                             _cache.SetValue(cacheKey, activities, minutes);
                         }
 
-                        var users = activities!.Select(x => x.UserID).Distinct();
-                        var userTimes = new List<double>();
-                        foreach (var user in users)
+                        var userIDs = activities!.Select(x => x.UserID).Distinct();
+                        var times = new List<double>();
+                        foreach (var userID in userIDs)
                         {
-                            var userActivity = activities!.Where(x => x.UserID == user);
-                            var aliveTime = userActivity.Last().Date - userActivity.First().Date;
+                            var currentUserActivities = activities!.Where(x => x.UserID == userID);
+                            var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
                             if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
                             {
-                                userTimes.Add(aliveTime);
+                                times.Add(aliveTime);
                             }
                         }
-                        pageTimes.Add(userTimes.Average());
+                        activityTimes.Add(times.Average());
                     }
                     catch
                     {
-                        pageTimes.Add(0);
+                        activityTimes.Add(0);
                     }
                 }
-                timePlotData.Add(pageTimes.Average());
+                plotData.Add(activityTimes.Average());
             }
-            return timePlotData.Average();
+            return plotData.Average();
         }
 
 
 
-        public List<PagePlotDTO> GetPageQuantityPlot(PostPageStatDTO body, Guid userID)
+        public List<ActivityPlotDTO> GetActivityQuantityPlot(PostActivityStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var quantityPlotData = new List<PagePlotDTO>();
+            var plotData = new List<ActivityPlotDTO>();
             foreach (var period in periods)
             {
-                var userTimes = new Dictionary<Guid, double>();
-                foreach (var pageID in body.PageIDs)
+                var quantities = new Dictionary<Guid, double>();
+                foreach (var activityID in body.ActivityIDs)
                 {
-                    var cacheKey = $"{period.LeftDate}-{period.RightDate}-{pageID}-PageQuantityPlot";
+                    var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(period.LeftDate, period.RightDate);
                     if (!_cache.TryGetValue(cacheKey, out int count))
                     {
-                        count = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate, pageID);
+                        count = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate, activityID);
 
                         var minutes = _cacheCfg.GetCacheExpirationMinutes();
                         _cache.SetValue(cacheKey, count, minutes);
                     }
-                    userTimes.Add(pageID, count);
+                    quantities.Add(activityID, count);
 
                 }
-                quantityPlotData.Add(new(period.LeftDate, period.RightDate, userTimes));
+                plotData.Add(new(period.LeftDate, period.RightDate, quantities));
             }
-            return quantityPlotData;
+            return plotData;
         }
 
-        public double GetPageQuantityAtom(PostPageStatDTO body, Guid userID)
+        public double GetActivityQuantityAtom(PostActivityStatDTO body)
         {
-            var periods = ValidateBodyAndGetPeriods(body, userID);
+            ValidateBody(body);
+            var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var quantityPlotData = new List<double>();
+            var plotData = new List<double>();
             foreach (var period in periods)
             {
-                var userTimes = new List<int>();
-                foreach (var pageID in body.PageIDs)
+                var quantities = new List<int>();
+                foreach (var activityID in body.ActivityIDs)
                 {
-                    var cacheKey = $"{period.LeftDate}-{period.RightDate}-{pageID}-PageQuantityAtom";
+                    var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(period.LeftDate, period.RightDate);
                     if (!_cache.TryGetValue(cacheKey, out int count))
                     {
-                        count = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate, pageID);
+                        count = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate, activityID);
 
                         var minutes = _cacheCfg.GetCacheExpirationMinutes();
                         _cache.SetValue(cacheKey, count, minutes);
                     }
-                    userTimes.Add(count);
+                    quantities.Add(count);
                 }
-                quantityPlotData.Add(userTimes.Average());
+                plotData.Add(quantities.Average());
             }
-            return quantityPlotData.Average();
+            return plotData.Average();
         }
 
 
 
-        private List<PeriodDTO> ValidateBodyAndGetPeriods(PostAttendanceStatDTO body, Guid userID)
+        private void ValidateBody(PostAttendanceStatDTO body)
         {
-            ValidateUserID(userID);
             ValidateDates(body.LeftDate, body.RightDate);
             ValidateIntervalID(body.IntervalID);
-
-            var intervalSeconds = _interval.SelectIntervalSeconds(body.IntervalID);
-
-            var periodSeconds = body.RightDate - body.LeftDate;
-            var remain = periodSeconds % intervalSeconds;
-            var shiftedLeftDate = body.LeftDate;
-            if (remain != 0)
-            {
-                shiftedLeftDate = body.LeftDate - intervalSeconds + remain;
-            }
-
-            var periods = new List<PeriodDTO>();
-            for (var i = shiftedLeftDate; i < body.RightDate; i += intervalSeconds)
-            {
-                periods.Add(new(i, i + intervalSeconds));
-            }
-            return periods;
         }
 
-        private List<PeriodDTO> ValidateBodyAndGetPeriods(PostPageStatDTO body, Guid userID)
+        private void ValidateBody(PostActivityStatDTO body)
         {
-            ValidateUserID(userID);
+            
             ValidateDates(body.LeftDate, body.RightDate);
             ValidateIntervalID(body.IntervalID);
-            foreach (var pageID in body.PageIDs)
+            foreach (var pageID in body.ActivityIDs)
             {
                 ValidateActivityID(pageID);
             }
+        }
 
-            var intervalSeconds = _interval.SelectIntervalSeconds(body.IntervalID);
+        private List<PeriodDTO> GetPeriods(double leftDate, double rightDate, Guid intervalID)
+        {
+            var intervalSeconds = _interval.SelectIntervalSeconds(intervalID);
 
-            var periodSeconds = body.RightDate - body.LeftDate;
+            var periodSeconds = rightDate - leftDate;
             var remain = periodSeconds % intervalSeconds;
-            var shiftedLeftDate = body.LeftDate;
+            var shiftedLeftDate = leftDate;
             if (remain != 0)
             {
-                shiftedLeftDate = body.LeftDate - intervalSeconds + remain;
+                shiftedLeftDate = leftDate - intervalSeconds + remain;
             }
 
             var periods = new List<PeriodDTO>();
-            for (var i = shiftedLeftDate; i < body.RightDate; i += intervalSeconds)
+            for (var i = shiftedLeftDate; i < rightDate; i += intervalSeconds)
             {
                 periods.Add(new(i, i + intervalSeconds));
             }
@@ -350,12 +343,6 @@ namespace api.v1.stats.Services.Stat
         }
 
 
-
-        private void ValidateUserID(Guid userID)
-        {
-            if (userID != _adminCfg.GetDefaultUserID())
-                throw new BadRequestException(_localization.EndpointIsNotAcceptable());
-        }
 
         private void ValidateDates(double leftDate, double rightDate)
         {

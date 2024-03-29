@@ -15,10 +15,6 @@ namespace db.v1.stats.Repositories.Activity
         public List<SelectActivityDTO> SelectActivities() => _db.Activities
             .Select(activity => new SelectActivityDTO(activity.ID, activity.Title)).ToList();
 
-        public List<SelectActivityDTO> SelectActivities(List<string> notEqualTags) => _db.Activities
-            .Where(activity => !notEqualTags.Contains(activity.Tag))
-            .Select(activity => new SelectActivityDTO(activity.ID, activity.Title)).ToList();
-
 
 
         public bool IsActivityExistByID(Guid activityID) => _db.Activities

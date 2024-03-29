@@ -16,7 +16,7 @@ namespace api.v1.main.Controllers
         private readonly IProfileService _profiles = profiles;
 
         [HttpGet("nickname")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public IActionResult GetUserNickname()
         {
             var userID = GetAccessTokenUserID();
