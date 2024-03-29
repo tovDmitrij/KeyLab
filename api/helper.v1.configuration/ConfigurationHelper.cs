@@ -3,66 +3,232 @@ using helper.v1.configuration.Interfaces;
 
 namespace helper.v1.configuration
 {
-    public sealed class ConfigurationHelper(IConfiguration cfg) : 
-        IEmailConfigurationHelper, IJWTConfigurationHelper, IFileConfigurationHelper, ICacheConfigurationHelper, 
-        IAdminConfigurationHelper, IActivityConfigurationHelper
+    public sealed class ConfigurationHelper(IConfiguration cfg) : IEmailConfigurationHelper, IJWTConfigurationHelper, IFileConfigurationHelper, 
+        ICacheConfigurationHelper, IActivityConfigurationHelper, IStatConfigurationHelper
     {
         private readonly IConfiguration _cfg = cfg;
 
-        public string GetJWTSecretKey() => _cfg["JWT:SecretKey"] ?? 
-            throw new ArgumentNullException("JWT:SecretKey отсутствует в конфигурационном файле");
-        public double GetJWTAccessExpireDate() => Convert.ToDouble(_cfg["JWT:AccessExpireDate"] ?? 
-            throw new ArgumentNullException("JWT:AccessExpireDate отсутствует в конфигурационном файле"));
-        public double GetJWTRefreshExpireDate() => Convert.ToDouble(_cfg["JWT:RefreshExpireDate"] ?? 
-            throw new ArgumentNullException("JWT:RefreshExpireDate отсутствует в конфигурационном файле"));
-        public string GetJWTIssuer() => _cfg["JWT:Issuer"] ?? 
-            throw new ArgumentNullException("JWT:Issuer отсутствует в конфигурационном файле");
-        public string GetJWTAudience() => _cfg["JWT:Audience"] ?? 
-            throw new ArgumentNullException("JWT:Audience отсутствует в конфигурационном файле");
+        public string GetJWTSecretKey()
+        {
+            var key = "JWT:SecretKey";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
 
-        public string GetEmailHost() => _cfg["Email:Host"] ?? 
-            throw new ArgumentNullException("Email:Host отсутствует в конфигурационном файле");
-        public int GetEmailPort() => Convert.ToInt32(_cfg["Email:Port"] ??
-            throw new ArgumentNullException("Email:Port отсутствует в конфигурационном файле"));
-        public string GetEmailLogin() => _cfg["Email:Login"] ?? 
-            throw new ArgumentNullException("Email:Login отсутствует в конфигурационном файле");
-        public string GetEmailPassword() => _cfg["Email:Password"] ?? 
-            throw new ArgumentNullException("Email:Password отсутствует в конфигурационном файле");
+        public double GetJWTAccessExpireDate()
+        {
+            var key = "JWT:AccessExpireDate";
+            ValidateConfigurationKey(key, out var str);
+            return Convert.ToDouble(str);
+        }
 
-        public Guid GetDefaultModelsUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"] ??
-            throw new ArgumentNullException("File:DefaultModelsUserID отсутствует в конфигурационном файле"));
-        public string GetSwitchFilePath(string fileName) => string.Format(_cfg["File:SwitchFilePath"] ??
-            throw new ArgumentNullException("File:SwitchFilePath отсутствует в конфигурационном файле"), fileName);
-        public string GetSwitchSoundFilePath(string fileName) => string.Format(_cfg["File:SwitchSoundPath"] ??
-            throw new ArgumentNullException("File:SwitchSoundPath отсутствует в конфигурационном файле"), fileName);
-        public string GetKeyboardFilePath(Guid userID, string fileName) => string.Format(_cfg["File:KeyboardFilePath"] ??
-            throw new ArgumentNullException("File:KeyboardFilePath отсутствует в конфигурационном файле"), userID, fileName);
-        public string GetBoxFilePath(Guid userID, string fileName) => string.Format(_cfg["File:BoxFilePath"] ??
-            throw new ArgumentNullException("File:BoxFilePath отсутствует в конфигурационном файле"), userID, fileName);
-        public string GetKeycapFilePath(Guid userID, Guid kitID, string fileName) => string.Format(_cfg["File:KeycapFilePath"] ??
-            throw new ArgumentNullException("File:KeycapFilePath отсутствует в конфигурационном файле"), userID, kitID, fileName);
+        public double GetJWTRefreshExpireDate()
+        {
+            var key = "JWT:RefreshExpireDate";
+            ValidateConfigurationKey(key, out var str);
+            return Convert.ToDouble(str);
+        }
 
-        public int GetCacheExpirationMinutes() => Convert.ToInt32(_cfg["Cache:ExpirationMinutes"] ?? 
-            throw new ArgumentNullException("Cache:ExpirationMinutes отсутствует в конфигурационном файле"));
+        public string GetJWTIssuer()
+        {
+            var key = "JWT:Issuer";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
 
-        public Guid GetDefaultUserID() => Guid.Parse(_cfg["File:DefaultModelsUserID"] ??
-            throw new ArgumentNullException("File:DefaultModelsUserID отсутствует в конфигурационном файле"));
+        public string GetJWTAudience()
+        {
+            var key = "JWT:Audience";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
 
-        public string GetRefreshActivityTag() => _cfg["Activities:Refresh"] ??
-            throw new ArgumentNullException("Activities:Refresh отсутствует в конфигурационном файле");
-        public string GetSeeKeyboardActivityTag() => _cfg["Activities:SeeKeyboard"] ??
-            throw new ArgumentNullException("Activities:SeeKeyboard отсутствует в конфигурационном файле");
-        public string GetEditKeyboardActivityTag() => _cfg["Activities:EditKeyboard"] ??
-            throw new ArgumentNullException("Activities:EditKeyboard отсутствует в конфигурационном файле");
-        public string GetSeeBoxActivityTag() => _cfg["Activities:SeeBox"] ??
-            throw new ArgumentNullException("Activities:SeeBox отсутствует в конфигурационном файле");
-        public string GetEditBoxActivityTag() => _cfg["Activities:EditBox"] ??
-            throw new ArgumentNullException("Activities:EditBox отсутствует в конфигурационном файле");
-        public string GetSeeKeycapActivityTag() => _cfg["Activities:SeeKeycap"] ??
-            throw new ArgumentNullException("Activities:SeeKeycap отсутствует в конфигурационном файле");
-        public string GetEditKeycapActivityTag() => _cfg["Activities:EditKeycap"] ??
-            throw new ArgumentNullException("Activities:EditKeycap отсутствует в конфигурационном файле");
-        public string GetSeeSwitchActivityTag() => _cfg["Activities:SeeSwitch"] ??
-            throw new ArgumentNullException("Activities:SeeSwitch отсутствует в конфигурационном файле");
+
+
+        public string GetEmailHost()
+        {
+            var key = "Email:Host";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public int GetEmailPort()
+        {
+            var key = "Email:Port";
+            ValidateConfigurationKey(key, out var str);
+            return Convert.ToInt32(str);
+        }
+
+        public string GetEmailLogin()
+        {
+            var key = "Email:Login";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetEmailPassword()
+        {
+            var key = "Email:Password";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+
+
+        public Guid GetDefaultModelsUserID()
+        {
+            var key = "File:DefaultModelsUserID";
+            ValidateConfigurationKey(key, out var str);
+            return Guid.Parse(str);
+        }
+
+        public string GetSwitchFilePath(string fileName)
+        {
+            var key = "File:SwitchFilePath";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, fileName);
+        }
+
+        public string GetSwitchSoundFilePath(string fileName)
+        {
+            var key = "File:SwitchSoundPath";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, fileName);
+        }
+
+        public string GetKeyboardFilePath(Guid userID, string fileName)
+        {
+            var key = "File:KeyboardFilePath";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, userID, fileName);
+        }
+
+        public string GetBoxFilePath(Guid userID, string fileName)
+        {
+            var key = "File:BoxFilePath";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, userID, fileName);
+        }
+
+        public string GetKeycapFilePath(Guid userID, Guid kitID, string fileName)
+        {
+            var key = "File:KeycapFilePath";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, userID, kitID, fileName);
+        }
+
+
+
+        public int GetCacheExpirationMinutes()
+        {
+            var key = "Cache:ExpirationMinutes";
+            ValidateConfigurationKey(key, out var str);
+            return Convert.ToInt32(str);
+        }
+
+        public string GetPaginationListCacheKey(int page, int pageSize, int repositoryFunctionHashCode, Guid param1 = default, Guid param2 = default)
+        {
+            var key = "Cache:PaginationListCacheKey";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, page, pageSize, repositoryFunctionHashCode, param1, param2);
+        }
+
+        public string GetFileCacheKey(string filePath)
+        {
+            var key = "Cache:FileCacheKey";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, filePath);
+        }
+
+        public string GetAttendanceTimeCacheKey(double leftDate, double rightDate)
+        {
+            var key = "Cache:StatisticCacheKey";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, leftDate, rightDate, "AttendanceTime");
+        }
+
+        public string GetAttendanceQuantityCacheKey(double leftDate, double rightDate)
+        {
+            var key = "Cache:StatisticCacheKey";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, leftDate, rightDate, "AttendanceQuantity");
+        }
+
+        public string GetActivityTimeCacheKey(double leftDate, double rightDate)
+        {
+            var key = "Cache:StatisticCacheKey";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, leftDate, rightDate, "ActivityTime");
+        }
+
+        public string GetActivityQuantityCacheKey(double leftDate, double rightDate)
+        {
+            var key = "Cache:StatisticCacheKey";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, leftDate, rightDate, "ActivityQuantity");
+        }
+
+
+
+        public string GetSeeKeyboardActivityTag()
+        {
+            var key = "Activities:SeeKeyboard";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetEditKeyboardActivityTag()
+        {
+            var key = "Activities:EditKeyboard";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetSeeBoxActivityTag()
+        {
+            var key = "Activities:SeeBox";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetEditBoxActivityTag()
+        {
+            var key = "Activities:EditBox";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetSeeKeycapActivityTag()
+        {
+            var key = "Activities:SeeKeycap";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetEditKeycapActivityTag()
+        {
+            var key = "Activities:EditKeycap";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetSeeSwitchActivityTag()
+        {
+            var key = "Activities:SeeSwitch";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public int GetStatisticAliveTimeSeconds()
+        {
+            var key = "Statistic:AliveTimeSeconds";
+            ValidateConfigurationKey(key, out var str);
+            return Convert.ToInt32(str);
+        }
+
+
+
+        private void ValidateConfigurationKey(string key, out string result) => result = _cfg[key] ??
+            throw new ArgumentNullException($"{key} отсутствует в конфигурационном файле");
     }
 }

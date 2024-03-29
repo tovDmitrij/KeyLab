@@ -2,8 +2,8 @@
 {
     public interface IFileHelper
     {
-        public void AddFile(byte[] file, string fullFilePath);
+        public Task UploadFileAsync(byte[] file, string fullFilePath);
         public void DeleteFile(string fullFilePath);
-        public byte[] GetFile(string fullFilePath);
+        public Task<byte[]> ReadFileAsync(string fullFilePath);
     }
 }

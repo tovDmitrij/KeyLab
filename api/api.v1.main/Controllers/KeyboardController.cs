@@ -28,7 +28,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpGet("auth")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> GetUserKeyboardsList([Required] int page, [Required] int pageSize)
         {
             var userID = GetAccessTokenUserID();
@@ -46,7 +46,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpGet("auth/totalPages")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public IActionResult GetUserKeyboardsTotalPages([Required] int pageSize)
         {
             var userID = GetAccessTokenUserID();
@@ -67,16 +67,16 @@ namespace api.v1.main.Controllers
 
         [HttpGet("preview")]
         [AllowAnonymous]
-        public IActionResult GetKeyboardPreview([Required] Guid keyboardID)
+        public async Task<IActionResult> GetKeyboardPreview([Required] Guid keyboardID)
         {
-            var previewBase64 = _keyboard.GetKeyboardBase64Preview(keyboardID);
+            var previewBase64 = await _keyboard.GetKeyboardBase64Preview(keyboardID);
             return Ok(new { previewBase64 });
         }
 
 
 
         [HttpPost, DisableRequestSizeLimit]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> AddKeyboard()
         {
             var file = GetFormDataKeyboardFile();
@@ -96,7 +96,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpPut, DisableRequestSizeLimit]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> UpdateKeyboard()
         {
             var file = GetFormDataKeyboardFile();
@@ -116,7 +116,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpDelete]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> DeleteKeyboard([FromBody] DeleteKeyboardDTO body)
         {
             var userID = GetAccessTokenUserID();
@@ -129,11 +129,16 @@ namespace api.v1.main.Controllers
 
 
 
+        [NonAction]
         private IFormFile? GetFormDataKeyboardFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
+
+        [NonAction]
         private IFormFile? GetFormDataKeyboardPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
 
+        [NonAction]
         private string? GetFormDataKeyboardTitle() => Request.Form["title"];
 
+        [NonAction]
         private Guid GetFormDataSwitchType()
         {
             if (!Guid.TryParse(Request.Form["switchTypeID"], out Guid result))
@@ -141,6 +146,7 @@ namespace api.v1.main.Controllers
             return result;
         }
 
+        [NonAction]
         private Guid GetFormDataBoxType()
         {
             if (!Guid.TryParse(Request.Form["boxTypeID"], out Guid result))
@@ -148,11 +154,12 @@ namespace api.v1.main.Controllers
             return result;
         }
 
+        [NonAction]
         private Guid GetFormDataKeyboardID()
         {
             if (!Guid.TryParse(Request.Form["keyboardID"], out Guid result))
                 result = Guid.Empty;
             return result;
         }
-}
+    }
 }

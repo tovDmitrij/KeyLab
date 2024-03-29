@@ -38,7 +38,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpGet("auth")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> GetUserBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
         {
             var userID = GetAccessTokenUserID();
@@ -80,16 +80,16 @@ namespace api.v1.main.Controllers
 
         [HttpGet("preview")]
         [AllowAnonymous]
-        public IActionResult GetBoxPreview([Required] Guid boxID)
+        public async Task<IActionResult> GetBoxPreview([Required] Guid boxID)
         {
-            var previewBase64 = _box.GetBoxBase64Preview(boxID);
+            var previewBase64 = await _box.GetBoxBase64Preview(boxID);
             return Ok(new { previewBase64 });
         }
 
 
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> AddBoxFile()
         {
             var file = GetFormDataBoxFile();
@@ -107,7 +107,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpPut]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> UpdateBoxFile()
         {
             var file = GetFormDataBoxFile();
@@ -124,7 +124,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpDelete]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> DeleteBoxFile([FromBody] DeleteBoxDTO body)
         {
             var userID = GetAccessTokenUserID();
@@ -136,11 +136,16 @@ namespace api.v1.main.Controllers
 
 
 
+        [NonAction]
         private IFormFile? GetFormDataBoxFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
+
+        [NonAction]
         private IFormFile? GetFormDataBoxPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
 
+        [NonAction]
         private string? GetFormDataBoxTitle() => Request.Form["title"];
 
+        [NonAction]
         public Guid GetFormDataBoxTypeID()
         {
             if (!Guid.TryParse(Request.Form["typeID"], out Guid result))
@@ -148,6 +153,7 @@ namespace api.v1.main.Controllers
             return result;
         }
 
+        [NonAction]
         public Guid GetFormDataBoxID()
         {
             if (!Guid.TryParse(Request.Form["boxID"], out Guid result))

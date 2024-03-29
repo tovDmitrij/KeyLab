@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Activity_IsNotExist" xml:space="preserve">
+    <value>Страницы с указанными параметрами не существует</value>
+  </data>
   <data name="BoxDescription_IsNotValid" xml:space="preserve">
     <value>Описание бокса клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
   </data>
@@ -144,9 +147,6 @@
   <data name="Email_SendVerificationCode" xml:space="preserve">
     <value>Код подтверждения аккаунта был успешно отправлен на указанную почту</value>
   </data>
-  <data name="Endpoint_IsNotAcceptable" xml:space="preserve">
-    <value>Доступ запрещён</value>
-  </data>
   <data name="File_IsNotAttached" xml:space="preserve">
     <value>Файл повреждён или не был прикреплён</value>
   </data>
@@ -161,6 +161,9 @@
   </data>
   <data name="File_IsSuccessfullUploaded" xml:space="preserve">
     <value>Файл был успешно сохранён</value>
+  </data>
+  <data name="Interval_IsNotExist" xml:space="preserve">
+    <value>Временного интервала с заданными параметрами не существует</value>
   </data>
   <data name="KeyboardDescription_IsNotValid" xml:space="preserve">
     <value>Описание клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа</value>
@@ -188,6 +191,9 @@
   </data>
   <data name="Preview_IsNotAttached" xml:space="preserve">
     <value>Превью файла повреждено или не было прикреплено</value>
+  </data>
+  <data name="Stats_LeftDateGreaterThanRightDate" xml:space="preserve">
+    <value>Левая дата периода больше правой</value>
   </data>
   <data name="SwitchType_IsNotExist" xml:space="preserve">
     <value>Типа переключателя с заданными параметрами не существует</value>

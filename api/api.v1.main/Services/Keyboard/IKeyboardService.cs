@@ -1,8 +1,9 @@
 ﻿using api.v1.main.DTOs.Keyboard;
 using api.v1.main.DTOs;
 
-using component.v1.exceptions;
 using db.v1.main.DTOs.Keyboard;
+
+using component.v1.exceptions;
 
 namespace api.v1.main.Services.Keyboard
 {
@@ -20,7 +21,7 @@ namespace api.v1.main.Services.Keyboard
         /// <exception cref="BadRequestException"></exception>
         public Task<byte[]> GetKeyboardFileBytes(Guid keyboardID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetKeyboardBase64Preview(Guid keyboardID);
+        public Task<string> GetKeyboardBase64Preview(Guid keyboardID);
 
 
 

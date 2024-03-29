@@ -34,8 +34,6 @@ namespace helper.v1.localization.Helper
         public string UserPasswordIsNotValid() => _localization["UserPassword_IsNotValid"];
         public string UserNicknameIsNotValid() => _localization["UserNickname_IsNotValid"];
 
-        public string EndpointIsNotAcceptable() => _localization["Endpoint_IsNotAcceptable"];
-
         public string KeyboardTitleIsBusy() => _localization["KeyboardTitle_IsBusy"];
         public string KeyboardTitleIsNotValid() => _localization["KeyboardTitle_IsNotValid"];
         public string KeyboardDescriptionIsNotValid() => _localization["KeyboardDescription_IsNotValid"];
@@ -54,5 +52,11 @@ namespace helper.v1.localization.Helper
 
         public string PaginationPageIsNotValid() => _localization["PaginationPage_NotValid"];
         public string PaginationPageSizeIsNotValid() => _localization["PaginationPageSize_NotValid"];
+
+        public string StatsLeftDateGreaterThanRightDate() => _localization["Stats_LeftDateGreaterThanRightDate"];
+
+        public string IntervalIsNotExist() => _localization["Interval_IsNotExist"];
+
+        public string ActivityIsNotExist() => _localization["Activity_IsNotExist"];
     }
 }

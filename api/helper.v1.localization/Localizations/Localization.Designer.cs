@@ -61,6 +61,15 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Страницы с указанными параметрами не существует.
+        /// </summary>
+        public static string Activity_IsNotExist {
+            get {
+                return ResourceManager.GetString("Activity_IsNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Описание бокса клавиатуры не валидное. Разрешённые символы: буквы, цифры. Мин. длина 3 символа.
         /// </summary>
         public static string BoxDescription_IsNotValid {
@@ -142,15 +151,6 @@ namespace helper.v1.localization.Localizations {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Доступ запрещён.
-        /// </summary>
-        public static string Endpoint_IsNotAcceptable {
-            get {
-                return ResourceManager.GetString("Endpoint_IsNotAcceptable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Файл повреждён или не был прикреплён.
         /// </summary>
         public static string File_IsNotAttached {
@@ -192,6 +192,15 @@ namespace helper.v1.localization.Localizations {
         public static string File_IsSuccessfullUploaded {
             get {
                 return ResourceManager.GetString("File_IsSuccessfullUploaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Временного интервала с заданными параметрами не существует.
+        /// </summary>
+        public static string Interval_IsNotExist {
+            get {
+                return ResourceManager.GetString("Interval_IsNotExist", resourceCulture);
             }
         }
         
@@ -273,6 +282,15 @@ namespace helper.v1.localization.Localizations {
         public static string Preview_IsNotAttached {
             get {
                 return ResourceManager.GetString("Preview_IsNotAttached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Левая дата периода больше правой.
+        /// </summary>
+        public static string Stats_LeftDateGreaterThanRightDate {
+            get {
+                return ResourceManager.GetString("Stats_LeftDateGreaterThanRightDate", resourceCulture);
             }
         }
         

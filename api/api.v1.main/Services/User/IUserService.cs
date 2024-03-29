@@ -8,11 +8,9 @@ namespace api.v1.main.Services.User
     {
         /// <exception cref="BadRequestException"></exception>
         public void SignUp(PostSignUpDTO body);
-
         /// <exception cref="BadRequestException"></exception>
-        public Task<SignInDTO> SignIn(PostSignInDTO body, Guid statsID);
-
+        public SignInDTO SignIn(PostSignInDTO body);
         /// <exception cref="BadRequestException"></exception>
-        public Task<string> UpdateAccessToken(string refreshToken, Guid statsID);
+        public string UpdateAccessToken(string refreshToken);
     }
 }

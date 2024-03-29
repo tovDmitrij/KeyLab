@@ -17,6 +17,7 @@ COPY ../api/component.v1.email/*.csproj ./component.v1.email/
 COPY ../api/component.v1.middlewares/*.csproj ./component.v1.middlewares/
 COPY ../api/component.v1.apicontroller/*.csproj ./component.v1.apicontroller/
 COPY ../api/component.v1.activity/*.csproj ./component.v1.activity/
+COPY ../api/component.v1.jwtrole/*.csproj ./component.v1.jwtrole/
 RUN dotnet restore
 
 COPY ../api/ ./

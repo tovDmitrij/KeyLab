@@ -21,7 +21,7 @@ namespace api.v1.main.Services.Box
         /// <exception cref="BadRequestException"></exception>
         public Task<byte[]> GetBoxFileBytes(Guid boxID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public string GetBoxBase64Preview(Guid boxID);
+        public Task<string> GetBoxBase64Preview(Guid boxID);
 
 
 

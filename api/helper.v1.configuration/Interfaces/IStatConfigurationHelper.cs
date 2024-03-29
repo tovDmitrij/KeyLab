@@ -1,8 +1,8 @@
 ﻿namespace helper.v1.configuration.Interfaces
 {
-    public interface IAdminConfigurationHelper
+    public interface IStatConfigurationHelper
     {
         /// <exception cref="ArgumentNullException"></exception>
-        public Guid GetDefaultUserID();
+        public int GetStatisticAliveTimeSeconds();
     }
 }

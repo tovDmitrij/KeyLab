@@ -1,8 +1,6 @@
 ﻿using api.v1.stats.Services.Interval;
 
-using component.v1.apicontroller;
-
-using helper.v1.localization.Helper;
+using component.v1.jwtrole;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,21 +9,15 @@ namespace api.v1.stats.Controllers
 {
     [ApiController]
     [Route("api/v1/stats")]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    public sealed class IntervalController : APIController
+    [Authorize(Roles = JWTRole.Administration)]
+    public sealed class IntervalController(IIntervalService interval) : ControllerBase
     {
-        private readonly IIntervalService _interval;
-
-        public IntervalController(IIntervalService interval, ILocalizationHelper localization) : base(localization) => _interval = interval;
-
-
+        private readonly IIntervalService _interval = interval;
 
         [HttpGet("intervals")]
         public IActionResult GetIntervals()
         {
-            var userID = GetAccessTokenUserID();
-
-            var intervals = _interval.GetIntervals(userID);
+            var intervals = _interval.GetIntervals();
             return Ok(intervals);
         }
     }

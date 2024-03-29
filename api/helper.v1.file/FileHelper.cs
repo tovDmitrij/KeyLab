@@ -2,21 +2,21 @@
 {
     public sealed class FileHelper : IFileHelper
     {
-        public void AddFile(byte[] file, string fullFilePath)
+        public async Task UploadFileAsync(byte[] file, string fullFilePath)
         {
             Directory.CreateDirectory(fullFilePath[..fullFilePath.LastIndexOf('/')]);
 
             using var fileStream = new FileStream(fullFilePath, FileMode.Create, FileAccess.Write);
-            fileStream.Write(file, 0, file.Length);
+            await fileStream.WriteAsync(file);
         }
 
         public void DeleteFile(string fullFilePath) => File.Delete(fullFilePath);
 
-        public byte[] GetFile(string fullFilePath)
+        public async Task<byte[]> ReadFileAsync(string fullFilePath)
         {
             try
             {
-                return File.ReadAllBytes(fullFilePath);
+                return await File.ReadAllBytesAsync(fullFilePath);
             }
             catch
             {

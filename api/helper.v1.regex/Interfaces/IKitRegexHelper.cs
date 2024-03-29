@@ -1,4 +1,6 @@
-﻿namespace helper.v1.regex.Interfaces
+﻿using component.v1.exceptions;
+
+namespace helper.v1.regex.Interfaces
 {
     public interface IKitRegexHelper
     {

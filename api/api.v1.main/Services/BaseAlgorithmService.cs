@@ -1,5 +1,4 @@
 ﻿using api.v1.main.DTOs;
-
 using component.v1.activity;
 using component.v1.exceptions;
 
@@ -11,35 +10,20 @@ using helper.v1.file;
 using helper.v1.localization.Helper;
 using helper.v1.messageBroker;
 
-namespace api.v1.main.Services.BaseAlgorithm
+namespace api.v1.main.Services
 {
-    public sealed class BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache, 
-        ICacheConfigurationHelper cacheCfg, IFileHelper file, IMessageBrokerHelper broker) : IBaseAlgorithmService
+    public abstract class BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache,
+        ICacheConfigurationHelper cacheCfg, IFileHelper file, IMessageBrokerHelper broker)
     {
-        private readonly ILocalizationHelper _localization = localization;
-        private readonly IUserRepository _user = user;
-        private readonly ICacheHelper _cache = cache;
-        private readonly IFileHelper _file = file;
-        private readonly IMessageBrokerHelper _broker = broker;
-        private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
-
-        public byte[] GetFile(string filePath)
-        {
-            if (!_cache.TryGetValue(filePath, out byte[]? file))
-            {
-                file = _file.GetFile(filePath);
-                if (file.Length == 0)
-                    throw new BadRequestException(_localization.FileIsNotExist());
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(filePath, file, minutes);
-            }
-            return file!;
-        }
+        protected readonly ILocalizationHelper _localization = localization;
+        protected readonly IUserRepository _user = user;
+        protected readonly ICacheHelper _cache = cache;
+        protected readonly IFileHelper _file = file;
+        protected readonly IMessageBrokerHelper _broker = broker;
+        protected readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
 
 
-
-        public InitFileDTO AddFile(
+        protected InitFileDTO UploadFile(
             IFormFile? file,
             IFormFile? preview,
             Guid userID,
@@ -56,7 +40,7 @@ namespace api.v1.main.Services.BaseAlgorithm
             {
                 file!.CopyTo(ms);
                 var modelBytes = ms.ToArray();
-                _file.AddFile(modelBytes, filePath);
+                _file.UploadFileAsync(modelBytes, filePath);
             }
 
             var previewName = $"{title}.jpeg";
@@ -65,13 +49,13 @@ namespace api.v1.main.Services.BaseAlgorithm
             {
                 preview!.CopyTo(ms);
                 var imgBytes = ms.ToArray();
-                _file.AddFile(imgBytes, previewPath);
+                _file.UploadFileAsync(imgBytes, previewPath);
             }
 
             return new(fileName, previewName);
         }
 
-        public InitFileDTO AddFile(
+        protected InitFileDTO UploadFile(
             IFormFile? file,
             IFormFile? preview,
             Guid userID,
@@ -89,7 +73,7 @@ namespace api.v1.main.Services.BaseAlgorithm
             {
                 file!.CopyTo(ms);
                 var modelBytes = ms.ToArray();
-                _file.AddFile(modelBytes, filePath);
+                _file.UploadFileAsync(modelBytes, filePath);
             }
 
             var previewName = $"{title}.jpeg";
@@ -98,13 +82,13 @@ namespace api.v1.main.Services.BaseAlgorithm
             {
                 preview!.CopyTo(ms);
                 var imgBytes = ms.ToArray();
-                _file.AddFile(imgBytes, previewPath);
+                _file.UploadFileAsync(imgBytes, previewPath);
             }
 
             return new(fileName, previewName);
         }
 
-        public InitFileDTO UpdateFile(
+        protected InitFileDTO UpdateFile(
             IFormFile? file,
             IFormFile? preview,
             Guid userID,
@@ -127,7 +111,7 @@ namespace api.v1.main.Services.BaseAlgorithm
                 file!.CopyTo(ms);
                 var modelBytes = ms.ToArray();
                 _file.DeleteFile(oldFilePath);
-                _file.AddFile(modelBytes, newFilePath);
+                _file.UploadFileAsync(modelBytes, newFilePath);
             }
 
             var oldPreviewFileName = previewNameFunction(objectID)!;
@@ -139,17 +123,34 @@ namespace api.v1.main.Services.BaseAlgorithm
                 preview!.CopyTo(memoryStream);
                 var imgBytes = memoryStream.ToArray();
                 _file.DeleteFile(oldPreviewFilePath);
-                _file.AddFile(imgBytes, newPreviewPath);
+                _file.UploadFileAsync(imgBytes, newPreviewPath);
             }
 
-            _cache.DeleteValue(objectID);
+            var cacheKey = _cacheCfg.GetFileCacheKey(oldFilePath);
+            _cache.DeleteValue(cacheKey);
 
             return new(newFileName, newPreviewName);
         }
 
 
 
-        public List<Object> GetPaginationListOfObjects<Object>(
+        protected async Task<byte[]> ReadFile(string filePath)
+        {
+            var cacheKey = _cacheCfg.GetFileCacheKey(filePath);
+            if (!_cache.TryGetValue(cacheKey, out byte[]? file))
+            {
+                file = await _file.ReadFileAsync(filePath);
+                if (file.Length == 0)
+                    throw new BadRequestException(_localization.FileIsNotExist());
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(cacheKey, file, minutes);
+            }
+            return file!;
+        }
+
+
+        protected List<Object> GetPaginationListOfObjects<Object>(
             int page,
             int pageSize,
             Func<int, int, List<Object>> repositoryFunction)
@@ -157,15 +158,21 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var cacheKey = $"{page}-{pageSize}-{repositoryFunction.GetHashCode()}";
+            var objects = repositoryFunction(page, pageSize);
+            /*
+            var cacheKey = _cacheCfg.GetPaginationListCacheKey(page, pageSize, repositoryFunction.GetHashCode());
             if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
             {
                 objects = repositoryFunction(page, pageSize);
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(cacheKey, objects, minutes);
             }
+            */
             return objects!;
         }
 
-        public List<Object> GetPaginationListOfObjects<Object>(
+        protected List<Object> GetPaginationListOfObjects<Object>(
             int page,
             int pageSize,
             Guid param1,
@@ -174,15 +181,21 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var cacheKey = $"{page}-{pageSize}-{param1}-{repositoryFunction.GetHashCode()}";
+            var objects = repositoryFunction(page, pageSize, param1);
+            /*
+            var cacheKey = _cacheCfg.GetPaginationListCacheKey(page, pageSize, repositoryFunction.GetHashCode(), param1);
             if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
             {
                 objects = repositoryFunction(page, pageSize, param1);
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(cacheKey, objects, minutes);
             }
+            */
             return objects!;
         }
 
-        public List<Object> GetPaginationListOfObjects<Object>(
+        protected List<Object> GetPaginationListOfObjects<Object>(
             int page,
             int pageSize,
             Guid param1,
@@ -192,17 +205,23 @@ namespace api.v1.main.Services.BaseAlgorithm
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var cacheKey = $"{page}-{pageSize}-{param1}-{param2}-{repositoryFunction.GetHashCode()}";
+            var objects = repositoryFunction(page, pageSize, param1, param2);
+            /*
+            var cacheKey = _cacheCfg.GetPaginationListCacheKey(page, pageSize, repositoryFunction.GetHashCode(), param1, param2);
             if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
             {
                 objects = repositoryFunction(page, pageSize, param1, param2);
+
+                var minutes = _cacheCfg.GetCacheExpirationMinutes();
+                _cache.SetValue(cacheKey, objects, minutes);
             }
+             */
             return objects!;
         }
 
 
 
-        public int GetPaginationTotalPages(int pageSize, Func<int> repositoryFunction)
+        protected int GetPaginationTotalPages(int pageSize, Func<int> repositoryFunction)
         {
             ValidatePageSize(pageSize);
 
@@ -210,7 +229,7 @@ namespace api.v1.main.Services.BaseAlgorithm
             return GetTotalPages(count, pageSize);
         }
 
-        public int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> repositoryFunction)
+        protected int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> repositoryFunction)
         {
             ValidatePageSize(pageSize);
 
@@ -220,7 +239,7 @@ namespace api.v1.main.Services.BaseAlgorithm
 
 
 
-        public async Task PublishActivity(Guid statsID, Func<string> activityTagFunction)
+        protected async Task PublishActivity(Guid statsID, Func<string> activityTagFunction)
         {
             var activityTag = activityTagFunction();
             var activityBody = new ActivityDTO(statsID, activityTag);
@@ -232,6 +251,13 @@ namespace api.v1.main.Services.BaseAlgorithm
         private static int GetTotalPages(int count, int pageSize) => (int)Math.Ceiling((double)count / pageSize);
 
 
+
+        protected void ValidateUserID(Guid userID)
+        {
+            if (!_user.IsUserExist(userID))
+                throw new BadRequestException(_localization.UserIsNotExist());
+        }
+
         private void ValidateFile(IFormFile? file)
         {
             if (file == null || file.Length == 0)
@@ -242,12 +268,6 @@ namespace api.v1.main.Services.BaseAlgorithm
         {
             if (preview == null || preview.Length == 0)
                 throw new BadRequestException(_localization.PreviewIsNotAttached());
-        }
-
-        private void ValidateUserID(Guid userID)
-        {
-            if (!_user.IsUserExist(userID))
-                throw new BadRequestException(_localization.UserIsNotExist());
         }
 
         private void ValidatePageSize(int pageSize)

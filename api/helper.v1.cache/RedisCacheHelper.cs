@@ -2,7 +2,7 @@
 
 using System.Text.Json;
 
-namespace helper.v1.cache.Implements
+namespace helper.v1.cache
 {
     public sealed class RedisCacheHelper(IDistributedCache cache) : ICacheHelper
     {

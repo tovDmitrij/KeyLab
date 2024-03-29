@@ -19,7 +19,7 @@ namespace api.v1.main.Controllers
         private readonly IKitService _kit = kit;
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> CreateKit([FromBody] PostKitDTO body)
         {
             var userID = GetAccessTokenUserID();
@@ -30,7 +30,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpPut]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> UpdateKit([FromBody] PutKitDTO body)
         {
             var userID = GetAccessTokenUserID();
@@ -41,7 +41,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpDelete]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> DeleteKit([FromBody] DeleteKitDTO body)
         {
             var userID = GetAccessTokenUserID();
@@ -63,7 +63,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpGet("auth")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<IActionResult> GetUserKits([Required] int page, [Required] int pageSize)
         {
             var userID = GetAccessTokenUserID();
@@ -84,7 +84,7 @@ namespace api.v1.main.Controllers
         }
 
         [HttpGet("auth/totalPages")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public IActionResult GetUserKitsTotalPages([Required] int pageSize)
         {
             var userID = GetAccessTokenUserID();

@@ -1,23 +1,26 @@
 ﻿using api.v1.main.DTOs;
-using api.v1.main.Services.BaseAlgorithm;
 
 using component.v1.exceptions;
 
 using db.v1.main.DTOs.Switch;
 using db.v1.main.Repositories.Switch;
+using db.v1.main.Repositories.User;
 
+using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
+using helper.v1.file;
 using helper.v1.localization.Helper;
+using helper.v1.messageBroker;
 
 namespace api.v1.main.Services.Switch
 {
-    public sealed class SwitchService(ISwitchRepository switches, IFileConfigurationHelper fileCfg, 
-        IBaseAlgorithmService @base, ILocalizationHelper localization, IActivityConfigurationHelper activityCfg) : ISwitchService
+    public sealed class SwitchService(ISwitchRepository switches, IFileConfigurationHelper fileCfg, ILocalizationHelper localization, 
+        IActivityConfigurationHelper activityCfg, ICacheHelper cache, ICacheConfigurationHelper cacheCfg, IUserRepository user,
+        IFileHelper file, IMessageBrokerHelper broker) : 
+        BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), ISwitchService
     {
         private readonly ISwitchRepository _switch = switches;
 
-        private readonly IBaseAlgorithmService _base = @base;
-        private readonly ILocalizationHelper _localization = localization;
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
@@ -27,28 +30,28 @@ namespace api.v1.main.Services.Switch
             var fileName = _switch.SelectSwitchFileName(switchID);
             var filePath = _fileCfg.GetSwitchFilePath(fileName!);
 
-            var file = _base.GetFile(filePath);
-            await _base.PublishActivity(statsID, _activityCfg.GetSeeSwitchActivityTag);
+            var file = await ReadFile(filePath);
+            await PublishActivity(statsID, _activityCfg.GetSeeSwitchActivityTag);
             return file;
         }
 
-        public string GetSwitchBase64Sound(Guid switchID)
+        public async Task<string> GetSwitchBase64Sound(Guid switchID)
         {
             ValidateSwitchID(switchID);
             var fileName = _switch.SelectSwitchSoundName(switchID);
             var filePath = _fileCfg.GetSwitchFilePath(fileName!);
 
-            var sound = _base.GetFile(filePath);
+            var sound = await ReadFile(filePath);
             return Convert.ToBase64String(sound);
         }
 
-        public string GetSwitchBase64Preview(Guid switchID)
+        public async Task<string> GetSwitchBase64Preview(Guid switchID)
         {
             ValidateSwitchID(switchID);
             var fileName = _switch.SelectSwitchPreviewName(switchID);
             var filePath = _fileCfg.GetSwitchFilePath(fileName!);
 
-            var preview = _base.GetFile(filePath);
+            var preview = await ReadFile(filePath);
             return Convert.ToBase64String(preview);
         }
 
@@ -56,9 +59,9 @@ namespace api.v1.main.Services.Switch
 
         public async Task<List<SelectSwitchDTO>> GetSwitches(PaginationDTO body, Guid statsID)
         {
-            var switches = _base.GetPaginationListOfObjects(body.Page, body.PageSize, _switch.SelectSwitches);
+            var switches = GetPaginationListOfObjects(body.Page, body.PageSize, _switch.SelectSwitches);
 
-            await _base.PublishActivity(statsID, _activityCfg.GetSeeSwitchActivityTag);
+            await PublishActivity(statsID, _activityCfg.GetSeeSwitchActivityTag);
             return switches;
         }
 
@@ -66,7 +69,7 @@ namespace api.v1.main.Services.Switch
 
         public int GetSwitchesTotalPages(int pageSize)
         {
-            var totalPages = _base.GetPaginationTotalPages(pageSize, _switch.SelectCountOfSwitch);
+            var totalPages = GetPaginationTotalPages(pageSize, _switch.SelectCountOfSwitch);
             return totalPages;
         }
 
