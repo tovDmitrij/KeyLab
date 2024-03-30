@@ -6,7 +6,6 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { API_URL } from "../constants";
 import { RootState } from "../store/store";
-import { getBaseQuery } from "./getBaseQuery";
 
 type TUser = {
   /**
@@ -28,7 +27,9 @@ export const getBaseQueryAuth = (
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).authReducer.accessToken;
+      console.log(token);
       token && headers.set("Authorization", `Bearer ${token}`);
+
       return headers;
     },
   }) as BaseQueryFn<string | FetchArgs, unknown, unknown>;
@@ -40,6 +41,7 @@ export const authService = createApi({
     login: builder.mutation<any, TUser>({
       query: (body) => ({
         url: "signIn",
+
         method: "POST",
         body: body,
       }),
@@ -47,38 +49,4 @@ export const authService = createApi({
   }),
 });
 
-export const userService = createApi({
-  reducerPath: "userService",
-  baseQuery: getBaseQuery,
-  endpoints: (builder) => ({
-    verifEmail: builder.mutation({
-      query: (body) => ({
-        url: "verifications/email",
-        method: "POST",
-        body: body,
-        responseHandler: (response) => response.text(),
-      }),
-    }),
-    signUp: builder.mutation({
-      query: (body) => ({
-        url: "users/signUp",
-        method: "POST",
-        body: body,
-        responseHandler: (response) => response.text(),
-      }),
-    }),
-    getNickName: builder.query<any, void>({
-      query: () => ({
-        url: "profiles/nickname",
-        method: "GET",
-      }),
-    }),
-  }),
-});
-
-export const {
-  useSignUpMutation,
-  useVerifEmailMutation,
-  useGetNickNameQuery,
-  useLazyGetNickNameQuery,
-} = userService;
+export const { useLoginMutation } = authService;
