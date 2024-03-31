@@ -1,3 +1,5 @@
 owner_id,type_id,title,file_name,preview_name,creation_date
-dced1acd-b907-47e0-9659-77cb2c95e0aa,63a9640a-8763-4101-8294-5b37e796bb9b,Бокс №1,60percent.glb,60percent.jpeg,1706026855
-dced1acd-b907-47e0-9659-77cb2c95e0aa,63a9640a-8763-4101-8294-5b37e796bb9b,Бокс №2,60percentswitches.glb,60percentswitches.jpeg,1706026855
+dced1acd-b907-47e0-9659-77cb2c95e0aa,782f1e2b-5eaa-4452-ae82-0427fbecaefd,Бокс 40%,Box40.glb,Box40.jpeg,1706026855
+dced1acd-b907-47e0-9659-77cb2c95e0aa,63a9640a-8763-4101-8294-5b37e796bb9b,Бокс 60%,Box60.glb,Box60.jpeg,1706026855
+dced1acd-b907-47e0-9659-77cb2c95e0aa,809c62fe-8c6a-4ae4-b90d-9b112cbba86d,Бокс 75%,Box75.glb,Box75.jpeg,1706026855
+dced1acd-b907-47e0-9659-77cb2c95e0aa,f27d815d-8702-4853-9df8-482a95bd6aaa,Бокс 100%,Box100.glb,Box100.jpeg,1706026855

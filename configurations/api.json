@@ -48,8 +48,8 @@
     },
     "Cache": {
         "ExpirationMinutes": 5,
-        "PaginationListCacheKey": "{0}-{1}-{2}-{3}-{4}",
-        "FileCacheKey": "{0}",
-        "StatisticCacheKey": "{0}-{1}-{2}"
+        "PaginationListCacheKey": "Pagination-{0}-{1}-{2}-{3}-{4}",
+        "FileCacheKey": "File-{0}",
+        "StatisticCacheKey": "Statistic-{0}-{1}-{2}"
     }
 }
