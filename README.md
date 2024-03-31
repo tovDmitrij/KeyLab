@@ -15,9 +15,11 @@
 3. Запустить скрипт docker.bash
 
 ## :computer: Технологический стек
+```
 NGINX
 Docker
 ASP.NET Core 8
 Redis 7.2.4
 PostgreSQL 16.0
 ReactTS
+```
