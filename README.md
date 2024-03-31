@@ -10,17 +10,14 @@
 **PostgreSQL** - см. README файлы в папке /postgres;
 
 ## :rocket: Запуск (только Docker)
-```
 1. Установить Docker;
-2. Запустить скрипт docker.bash
-```
+2. Скачать архив с файлами [по ссылке](https://drive.google.com/file/d/1Id3OXdBQeUQqE8rKkgnQrbqrdmIlZ7qY/view?usp=sharing) и распаковать его в папку *files*;
+3. Запустить скрипт docker.bash
 
 ## :computer: Технологический стек
-```
 NGINX
 Docker
 ASP.NET Core 8
 Redis 7.2.4
 PostgreSQL 16.0
 ReactTS
-```
