@@ -19,10 +19,10 @@ namespace api.v1.main.Controllers
         private readonly ISwitchService _switch = @switch;
 
         [HttpGet("default")]
-        public async Task<IActionResult> GetSwitches([Required] int page, [Required] int pageSize)
+        public async Task<IActionResult> GetSwitchesList([Required] int page, [Required] int pageSize)
         {
             var statsID = GetStatsID();
-            var switches = await _switch.GetSwitches(new(page, pageSize), statsID);
+            var switches = await _switch.GetSwitchesList(new(page, pageSize), statsID);
             return Ok(switches);
         }
 

@@ -32,8 +32,6 @@ namespace api.v1.main.Services.Box
         public async Task AddBox(PostBoxDTO body, Guid statsID)
         {
             ValidateUserID(body.UserID);
-            ValidateBoxFile(body.File);
-            ValidateBoxPreview(body.Preview);
             ValidateBoxType(body.TypeID);
             ValidateBoxTitle(body.UserID, body.Title);
 
@@ -164,18 +162,6 @@ namespace api.v1.main.Services.Box
         {
             if (!_box.IsBoxOwner(boxID, userID))
                 throw new BadRequestException(_localization.UserIsNotBoxOwner());
-        }
-
-        private void ValidateBoxFile(IFormFile? file)
-        {
-            if (file is null || file.Length == 0)
-                throw new BadRequestException(_localization.FileIsNotAttached());
-        }
-
-        private void ValidateBoxPreview(IFormFile? preview)
-        {
-            if (preview == null || preview.Length == 0)
-                throw new BadRequestException(_localization.PreviewIsNotAttached());
         }
 
         private void ValidateBoxType(Guid boxTypeID)

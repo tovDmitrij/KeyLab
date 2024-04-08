@@ -57,7 +57,7 @@ namespace api.v1.main.Services.Switch
 
 
 
-        public async Task<List<SelectSwitchDTO>> GetSwitches(PaginationDTO body, Guid statsID)
+        public async Task<List<SelectSwitchDTO>> GetSwitchesList(PaginationDTO body, Guid statsID)
         {
             var switches = GetPaginationListOfObjects(body.Page, body.PageSize, _switch.SelectSwitches);
 
