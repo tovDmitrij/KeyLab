@@ -10,11 +10,11 @@ namespace api.v1.main.Services.Keyboard
     public interface IKeyboardService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task AddKeyboard(PostKeyboardDTO body, Guid statsID);
+        public Task<string> AddKeyboard(PostKeyboardDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task UpdateKeyboard(PutKeyboardDTO body, Guid statsID);
+        public Task<string> UpdateKeyboard(PutKeyboardDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task DeleteKeyboard(DeleteKeyboardDTO body, Guid userID, Guid statsID);
+        public Task<string> DeleteKeyboard(DeleteKeyboardDTO body, Guid userID, Guid statsID);
 
 
 

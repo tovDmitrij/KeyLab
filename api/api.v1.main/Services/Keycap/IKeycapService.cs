@@ -10,9 +10,9 @@ namespace api.v1.main.Services.Keycap
     public interface IKeycapService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task AddKeycap(PostKeycapDTO body, Guid statsID);
+        public Task<string> AddKeycap(PostKeycapDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task UpdateKeycap(PutKeycapDTO body, Guid statsID);
+        public Task<string> UpdateKeycap(PutKeycapDTO body, Guid statsID);
 
 
 

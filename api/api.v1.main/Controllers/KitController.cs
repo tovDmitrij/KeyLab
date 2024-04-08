@@ -14,7 +14,7 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/kits")]
-    public sealed class KitController(IKitService kit, ILocalizationHelper localization) : APIController(localization)
+    public sealed class KitController(IKitService kit) : APIController
     {
         private readonly IKitService _kit = kit;
 

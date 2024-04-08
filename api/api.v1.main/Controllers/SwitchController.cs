@@ -14,7 +14,7 @@ namespace api.v1.main.Controllers
     [ApiController]
     [Route("api/v1/switches")]
     [AllowAnonymous]
-    public sealed class SwitchController(ISwitchService @switch, ILocalizationHelper localization) : APIController(localization)
+    public sealed class SwitchController(ISwitchService @switch) : APIController
     {
         private readonly ISwitchService _switch = @switch;
 

@@ -255,7 +255,7 @@ namespace api.v1.main.Services
         protected void ValidateUserID(Guid userID)
         {
             if (!_user.IsUserExist(userID))
-                throw new BadRequestException(_localization.UserIsNotExist());
+                throw new UnauthorizedException(_localization.UserAccessTokenIsExpired());
         }
 
         private void ValidateFile(IFormFile? file)

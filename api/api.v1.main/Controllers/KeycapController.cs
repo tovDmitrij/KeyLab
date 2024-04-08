@@ -3,8 +3,6 @@ using api.v1.main.Services.Keycap;
 
 using component.v1.apicontroller;
 
-using helper.v1.localization.Helper;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +12,7 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/keycaps")]
-    public sealed class KeycapController(IKeycapService keycap, ILocalizationHelper localization) : APIController(localization)
+    public sealed class KeycapController(IKeycapService keycap) : APIController
     {
         private readonly IKeycapService _keycap = keycap;
 
@@ -31,9 +29,9 @@ namespace api.v1.main.Controllers
 
             var body = new PostKeycapDTO(file, preview, title, kitID, userID);
             var statsID = GetStatsID();
-            await _keycap.AddKeycap(body, statsID);
+            var msgResult = await _keycap.AddKeycap(body, statsID);
 
-            return Ok(_localization.FileIsSuccessfullUploaded());
+            return Ok(msgResult);
         }
 
         [HttpPut, DisableRequestSizeLimit]
@@ -49,9 +47,9 @@ namespace api.v1.main.Controllers
 
             var body = new PutKeycapDTO(file, preview, title, keycapID, userID);
             var statsID = GetStatsID();
-            await _keycap.UpdateKeycap(body, statsID);
+            var msgResult = await _keycap.UpdateKeycap(body, statsID);
 
-            return Ok(_localization.FileIsSuccessfullUpdated());
+            return Ok(msgResult);
         }
 
 

@@ -3,8 +3,6 @@ using api.v1.main.Services.Keyboard;
 
 using component.v1.apicontroller;
 
-using helper.v1.localization.Helper;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +12,7 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/keyboards")]
-    public sealed class KeyboardController(IKeyboardService keyboard, ILocalizationHelper localization) : APIController(localization)
+    public sealed class KeyboardController(IKeyboardService keyboard) : APIController
     {
         private readonly IKeyboardService _keyboard = keyboard;
 
@@ -90,9 +88,9 @@ namespace api.v1.main.Controllers
             var body = new PostKeyboardDTO(file, preview, title, userID, boxTypeID, switchTypeID);
 
             var statsID = GetStatsID();
-            await _keyboard.AddKeyboard(body, statsID);
+            var msgResult = await _keyboard.AddKeyboard(body, statsID);
 
-            return Ok(_localization.FileIsSuccessfullUploaded());
+            return Ok(msgResult);
         }
 
         [HttpPut, DisableRequestSizeLimit]
@@ -110,9 +108,9 @@ namespace api.v1.main.Controllers
 
             var body = new PutKeyboardDTO(file, preview, title, userID, keyboardID, boxTypeID, switchTypeID);
             var statsID = GetStatsID();
-            await _keyboard.UpdateKeyboard(body, statsID);
+            var msgResult = await _keyboard.UpdateKeyboard(body, statsID);
 
-            return Ok(_localization.FileIsSuccessfullUpdated());
+            return Ok(msgResult);
         }
 
         [HttpDelete]
@@ -122,9 +120,9 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            await _keyboard.DeleteKeyboard(body, userID, statsID);
+            var msgResult = await _keyboard.DeleteKeyboard(body, userID, statsID);
 
-            return Ok(_localization.FileIsSuccessfullDeleted());
+            return Ok(msgResult);
         }
 
 

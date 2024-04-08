@@ -29,7 +29,7 @@ namespace api.v1.main.Services.Keycap
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
-        public async Task AddKeycap(PostKeycapDTO body, Guid statsID)
+        public async Task<string> AddKeycap(PostKeycapDTO body, Guid statsID)
         {
             ValidateUserID(body.UserID);
             ValidateKitID(body.KitID);
@@ -41,9 +41,11 @@ namespace api.v1.main.Services.Keycap
             _keycap.InsertKeycap(insertKeycapBody);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
+
+            return _localization.FileIsSuccessfullUploaded();
         }
 
-        public async Task UpdateKeycap(PutKeycapDTO body, Guid statsID)
+        public async Task<string> UpdateKeycap(PutKeycapDTO body, Guid statsID)
         {
             ValidateUserID(body.UserID);
             ValidateKeycapID(body.KeycapID);
@@ -56,6 +58,8 @@ namespace api.v1.main.Services.Keycap
             _keycap.UpdateKeycap(updateKeycapBody);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
+
+            return _localization.FileIsSuccessfullUpdated();
         }
 
 
