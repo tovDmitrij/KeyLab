@@ -32,7 +32,7 @@ namespace api.v1.main.Services.User
         private readonly IJWTConfigurationHelper _cfgJWT = cfgJWT;
         private readonly IFileConfigurationHelper _cfgFile = cfgFile;
 
-        public void SignUp(PostSignUpDTO body)
+        public string SignUp(PostSignUpDTO body)
         {
             _rgx.ValidateUserEmail(body.Email);
             _rgx.ValidateUserPassword(body.Password);
@@ -55,6 +55,8 @@ namespace api.v1.main.Services.User
 
             var signUpBody = new InsertUserDTO(body.Email, salt, hashPassword, body.Nickname, currentDate);
             _user.InsertUserInfo(signUpBody);
+
+            return _localization.UserSignUpIsSuccessfull();
         }
 
         public SignInDTO SignIn(PostSignInDTO body)

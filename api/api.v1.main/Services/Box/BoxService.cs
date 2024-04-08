@@ -29,7 +29,7 @@ namespace api.v1.main.Services.Box
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
 
-        public async Task AddBox(PostBoxDTO body, Guid statsID)
+        public async Task<string> AddBox(PostBoxDTO body, Guid statsID)
         {
             ValidateUserID(body.UserID);
             ValidateBoxType(body.TypeID);
@@ -42,9 +42,11 @@ namespace api.v1.main.Services.Box
             _box.InsertBoxInfo(insertBoxBody);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
+
+            return _localization.FileIsSuccessfullUploaded();
         }
 
-        public async Task UpdateBox(PutBoxDTO body, Guid statsID)
+        public async Task<string> UpdateBox(PutBoxDTO body, Guid statsID)
         {
             ValidateBoxTitle(body.UserID, body.Title);
             ValidateBoxOwner(body.BoxID, body.UserID);
@@ -56,9 +58,11 @@ namespace api.v1.main.Services.Box
             _box.UpdateBoxInfo(updateBoxBody);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
+
+            return _localization.FileIsSuccessfullUpdated();
         }
 
-        public async Task DeleteBox(DeleteBoxDTO body, Guid userID, Guid statsID)
+        public async Task<string> DeleteBox(DeleteBoxDTO body, Guid userID, Guid statsID)
         {
             ValidateBoxOwner(body.BoxID, userID);
 
@@ -75,6 +79,8 @@ namespace api.v1.main.Services.Box
             _box.DeleteBoxInfo(body.BoxID);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
+
+            return _localization.FileIsSuccessfullDeleted();
         }
 
 

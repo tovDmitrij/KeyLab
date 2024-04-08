@@ -1,11 +1,6 @@
 ﻿using api.v1.main.DTOs.User;
 using api.v1.main.Services.User;
 
-using component.v1.apicontroller;
-using component.v1.exceptions;
-
-using helper.v1.localization.Helper;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,15 +9,15 @@ namespace api.v1.main.Controllers
     [ApiController]
     [AllowAnonymous]
     [Route("api/v1/users")]
-    public sealed class UserController(IUserService user, ILocalizationHelper localization) : APIController(localization)
+    public sealed class UserController(IUserService user) : ControllerBase
     {
         private readonly IUserService _user = user;
 
         [HttpPost("signUp")]
         public IActionResult SignUp([FromBody] PostSignUpDTO body)
         {
-            _user.SignUp(body);
-            return Ok(_localization.UserSignUpIsSuccessfull());
+            var msgResult = _user.SignUp(body);
+            return Ok(msgResult);
         }
 
         [HttpPost("signIn")]
@@ -46,8 +41,7 @@ namespace api.v1.main.Controllers
         [NonAction]
         private string GetRefreshTokenFromCookies()
         {
-            var refreshToken = Request.Cookies["refresh_token"] ??
-                throw new UnauthorizedException(_localization.UserRefreshTokenIsExpired());
+            var refreshToken = Request.Cookies["refresh_token"] ?? "";
             return refreshToken;
         }
 

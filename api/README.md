@@ -1,3 +1,6 @@
+### UserController
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/controller_user.svg" />
+
 ### KeyboardController
 <img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/controller_keyboard.svg" />
 
@@ -13,11 +16,8 @@
 ### SwitchController
 <img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/controller_switch.svg" />
 
-### StatController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/controller_stat.svg" />
-
-### UserController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/controller_user.svg" />
-
 ### StatConsumer
 <img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/consumer_stat.svg" />
+
+### StatController
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/controller_stat.svg" />

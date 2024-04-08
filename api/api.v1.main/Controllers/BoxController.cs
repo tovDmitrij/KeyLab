@@ -3,8 +3,6 @@ using api.v1.main.Services.Box;
 
 using component.v1.apicontroller;
 
-using helper.v1.localization.Helper;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +12,7 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/boxes")]
-    public sealed class BoxController(IBoxService box, ILocalizationHelper localization) : APIController(localization)
+    public sealed class BoxController(IBoxService box) : APIController
     {
         private readonly IBoxService _box = box;
 
@@ -101,9 +99,9 @@ namespace api.v1.main.Controllers
             var body = new PostBoxDTO(file, preview, title, typeID, userID);
 
             var statsID = GetStatsID();
-            await _box.AddBox(body, statsID);
+            var msgResult = await _box.AddBox(body, statsID);
 
-            return Ok(_localization.FileIsSuccessfullUploaded());
+            return Ok(msgResult);
         }
 
         [HttpPut]
@@ -118,9 +116,9 @@ namespace api.v1.main.Controllers
 
             var body = new PutBoxDTO(file, preview, title, userID, boxID);
             var statsID = GetStatsID();
-            await _box.UpdateBox(body, statsID);
+            var msgResult = await _box.UpdateBox(body, statsID);
 
-            return Ok(_localization.FileIsSuccessfullUpdated());
+            return Ok(msgResult);
         }
 
         [HttpDelete]
@@ -130,8 +128,9 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            await _box.DeleteBox(body, userID, statsID);
-            return Ok(_localization.FileIsSuccessfullDeleted());
+            var msgResult = await _box.DeleteBox(body, userID, statsID);
+
+            return Ok(msgResult);
         }
 
 

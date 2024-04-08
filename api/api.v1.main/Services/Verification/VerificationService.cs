@@ -28,7 +28,7 @@ namespace api.v1.main.Services.Verification
         private readonly ITimeHelper _time = time;
         private readonly IMessageBrokerHelper _broker = broker;
 
-        public async Task SendVerificationEmailCode(ConfirmEmailDTO body)
+        public async Task<string> SendVerificationEmailCode(ConfirmEmailDTO body)
         {
             _rgx.ValidateUserEmail(body.Email);
 
@@ -46,6 +46,8 @@ namespace api.v1.main.Services.Verification
             var sendEmailBody = new SendEmailDTO(body.Email, msgTitle, msgText);
 
             await _broker.PublishData(sendEmailBody);
+
+            return _localization.EmailCodeIsSuccessfullSend();
         }
     }
 }

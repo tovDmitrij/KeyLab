@@ -11,7 +11,7 @@ namespace api.v1.main.Controllers
 {
     [ApiController]
     [Route("api/v1/profiles")]
-    public sealed class ProfileController(IProfileService profiles, ILocalizationHelper localization) : APIController(localization)
+    public sealed class ProfileController(IProfileService profiles) : APIController
     {
         private readonly IProfileService _profiles = profiles;
 
