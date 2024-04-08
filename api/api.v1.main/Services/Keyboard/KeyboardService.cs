@@ -51,7 +51,7 @@ namespace api.v1.main.Services.Keyboard
 
         public async Task UpdateKeyboard(PutKeyboardDTO body, Guid statsID)
         {
-            ValidateKeyboardExist(body.KeyboardID);
+            ValidateKeyboardID(body.KeyboardID);
             ValidateKeyboardTitle(body.UserID, body.Title);
             ValidateBoxType(body.BoxTypeID);
             ValidateSwitchType(body.SwitchTypeID);
@@ -69,7 +69,7 @@ namespace api.v1.main.Services.Keyboard
         public async Task DeleteKeyboard(DeleteKeyboardDTO body, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
-            ValidateKeyboardExist(body.KeyboardID);
+            ValidateKeyboardID(body.KeyboardID);
             ValidateKeyboardOwner(body.KeyboardID, userID);
 
             var modelFileName = _keyboard.SelectKeyboardFileName(body.KeyboardID)!;
@@ -177,12 +177,6 @@ namespace api.v1.main.Services.Keyboard
         {
             if (!_switch.IsSwitchExist(switchTypeID))
                 throw new BadRequestException(_localization.SwitchTypeIsNotExist());
-        }
-
-        private void ValidateKeyboardExist(Guid keyboardID)
-        {
-            if (!_keyboard.IsKeyboardExist(keyboardID))
-                throw new BadRequestException(_localization.FileIsNotExist());
         }
 
         private void ValidateKeyboardOwner(Guid keyboardID, Guid userID)

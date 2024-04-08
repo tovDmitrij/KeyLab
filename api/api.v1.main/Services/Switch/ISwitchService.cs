@@ -17,7 +17,7 @@ namespace api.v1.main.Services.Switch
 
 
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectSwitchDTO>> GetSwitches(PaginationDTO body, Guid statsID);
+        public Task<List<SelectSwitchDTO>> GetSwitchesList(PaginationDTO body, Guid statsID);
 
 
 

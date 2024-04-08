@@ -146,7 +146,7 @@ namespace api.v1.main.Controllers
         private string? GetFormDataBoxTitle() => Request.Form["title"];
 
         [NonAction]
-        public Guid GetFormDataBoxTypeID()
+        private Guid GetFormDataBoxTypeID()
         {
             if (!Guid.TryParse(Request.Form["typeID"], out Guid result))
                 result = Guid.Empty;
@@ -154,7 +154,7 @@ namespace api.v1.main.Controllers
         }
 
         [NonAction]
-        public Guid GetFormDataBoxID()
+        private Guid GetFormDataBoxID()
         {
             if (!Guid.TryParse(Request.Form["boxID"], out Guid result))
                 result = Guid.Empty;

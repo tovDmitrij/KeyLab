@@ -8,7 +8,7 @@ namespace helper.v1.security.Helper
     public sealed class SecurityHelper : ISecurityHelper
     {
         private const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        private readonly Random rnd = new();
+        private readonly Random _rnd = new();
 
         public string GenerateRandomValue()
         {
@@ -45,7 +45,7 @@ namespace helper.v1.security.Helper
 
         public SecurityCodeDTO GenerateEmailVerificationCode(double expireDate)
         {
-            var code = rnd.Next(100_000, 999_999);
+            var code = _rnd.Next(100_000, 999_999);
             return new(code.ToString(), expireDate);
         }
     }
