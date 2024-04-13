@@ -34,7 +34,7 @@ namespace api.v1.main.Services.Keyboard
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
-        public async Task<string> AddKeyboard(PostKeyboardDTO body, Guid statsID)
+        public async Task AddKeyboard(PostKeyboardDTO body, Guid statsID)
         {
             ValidateKeyboardTitle(body.UserID, body.Title);
             ValidateBoxType(body.BoxTypeID);
@@ -47,11 +47,9 @@ namespace api.v1.main.Services.Keyboard
             _keyboard.InsertKeyboardInfo(insertKeyboardBody);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
-
-            return _localization.FileIsSuccessfullUploaded();
         }
 
-        public async Task<string> UpdateKeyboard(PutKeyboardDTO body, Guid statsID)
+        public async Task UpdateKeyboard(PutKeyboardDTO body, Guid statsID)
         {
             ValidateKeyboardID(body.KeyboardID);
             ValidateKeyboardTitle(body.UserID, body.Title);
@@ -66,11 +64,9 @@ namespace api.v1.main.Services.Keyboard
             _keyboard.UpdateKeyboardInfo(updateKeyboardBody);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
-
-            return _localization.FileIsSuccessfullUpdated();
         }
         
-        public async Task<string> DeleteKeyboard(DeleteKeyboardDTO body, Guid userID, Guid statsID)
+        public async Task DeleteKeyboard(DeleteKeyboardDTO body, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
             ValidateKeyboardID(body.KeyboardID);
@@ -89,8 +85,18 @@ namespace api.v1.main.Services.Keyboard
             _keyboard.DeleteKeyboardInfo(body.KeyboardID);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
+        }
 
-            return _localization.FileIsSuccessfullDeleted();
+        public async Task PatchKeyboardTitle(PatchKeyboardTitleDTO body, Guid userID, Guid statsID)
+        {
+            ValidateUserID(userID);
+            ValidateKeyboardID(body.KeyboardID);
+            ValidateKeyboardOwner(body.KeyboardID, userID);
+            ValidateKeyboardTitle(userID, body.Title);
+
+            _keyboard.UpdateKeyboardTitle(body.Title, body.KeyboardID);
+
+            await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
         }
 
 

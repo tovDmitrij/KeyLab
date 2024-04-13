@@ -29,9 +29,9 @@ namespace api.v1.main.Controllers
 
             var body = new PostKeycapDTO(file, preview, title, kitID, userID);
             var statsID = GetStatsID();
-            var msgResult = await _keycap.AddKeycap(body, statsID);
+            await _keycap.AddKeycap(body, statsID);
 
-            return Ok(msgResult);
+            return Ok();
         }
 
         [HttpPut, DisableRequestSizeLimit]
@@ -47,9 +47,18 @@ namespace api.v1.main.Controllers
 
             var body = new PutKeycapDTO(file, preview, title, keycapID, userID);
             var statsID = GetStatsID();
-            var msgResult = await _keycap.UpdateKeycap(body, statsID);
+            await _keycap.UpdateKeycap(body, statsID);
 
-            return Ok(msgResult);
+            return Ok();
+        }
+
+        public async Task<IActionResult> PatchKeycapTitle([FromBody] PatchKeycapTitleDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var statID = GetStatsID();
+
+            await _keycap.PatchKeycapTitle(body, userID, statID);
+            return Ok();
         }
 
 

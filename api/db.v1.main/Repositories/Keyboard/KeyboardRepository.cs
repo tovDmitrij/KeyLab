@@ -31,6 +31,15 @@ namespace db.v1.main.Repositories.Keyboard
             SaveChanges();
         }
 
+        public void UpdateKeyboardTitle(string title, Guid keyboardID)
+        {
+            var keyboard = GetKeyboardByID(keyboardID);
+            keyboard.Title = title;
+
+            _db.Keyboards.Update(keyboard);
+            SaveChanges();
+        }
+
         public void DeleteKeyboardInfo(Guid keyboardID)
         {
             var keyboard = GetKeyboardByID(keyboardID);

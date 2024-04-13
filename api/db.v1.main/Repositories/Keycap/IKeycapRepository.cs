@@ -6,6 +6,7 @@ namespace db.v1.main.Repositories.Keycap
     {
         public Guid InsertKeycap(InsertKeycapDTO body);
         public void UpdateKeycap(UpdateKeycapDTO body);
+        public void UpdateKeycapTitle(string title, Guid keycapID);
         public void DeleteKeycap(Guid keycapID);
 
         public string? SelectKeycapFileName(Guid keycapID);

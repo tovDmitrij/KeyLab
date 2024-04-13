@@ -88,9 +88,9 @@ namespace api.v1.main.Controllers
             var body = new PostKeyboardDTO(file, preview, title, userID, boxTypeID, switchTypeID);
 
             var statsID = GetStatsID();
-            var msgResult = await _keyboard.AddKeyboard(body, statsID);
+            await _keyboard.AddKeyboard(body, statsID);
 
-            return Ok(msgResult);
+            return Ok();
         }
 
         [HttpPut, DisableRequestSizeLimit]
@@ -108,9 +108,21 @@ namespace api.v1.main.Controllers
 
             var body = new PutKeyboardDTO(file, preview, title, userID, keyboardID, boxTypeID, switchTypeID);
             var statsID = GetStatsID();
-            var msgResult = await _keyboard.UpdateKeyboard(body, statsID);
+            await _keyboard.UpdateKeyboard(body, statsID);
 
-            return Ok(msgResult);
+            return Ok();
+        }
+
+        [HttpPatch("title")]
+        [Authorize]
+        public async Task<IActionResult> PatchKeyboardTitle([FromBody] PatchKeyboardTitleDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+
+            var statsID = GetStatsID();
+            await _keyboard.PatchKeyboardTitle(body, userID, statsID);
+
+            return Ok();
         }
 
         [HttpDelete]
@@ -120,9 +132,9 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            var msgResult = await _keyboard.DeleteKeyboard(body, userID, statsID);
+            await _keyboard.DeleteKeyboard(body, userID, statsID);
 
-            return Ok(msgResult);
+            return Ok();
         }
 
 

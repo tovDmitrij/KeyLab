@@ -16,8 +16,8 @@ namespace api.v1.main.Controllers
         [HttpPost("signUp")]
         public IActionResult SignUp([FromBody] PostSignUpDTO body)
         {
-            var msgResult = _user.SignUp(body);
-            return Ok(msgResult);
+            _user.SignUp(body);
+            return Ok();
         }
 
         [HttpPost("signIn")]
