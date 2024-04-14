@@ -1,7 +1,7 @@
 import React from "react";
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 
-function KeyboardIcon(props: SvgIconProps) {
+const KeyboardIcon = (props: SvgIconProps) => {
   return (
     <SvgIcon {...props}>
       <svg

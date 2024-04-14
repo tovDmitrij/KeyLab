@@ -41,7 +41,6 @@ export const authService = createApi({
     login: builder.mutation<any, TUser>({
       query: (body) => ({
         url: "signIn",
-
         method: "POST",
         body: body,
       }),

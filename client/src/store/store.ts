@@ -2,7 +2,9 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { userService } from "../services/userService";
 import reducers from './index';
 import { keyboardsService } from "../services/keyboardService";
-import { authService } from "../services/authSetvice";
+import { authService } from "../services/authService";
+import { switchesService } from "../services/switchesService";
+import { boxesService } from "../services/boxesService";
 
 const rootReducer = combineReducers(reducers);
 
@@ -12,7 +14,9 @@ export const store = configureStore({
     getDefaultMiddleware().concat(
       userService.middleware,
       authService.middleware,
-      keyboardsService.middleware
+      keyboardsService.middleware,
+      switchesService.middleware,
+      boxesService.middleware,
     )
 });
 

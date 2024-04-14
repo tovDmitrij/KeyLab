@@ -226,7 +226,7 @@ const Register = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box className={classes.modal}>
+        <Container   sx={{width: "500px"}} className={classes.modal}>
           <Typography
             className={classes.textUp}
             id="modal-modal-title"
@@ -262,7 +262,7 @@ const Register = () => {
           >
             Отправить код
           </Button>
-        </Box>
+        </Container>
       </Modal>
     </>
   );
