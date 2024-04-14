@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import Button from "@mui/material/Button";
@@ -13,10 +13,12 @@ import {
 
 import { useAppDispatch } from "../../store/redux";
 import { singnIn } from "../../store/authSlice";
-import { useLoginMutation } from "../../services/authSetvice";
+import { useLoginMutation } from "../../services/authService";
 import Header from "../../components/Header/Header";
 
 import classes from "./Login.module.scss";
+import { useLazyGetNickNameQuery } from "../../services/userService";
+import { setIsAdmin, setNickName } from "../../store/profileSlice";
 
 /**
  * Тип данных представляет информацию о пользователе для авторизации.
@@ -43,6 +45,8 @@ const Login = () => {
   });
 
   const [login] = useLoginMutation();
+  const [getNickName] = useLazyGetNickNameQuery();
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -64,7 +68,13 @@ const Login = () => {
         .unwrap()
         .then((data) => {
           dispatch(singnIn(data));
-          navigate("/MainPage");
+          dispatch(setIsAdmin(data.isAdmin));
+          getNickName()
+            .unwrap()
+            .then((data) => {
+              dispatch(setNickName(data));
+            });
+          navigate("/");
         })
         .catch((error) => {
           setIsError(true);
@@ -134,7 +144,7 @@ const Login = () => {
           </Link>
         </Box>
         <Snackbar
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right'}}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           open={open}
           autoHideDuration={3000}
           onClose={handleClose}

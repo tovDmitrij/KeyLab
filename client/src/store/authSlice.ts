@@ -36,6 +36,7 @@ export const authSlice = createSlice({
     singnIn: (state, action) => {
       const accesToken = action.payload.accessToken;
       state.accessToken = accesToken;
+      
       localStorage.setItem("token", accesToken);
       state.isAuth = true;
     },

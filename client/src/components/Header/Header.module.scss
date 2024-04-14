@@ -8,6 +8,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  
 }
 
 .header_right {
@@ -16,3 +17,8 @@
   align-items: center;
   gap: 8px;
 }
+
+.link {
+  cursor: pointer;
+}
+

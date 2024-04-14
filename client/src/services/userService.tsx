@@ -71,6 +71,7 @@ export const userService = createApi({
       query: () => ({
         url: "profiles/nickname",
         method: "GET",
+        responseHandler: (response) => response.text(),
       }),
     }),
   }),

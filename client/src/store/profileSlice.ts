@@ -6,11 +6,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 type TUserState = {
   nickName?: string;
   email?: string;
+  isAdmin?: boolean;
 };
 
 const initialState: TUserState = {
   nickName: undefined,
   email: undefined,
+  isAdmin: false,
 };
 
 export const profileSlice = createSlice({
@@ -24,8 +26,12 @@ export const profileSlice = createSlice({
     setEmail: (state, action: PayloadAction<string | undefined>) => {
       state.email = action.payload;
     },
+
+    setIsAdmin: (state, action: PayloadAction<boolean>) => {
+      state.isAdmin = action.payload;
+    },
   },
 });
 
-export const { setNickName, setEmail } = profileSlice.actions;
+export const { setNickName, setEmail, setIsAdmin } = profileSlice.actions;
 export default profileSlice.reducer;

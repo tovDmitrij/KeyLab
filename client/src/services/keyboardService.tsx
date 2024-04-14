@@ -1,8 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-//import { authApiService, baseQueryWithReauth } from "./userService";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 import { getBaseQuery } from "./getBaseQuery";
-import { API_URL } from "../constants";
 
 type TPages = {
   /**
