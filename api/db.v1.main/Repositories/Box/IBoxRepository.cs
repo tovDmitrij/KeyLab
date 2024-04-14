@@ -7,6 +7,7 @@ namespace db.v1.main.Repositories.Box
     {
         public Guid InsertBoxInfo(InsertBoxDTO body);
         public void UpdateBoxInfo(UpdateBoxDTO body);
+        public void UpdateBoxTitle(string title, Guid boxID);
         public void DeleteBoxInfo(Guid boxID);
 
         public bool IsBoxExist(Guid boxID);

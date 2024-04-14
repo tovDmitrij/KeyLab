@@ -10,11 +10,13 @@ namespace api.v1.main.Services.Box
     public interface IBoxService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task<string> AddBox(PostBoxDTO body, Guid statsID);
+        public Task AddBox(PostBoxDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task<string> UpdateBox(PutBoxDTO body, Guid statsID);
+        public Task UpdateBox(PutBoxDTO body, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task<string> DeleteBox(DeleteBoxDTO body, Guid userID, Guid statsID);
+        public Task DeleteBox(DeleteBoxDTO body, Guid userID, Guid statsID);
+        /// <exception cref="BadRequestException"></exception>
+        public Task PatchBoxTitle(PatchBoxTitleDTO body, Guid userID, Guid statsID);
 
 
 

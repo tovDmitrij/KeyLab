@@ -22,6 +22,17 @@ namespace db.v1.main.Repositories.Box
         {
             var box = _db.Boxes.First(box => box.ID == body.BoxID);
             box.Title = body.Title;
+            box.FileName = body.FileName;
+            box.PreviewName = body.PreviewName;
+
+            _db.Boxes.Update(box);
+            SaveChanges();
+        }
+
+        public void UpdateBoxTitle(string title, Guid boxID)
+        {
+            var box = _db.Boxes.First(box => box.ID == boxID);
+            box.Title = title;
 
             _db.Boxes.Update(box);
             SaveChanges();

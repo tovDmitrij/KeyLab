@@ -18,8 +18,8 @@ namespace api.v1.main.Controllers
         [HttpPost("email")]
         public async Task<IActionResult> VerificateEmail([FromBody] ConfirmEmailDTO body)
         {
-            var msgResult = await _verification.SendVerificationEmailCode(body);
-            return Ok(msgResult);
+            await _verification.SendVerificationEmailCode(body);
+            return Ok();
         }
     }
 }

@@ -29,6 +29,15 @@ namespace db.v1.main.Repositories.Keycap
             _db.SaveChanges();
         }
 
+        public void UpdateKeycapTitle(string title, Guid keycapID)
+        {
+            var keycap = _db.Keycaps.First(keycap => keycap.ID == keycapID);
+            keycap.Title = title;
+
+            _db.Keycaps.Update(keycap);
+            _db.SaveChanges();
+        }
+
         public void DeleteKeycap(Guid keycapID)
         {
             var keycap = _db.Keycaps.First(keycap =>  keycap.ID == keycapID);

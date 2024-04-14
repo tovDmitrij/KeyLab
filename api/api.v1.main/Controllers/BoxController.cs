@@ -99,9 +99,9 @@ namespace api.v1.main.Controllers
             var body = new PostBoxDTO(file, preview, title, typeID, userID);
 
             var statsID = GetStatsID();
-            var msgResult = await _box.AddBox(body, statsID);
+            await _box.AddBox(body, statsID);
 
-            return Ok(msgResult);
+            return Ok();
         }
 
         [HttpPut]
@@ -116,9 +116,20 @@ namespace api.v1.main.Controllers
 
             var body = new PutBoxDTO(file, preview, title, userID, boxID);
             var statsID = GetStatsID();
-            var msgResult = await _box.UpdateBox(body, statsID);
+            await _box.UpdateBox(body, statsID);
 
-            return Ok(msgResult);
+            return Ok();
+        }
+
+        [HttpPatch("title")]
+        [Authorize]
+        public async Task<IActionResult> PatchBoxTitle([FromBody] PatchBoxTitleDTO body)
+        {
+            var userID = GetAccessTokenUserID();
+            var statID = GetStatsID();
+
+            await _box.PatchBoxTitle(body, userID, statID);
+            return Ok();
         }
 
         [HttpDelete]
@@ -128,9 +139,9 @@ namespace api.v1.main.Controllers
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            var msgResult = await _box.DeleteBox(body, userID, statsID);
+            await _box.DeleteBox(body, userID, statsID);
 
-            return Ok(msgResult);
+            return Ok();
         }
 
 

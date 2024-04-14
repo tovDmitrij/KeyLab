@@ -6,6 +6,7 @@ namespace db.v1.main.Repositories.Keyboard
     {
         public Guid InsertKeyboardInfo(InsertKeyboardDTO body);
         public void UpdateKeyboardInfo(UpdateKeyboardDTO body);
+        public void UpdateKeyboardTitle(string title, Guid keyboardID);
         public void DeleteKeyboardInfo(Guid keyboardID);
 
         public bool IsKeyboardExist(Guid keyboardID);
