@@ -9,19 +9,35 @@ services:
     volumes:
       - ./configurations/nginx.conf:/etc/nginx/nginx.conf
 
-  api_main:
-    container_name: api_main
+  api_users:
+    container_name: api_users
     restart: always
     depends_on:
       - rabbitmq
-      - db_main
-      - redis_main
+      - db_users
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile.api.main
-    entrypoint: [ "dotnet", "api.v1.main.dll" ]
+      dockerfile: dockerfiles/Dockerfile.api.users
+    entrypoint: [ "dotnet", "api.v1.users.dll" ]
     ports:
       - 6002:8080
+    volumes:
+      - ./api/logs:/logs
+      - ./configurations:/configurations
+
+  api_keyboards:
+    container_name: api_keyboards
+    restart: always
+    depends_on:
+      - rabbitmq
+      - db_keyboards
+      - redis_keyboards
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.api.keyboards
+    entrypoint: [ "dotnet", "api.v1.keyboards.dll" ]
+    ports:
+      - 6003:8080
     volumes:
       - ./api/logs:/logs
       - ./files:/files
@@ -37,7 +53,7 @@ services:
       dockerfile: dockerfiles/Dockerfile.api.email
     entrypoint: [ "dotnet", "api.v1.email.dll" ]
     ports:
-      - 6003:8080
+      - 6004:8080
     volumes:
       - ./configurations:/configurations
 
@@ -52,25 +68,40 @@ services:
       dockerfile: dockerfiles/Dockerfile.api.stats
     entrypoint: [ "dotnet", "api.v1.stats.dll" ]
     ports:
-      - 6004:8080
+      - 6005:8080
     volumes:
       - ./api/logs:/logs
       - ./configurations:/configurations
 
-  db_main:
-    container_name: db_main
+  db_keyboards:
+    container_name: db_keyboards
     image: postgres:16.0
     restart: always
     environment:
-      POSTGRES_DB: main
+      POSTGRES_DB: keyboards
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - 6011:5432
     volumes:
-      - ./postgres/main/data:/var/lib/postgresql/data
-      - ./postgres/main/create.sql:/docker-entrypoint-initdb.d/create.sql
-      - ./postgres/main/init:/postgres/main/init
+      - ./postgres/keyboards/data:/var/lib/postgresql/data
+      - ./postgres/keyboards/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./postgres/keyboards/init:/postgres/keyboards/init
+
+  db_users:
+    container_name: db_users
+    image: postgres:16.0
+    restart: always
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 6012:5432
+    volumes:
+      - ./postgres/users/data:/var/lib/postgresql/data
+      - ./postgres/users/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./postgres/users/init:/postgres/users/init
 
   db_stats:
     container_name: db_stats
@@ -81,14 +112,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - 6012:5432
+      - 6013:5432
     volumes:
       - ./postgres/stats/data:/var/lib/postgresql/data
       - ./postgres/stats/create.sql:/docker-entrypoint-initdb.d/create.sql
       - ./postgres/stats/init:/postgres/stats/init
 
-  redis_main:
-    container_name: redis_main
+  redis_keyboards:
+    container_name: redis_keyboards
     image: redis:7.2.4
     restart: always
     environment:
@@ -99,8 +130,8 @@ services:
       - 6021:6021
     command: redis-server --include /usr/local/etc/redis/redis.conf
     volumes:
-      - ./redis/main/data:/data
-      - ./configurations/redis.main.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/keyboards/data:/data
+      - ./configurations/redis.keyboards.conf:/usr/local/etc/redis/redis.conf
 
   redis_stats:
     container_name: redis_stats

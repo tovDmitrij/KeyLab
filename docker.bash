@@ -2,7 +2,8 @@
 
 docker compose stop;
 docker compose down;
-docker image rm keyboards-api_main;
+docker image rm keyboards-api_keyboards;
+docker image rm keyboards-api_users;
 docker image rm keyboards-api_email;
 docker image rm keyboards-api_stats;
 docker compose build;

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\component.v1.apicontroller\component.v1.apicontroller.csproj" />
+    <ProjectReference Include="..\component.v1.email\component.v1.email.csproj" />
+    <ProjectReference Include="..\component.v1.exceptions\component.v1.exceptions.csproj" />
+    <ProjectReference Include="..\component.v1.jwtrole\component.v1.jwtrole.csproj" />
+    <ProjectReference Include="..\component.v1.middlewares\component.v1.middlewares.csproj" />
+    <ProjectReference Include="..\component.v1.user\component.v1.user.csproj" />
+    <ProjectReference Include="..\db.v1.users\db.v1.users.csproj" />
+    <ProjectReference Include="..\helper.v1.configuration\helper.v1.configuration.csproj" />
+    <ProjectReference Include="..\helper.v1.jwt\helper.v1.jwt.csproj" />
+    <ProjectReference Include="..\helper.v1.localization\helper.v1.localization.csproj" />
+    <ProjectReference Include="..\helper.v1.messageBroker\helper.v1.messageBroker.csproj" />
+    <ProjectReference Include="..\helper.v1.regex\helper.v1.regex.csproj" />
+    <ProjectReference Include="..\helper.v1.security\helper.v1.security.csproj" />
+    <ProjectReference Include="..\helper.v1.time\helper.v1.time.csproj" />
+  </ItemGroup>
+
+</Project>
