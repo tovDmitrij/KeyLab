@@ -1,4 +1,5 @@
-postgres/main/data
+postgres/keyboards/data
+postgres/users/data
 postgres/stats/data
 .vs
 .github
@@ -19,7 +20,7 @@ redis
 
 # User-specific files
 *.suo
-*.user
+*.csproj.user
 *.userosscache
 *.sln.docstates
 

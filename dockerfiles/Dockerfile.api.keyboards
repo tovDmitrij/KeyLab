@@ -1,0 +1,29 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as build-env
+WORKDIR /api
+COPY ../api/api.keyboards.sln ./
+COPY ../api/api.v1.keyboards/*.csproj ./api.v1.keyboards/
+COPY ../api/db.v1.keyboards/*.csproj ./db.v1.keyboards/
+COPY ../api/db.v1.users/*.csproj ./db.v1.users/
+COPY ../api/helper.v1.regex/*.csproj ./helper.v1.regex/
+COPY ../api/helper.v1.time/*.csproj ./helper.v1.time/
+COPY ../api/helper.v1.configuration/*.csproj ./helper.v1.configuration/
+COPY ../api/helper.v1.file/*.csproj ./helper.v1.file/
+COPY ../api/helper.v1.cache/*.csproj ./helper.v1.cache/
+COPY ../api/helper.v1.localization/*.csproj ./helper.v1.localization/
+COPY ../api/helper.v1.messageBroker/*.csproj ./helper.v1.messageBroker/
+COPY ../api/component.v1.exceptions/*.csproj ./component.v1.exceptions/
+COPY ../api/component.v1.email/*.csproj ./component.v1.email/
+COPY ../api/component.v1.middlewares/*.csproj ./component.v1.middlewares/
+COPY ../api/component.v1.apicontroller/*.csproj ./component.v1.apicontroller/
+COPY ../api/component.v1.activity/*.csproj ./component.v1.activity/
+COPY ../api/component.v1.user/*.csproj ./component.v1.user/
+RUN dotnet restore
+
+COPY ../api/ ./
+RUN dotnet publish api.keyboards.sln -c Release -o /publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runtime
+WORKDIR /publish
+COPY --from=build-env /publish .
+
+EXPOSE 80

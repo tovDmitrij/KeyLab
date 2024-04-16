@@ -39,11 +39,12 @@
         "Password": "guest"
     },
     "PostgreSQL": {
-        "Main": "Host=db_main;Database=main;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300",
-        "Stats": "Host=db_stats;Database=stats;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300"
+        "Keyboards": "Host=db_keyboards;Database=keyboards;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300",
+        "Stats": "Host=db_stats;Database=stats;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300",
+        "Users": "Host=db_users;Database=users;Username=postgres;Password=postgres;Timeout=300;CommandTimeout=300"
     },
     "Redis": {
-        "Main": "redis_main:6021",
+        "Keyboards": "redis_keyboards:6021",
         "Stats": "redis_stats:6022"
     },
     "Cache": {
