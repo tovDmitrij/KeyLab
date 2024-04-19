@@ -4,7 +4,8 @@ namespace db.v1.users.Repositories.User
 {
     public interface IUserRepository
     {
-        public void InsertUserInfo(InsertUserDTO body);
+        public Guid InsertUserInfo(InsertUserDTO body);
+        public void InsertUserInfo(InsertUserDTO body, Guid userID);
         public void UpdateRefreshToken(RefreshTokenDTO body);
 
         public bool IsEmailBusy(string email);
