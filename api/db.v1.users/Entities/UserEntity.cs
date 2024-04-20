@@ -43,6 +43,16 @@ namespace db.v1.users.Entities
             RegistrationDate = registrationDate;
         }
 
+        public UserEntity(Guid id, string email, string salt, string password, string nickname, double registrationDate)
+        {
+            ID = id;
+            Email = email;
+            Salt = salt;
+            Password = password;
+            Nickname = nickname;
+            RegistrationDate = registrationDate;
+        }
+
         public UserEntity(string email, string salt, string password, string nickname, double registrationDate)
         {
             Email = email;

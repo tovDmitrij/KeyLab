@@ -57,9 +57,9 @@ namespace api.v1.users.Services.User
             var hashPassword = _security.HashPassword(salt, body.Password);
 
             var signUpBody = new InsertUserDTO(body.Email, salt, hashPassword, body.Nickname, currentDate);
-            _user.InsertUserInfo(signUpBody);
+            var userID = _user.InsertUserInfo(signUpBody);
 
-            var data = new UserDTO(body.Email, salt, hashPassword, body.Nickname, currentDate);
+            var data = new UserDTO(userID, body.Email, salt, hashPassword, body.Nickname, currentDate);
             await _broker.PublishData(data);
         }
 

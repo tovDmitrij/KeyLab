@@ -8,9 +8,19 @@ namespace db.v1.users.Repositories.User
     {
         private readonly IUserContext _db = db;
 
-        public void InsertUserInfo(InsertUserDTO body)
+        public Guid InsertUserInfo(InsertUserDTO body)
         {
             var user = new UserEntity(body.Email, body.Salt, body.HashPass, body.Nickname, body.RegistrationDate);
+
+            _db.Users.Add(user);
+            SaveChanges();
+
+            return user.ID;
+        }
+
+        public void InsertUserInfo(InsertUserDTO body, Guid userID)
+        {
+            var user = new UserEntity(userID, body.Email, body.Salt, body.HashPass, body.Nickname, body.RegistrationDate);
 
             _db.Users.Add(user);
             SaveChanges();

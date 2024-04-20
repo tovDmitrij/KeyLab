@@ -74,7 +74,7 @@ namespace api.v1.keyboards.Services.Keycap
         {
             var kitID = _keycap.SelectKitIDByKeycapID(keycapID) ?? throw new BadRequestException(_localization.KitIsNotExist());
 
-            var fileName = _keycap.SelectKeycapFileName(kitID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var fileName = _keycap.SelectKeycapFileName(keycapID) ?? throw new BadRequestException(_localization.FileIsNotExist());
             var userID = _kit.SelectKitOwnerID(kitID) ?? throw new BadRequestException(_localization.FileIsNotExist());
             var filePath = _fileCfg.GetKeycapFilePath(userID, kitID, fileName);
 
