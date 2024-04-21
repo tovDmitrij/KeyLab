@@ -10,6 +10,13 @@
             await fileStream.WriteAsync(file);
         }
 
+        public void CopyFile(string sourceFilePath, string destinationFilePath)
+        {
+            Directory.CreateDirectory(destinationFilePath[..destinationFilePath.LastIndexOf('/')]);
+
+            File.Copy(sourceFilePath, destinationFilePath, true);
+        }
+
         public void DeleteFile(string fullFilePath) => File.Delete(fullFilePath);
 
         public async Task<byte[]> ReadFileAsync(string fullFilePath)
