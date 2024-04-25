@@ -8,3 +8,10 @@ Dockerfile.*    linguist-language=Dockerfile
 
 *.yaml          linguist-detectable=true
 *.yaml          linguist-language=Dockerfile
+
+*.bash          linguist-detectable=false
+*.html          linguist-detectable=false
+*.scss          linguist-detectable=false
+*.sass          linguist-detectable=false
+*.css           linguist-detectable=false
+*.js            linguist-detectable=false
