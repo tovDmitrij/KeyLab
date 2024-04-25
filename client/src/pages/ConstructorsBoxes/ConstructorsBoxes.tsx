@@ -96,6 +96,7 @@ const ConstrucrotBoxes = () => {
     setNewIdBoxType(idType);
     const key = Object.keys(typeBoxesId).find(key => typeBoxesId[key as keyof typeof typeBoxesId] === idType) as keyof typeof typeBoxesId | undefined;
 
+    //todo: поменять на boxes/types
     switch(key) { 
       case "boxes100": { 
         if (dataBase100 && dataBase100[0] && dataBase100[0].id) getId(dataBase100[0].id);
@@ -133,7 +134,7 @@ const ConstrucrotBoxes = () => {
     model?.children.forEach( child => {
       if (!((child.name.includes('Cube'))  || (child.name.includes('Stabilize'))  || (child.name.includes('Plate'))) && child.visible === true) {
         //@ts-ignore
-        child?.material?.color?.setRGB(color.r / 255, color.g / 255, color.b /255)
+        child?.material?.color?.setRGB(color.r / 255, color.g / 255, color.b /  255)
       }
     })
   }, [color])
@@ -144,7 +145,7 @@ const ConstrucrotBoxes = () => {
     ref?.current?.toBlob((blob: any) => {
       setPreviewFile(blob);
     }, 'image/jpeg');
-  }, [ref])
+  }, [model])
  
   return (
     <>

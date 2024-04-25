@@ -10,8 +10,6 @@ import {
 } from "@mui/material";
 import { PopoverPicker } from "../../ColorPicker/PopoverPicker";
 import { RgbaColor } from "react-colorful";
-import { usePostBoxMutation } from "../../../services/boxesService";
-import { GLTFExporter } from "three/examples/jsm/Addons.js";
 
 type props = {
   handleChooseColor: (data: any) => void;
@@ -35,6 +33,7 @@ const ListBoxesNew: FC<props> = ({
     if (!title) return;
     saveNewBox(title);
   }
+  
 
   return (
     <Container

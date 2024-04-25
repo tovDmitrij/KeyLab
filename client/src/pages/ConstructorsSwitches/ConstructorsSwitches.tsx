@@ -17,6 +17,9 @@ import { saveAs } from "file-saver";
 import { OrbitControls } from "@react-three/drei";
 
 const ConstructorsSwitches = () => {
+  const ref = useRef(null);
+  const refModel = useRef(null);
+  const [previewFile, setPreviewFile] = useState();
   const [getSwitch] = useLazyGetSwitchQuery();
   const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
 
@@ -38,17 +41,30 @@ const ConstructorsSwitches = () => {
       });
   };
 
+  useEffect(() => {
+    if (!ref.current && ref.current === null) return;
+    //@ts-ignore
+    ref?.current?.toBlob((blob: any) => {
+      setPreviewFile(blob);
+    }, 'image/jpeg');
+  }, [model])
+
+  useEffect(() => {
+    if (!previewFile) return;
+    saveAs(previewFile, "image.png");
+  }, [previewFile])
+
   return (
     <>
       <Header />
-      <Grid sx={{ bgcolor: "#2D393B" }} container spacing={2}>
+      <Grid sx={{ bgcolor: "#2D393B" }} container spacing={0}>
         <Grid
           sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}
           className={classes.editor}
           item
           xs={10}
         >
-          <Canvas>
+          <Canvas ref={ref}>
 
             <directionalLight  args={[0xffffff]} position={[0, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, 0, -3]} intensity={1} />
@@ -72,7 +88,11 @@ const ConstructorsSwitches = () => {
               enablePan={false}
               target={[0, 0, 0]}
             />
-            {model && <primitive object={model} scale={"50"} />}
+            {model && (
+              <mesh ref={refModel}>
+                <primitive object={model} scale={"50"} />
+              </mesh>
+            )}
           </Canvas>
         </Grid>
         <Grid item xs={2}>

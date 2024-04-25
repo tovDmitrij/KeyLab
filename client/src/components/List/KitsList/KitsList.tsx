@@ -3,33 +3,28 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
+import { Button, Container, Typography } from "@mui/material";
 
-import classes from "./SwitchesList.module.scss";
-import { Button, Container, ListItemIcon, Typography } from "@mui/material";
-import PlusImage from "./Plus.png";
-import Preview from "./Preview";
-import { useNavigate } from "react-router-dom";
-
-type TSwitches = {
+type TKits = {
   /**
-   * id свитча
+   * id кита
    */
   id?: string;
   /**
-   * название свитча
+   * название кита
    */
   title?: string;
 };
 
 type props = {
-  switches: TSwitches[];
+  kits?: TKits[];
   handleChoose: (data: string) => void;
 };
 
-const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
-  const navigate = useNavigate()
-  const onClick = (value: TSwitches) => {
+const KitsList: FC<props> = ({ kits, handleChoose }) => {
+
+  const onClick = (value: TKits) => {
+    console.log(value);
     if (!value.id) return;
     handleChoose(value.id);
   };
@@ -38,24 +33,29 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
     <Container
       disableGutters
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        //width: "100%",
+        width: "100%",
         textAlign: "center",
         bgcolor: "#2A2A2A",
         height: "100vh",
         overflow: "hidden",
       }}
     >
+     
       <List
         sx={{
           mt: "66px",
-          //height: "76%",
+          height: "76%",
           position: "relative",
           overflowY: "auto",
         }}
-      >
-        {switches?.map((value) => {
+      > 
+        <Typography
+          sx={{
+            color: "white",
+          }}> 
+          Новый набор 
+        </Typography>
+        {kits?.map((value) => {
           const labelId = `checkbox-list-label-${value}`;
 
           return (
@@ -65,22 +65,13 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
               disablePadding
             >
               <ListItemButton
-                sx={{
-                  textAlign: "center",
-                  minWidth: "100",
-                  borderTop: "1px solid grey",
-                  borderBottom: "1px solid grey",
-                }}
                 role={undefined}
                 onClick={() => onClick(value)}
                 dense
               >
-                <ListItemIcon>
-                  <Preview type="switch" id={value.id} />
-                </ListItemIcon>
                 <ListItemText
                   sx={{
-                    color: "#c1c0c0",
+                    color: "white",
                     m: "5px",
                   }}
                   id={labelId}
@@ -91,52 +82,29 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
           );
         })}
       </List>
-      <Container
-        disableGutters
-        sx={{
-          //height: "76%",
-          //position: "rela",
-          marginTop: "auto",
-        }}
-       >
+      <Container>
         <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
-            border: "1px solid #c1c0c0",
           }}
           variant="contained"
-          onClick={() => set }
         >
-          <Typography
-            sx={{
-              color: "#c1c0c0",
-            }}
-          >
-            добавить
-          </Typography>
+          добавить
         </Button>
         <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
-            border: "1px solid #c1c0c0",
           }}
           variant="contained"
-          onClick={() => navigate("/constructors")}
         >
-          <Typography
-            sx={{
-              color: "#c1c0c0",
-            }}
-          >
-            назад
-          </Typography>
+          назад
         </Button>
       </Container>
     </Container>
   );
 };
-export default SwitchesList;
+export default KitsList;
