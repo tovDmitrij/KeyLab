@@ -19,9 +19,9 @@ namespace api.v1.keyboards.Services.Kit
 
 
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectKitDTO>> GetDefaultKits(PaginationDTO body, Guid statsID);
+        public Task<List<SelectKitDTO>> GetDefaultKits(PaginationDTO body, Guid boxTypeID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectKitDTO>> GetUserKits(PaginationDTO body, Guid userID, Guid statsID);
+        public Task<List<SelectKitDTO>> GetUserKits(PaginationDTO body, Guid boxTypeID, Guid userID, Guid statsID);
 
 
 

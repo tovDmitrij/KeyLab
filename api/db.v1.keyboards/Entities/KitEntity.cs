@@ -13,6 +13,9 @@ namespace db.v1.keyboards.Entities
         [Column("owner_id")]
         public Guid OwnerID { get; set; }
 
+        [Column("box_type_id")]
+        public Guid BoxTypeID { get; set; }
+
         [Column("title")]
         public string Title { get; set; } = "";
 
@@ -21,17 +24,19 @@ namespace db.v1.keyboards.Entities
 
 
 
-        public KitEntity(Guid id, Guid ownerID, string title, double creationDate)
+        public KitEntity(Guid id, Guid ownerID, Guid boxTypeID, string title, double creationDate)
         {
             ID = id;
             OwnerID = ownerID;
+            BoxTypeID = boxTypeID;
             Title = title;
             CreationDate = creationDate;
         }
 
-        public KitEntity(Guid ownerID, string title, double creationDate)
+        public KitEntity(Guid ownerID, Guid boxTypeID, string title, double creationDate)
         {
             OwnerID = ownerID;
+            BoxTypeID = boxTypeID;
             Title = title;
             CreationDate = creationDate;
         }

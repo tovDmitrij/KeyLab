@@ -53,21 +53,21 @@ namespace api.v1.keyboards.Controllers
 
         [HttpGet("default")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetDefaultKits([Required] int page, [Required] int pageSize)
+        public async Task<IActionResult> GetDefaultKits([Required] int page, [Required] int pageSize, [Required] Guid boxTypeID)
         {
             var statsID = GetStatsID();
-            var kits = await _kit.GetDefaultKits(new(page, pageSize), statsID);
+            var kits = await _kit.GetDefaultKits(new(page, pageSize), boxTypeID, statsID);
             return Ok(kits);
         }
 
         [HttpGet("auth")]
         [Authorize]
-        public async Task<IActionResult> GetUserKits([Required] int page, [Required] int pageSize)
+        public async Task<IActionResult> GetUserKits([Required] int page, [Required] int pageSize, [Required] Guid boxTypeID)
         {
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            var kits = await _kit.GetUserKits(new(page, pageSize), userID, statsID);
+            var kits = await _kit.GetUserKits(new(page, pageSize), boxTypeID, userID, statsID);
             return Ok(kits);
         }
 

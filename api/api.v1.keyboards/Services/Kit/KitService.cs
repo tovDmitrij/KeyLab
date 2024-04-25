@@ -4,6 +4,7 @@ using api.v1.keyboards.DTOs.Kit;
 using component.v1.exceptions;
 
 using db.v1.keyboards.DTOs.Kit;
+using db.v1.keyboards.Repositories.Box;
 using db.v1.keyboards.Repositories.Keycap;
 using db.v1.keyboards.Repositories.Kit;
 using db.v1.users.Repositories.User;
@@ -20,11 +21,12 @@ namespace api.v1.keyboards.Services.Kit
 {
     public sealed class KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, ILocalizationHelper localization, IUserRepository user, 
         ITimeHelper time, IKitRegexHelper rgx, IFileHelper file, IKeycapRepository keycap, IActivityConfigurationHelper activityCfg, 
-        ICacheHelper cache, ICacheConfigurationHelper cacheCfg, IMessageBrokerHelper broker) : 
+        ICacheHelper cache, ICacheConfigurationHelper cacheCfg, IMessageBrokerHelper broker, IBoxRepository box) : 
         BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), IKitService
     {
         private readonly IKitRepository _kit = kit;
         private readonly IKeycapRepository _keycap = keycap;
+        private readonly IBoxRepository _box = box;
 
         private readonly ITimeHelper _time = time;
         private readonly IKitRegexHelper _rgx = rgx;
@@ -35,9 +37,30 @@ namespace api.v1.keyboards.Services.Kit
         {
             ValidateUserID(userID);
             ValidateKitTitle(body.Title);
+            ValidateBoxTypeID(body.BoxTypeID);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var kitID =  _kit.InsertKit(userID, body.Title, currentTime);
+            var kitID =  _kit.InsertKit(userID, body.BoxTypeID, body.Title, currentTime);
+
+            var defaultUserID = _fileCfg.GetDefaultModelsUserID();
+            var defaultKitID = _kit.SelectUserKits(defaultUserID, body.BoxTypeID).First().ID;
+            var keycaps = _keycap.SelectKeycaps(defaultKitID);
+
+            foreach (var keycap in keycaps)
+            {
+                var defaultFileName = _keycap.SelectKeycapFileName(keycap.ID);
+                var defaultFilePath = _fileCfg.GetKeycapFilePath(defaultUserID, defaultKitID, defaultFileName!);
+
+                var newFilePath = _fileCfg.GetKeycapFilePath(userID, kitID, defaultFileName!);
+
+                _file.CopyFile(defaultFilePath, newFilePath);
+
+                var time = _time.GetCurrentUNIXTime();
+
+                var previewName = $"{keycap.Title}.jpeg";
+                _keycap.InsertKeycap(new(kitID, keycap.Title, defaultFileName!, previewName, time));
+            }
+
             await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
             return kitID;
         }
@@ -80,18 +103,21 @@ namespace api.v1.keyboards.Services.Kit
 
 
 
-        public async Task<List<SelectKitDTO>> GetDefaultKits(PaginationDTO body, Guid statsID)
+        public async Task<List<SelectKitDTO>> GetDefaultKits(PaginationDTO body, Guid boxTypeID, Guid statsID)
         {
-            var kits = GetPaginationListOfObjects(body.Page, body.PageSize, _fileCfg.GetDefaultModelsUserID(), _kit.SelectUserKits);
+            ValidateBoxTypeID(boxTypeID);
+
+            var kits = GetPaginationListOfObjects(body.Page, body.PageSize, _fileCfg.GetDefaultModelsUserID(), boxTypeID, _kit.SelectUserKits);
             await PublishActivity(statsID, _activityCfg.GetSeeKeycapActivityTag);
             return kits;
         }
 
-        public async Task<List<SelectKitDTO>> GetUserKits(PaginationDTO body, Guid userID, Guid statsID)
+        public async Task<List<SelectKitDTO>> GetUserKits(PaginationDTO body, Guid boxTypeID, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
+            ValidateBoxTypeID(boxTypeID);
 
-            var kits = GetPaginationListOfObjects(body.Page, body.PageSize, userID, _kit.SelectUserKits);
+            var kits = GetPaginationListOfObjects(body.Page, body.PageSize, userID, boxTypeID, _kit.SelectUserKits);
             await PublishActivity(statsID, _activityCfg.GetSeeKeycapActivityTag);
             return kits;
         }
@@ -123,6 +149,12 @@ namespace api.v1.keyboards.Services.Kit
         private void ValidateKitTitle(string title)
         {
             _rgx.ValidateKitTitle(title);
+        }
+        
+        private void ValidateBoxTypeID(Guid boxTypeID)
+        {
+            if (!_box.IsBoxTypeExist(boxTypeID))
+                throw new BadRequestException(_localization.BoxTypeIsNotExist());
         }
     }
 }

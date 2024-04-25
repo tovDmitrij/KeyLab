@@ -8,9 +8,9 @@ namespace db.v1.keyboards.Repositories.Kit
     {
         private readonly IKitContext _db = db;
 
-        public Guid InsertKit(Guid userID, string title, double creationDate)
+        public Guid InsertKit(Guid userID, Guid boxTypeID, string title, double creationDate)
         {
-            var kit = new KitEntity(userID, title, creationDate);
+            var kit = new KitEntity(userID, boxTypeID, title, creationDate);
             _db.Kits.Add(kit);
             _db.SaveChanges();
             return kit.ID;
@@ -33,9 +33,13 @@ namespace db.v1.keyboards.Repositories.Kit
 
 
 
-        public List<SelectKitDTO> SelectUserKits(int page, int pageSize, Guid userID) => _db.Kits
-            .Where(kit => kit.OwnerID == userID).Skip((page - 1) * pageSize).Take(pageSize)
-            .Select(kit => new SelectKitDTO(kit.ID, kit.Title, kit.CreationDate)).ToList();  
+        public List<SelectKitDTO> SelectUserKits(Guid userID, Guid boxTypeID) => _db.Kits
+            .Where(kit => kit.OwnerID == userID & kit.BoxTypeID == boxTypeID)
+            .Select(kit => new SelectKitDTO(kit.ID, kit.BoxTypeID, kit.Title, kit.CreationDate)).ToList();
+
+        public List<SelectKitDTO> SelectUserKits(int page, int pageSize, Guid userID, Guid boxTypeID) => _db.Kits
+            .Where(kit => kit.OwnerID == userID & kit.BoxTypeID == boxTypeID).Skip((page - 1) * pageSize).Take(pageSize)
+            .Select(kit => new SelectKitDTO(kit.ID, kit.BoxTypeID, kit.Title, kit.CreationDate)).ToList();  
 
         public int SelectCountOfKits(Guid userID) => _db.Kits
             .Count(kit => kit.OwnerID == userID);

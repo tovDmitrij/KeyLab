@@ -89,12 +89,14 @@ csv header;
 create table if not exists kits(
     id uuid default uuid_generate_v4() primary key,
     owner_id uuid not null references users(id),
+    box_type_id uuid not null references box_types(id),
     title text not null,
     creation_date numeric not null
 );
 create index on kits(id);
 create index on kits(owner_id);
-copy kits(id, owner_id, title, creation_date)
+create index on kits(box_type_id);
+copy kits(id, owner_id, box_type_id, title, creation_date)
 from '/postgres/keyboards/init/kits.csv'
 delimiter ','
 csv header;
