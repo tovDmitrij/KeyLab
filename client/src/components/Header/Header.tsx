@@ -10,11 +10,13 @@ import classes from "./Header.module.scss";
 import { useAppSelector } from "../../store/redux";
 
 import { RootState } from "../../store/store";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [nick, setNick] = useState<string>();
   const [title, setTitle] = useState<string | undefined>();
   const currentUrl = window.location.href;
+  const navigate = useNavigate();
   const { nickName, isAdmin } = useAppSelector(
     (state: RootState) => state.profileReducer
   );
@@ -28,6 +30,8 @@ const Header = () => {
       setTitle("Выбор свитчей") 
     } else if (currentUrl.includes("/constrBoxes")) {
       setTitle("Выбор размера клавиатуры");
+    } else if (currentUrl.includes("/constrKeys")) {
+      setTitle("Выбор кейкапов");
     } else if (currentUrl.includes("/constructors")) {
       setTitle("Комплектующие");
     }
@@ -47,7 +51,9 @@ const Header = () => {
         ) : (
           <Toolbar disableGutters>
             <Box component="div" className={classes.header_left}>
-              <KeyboardIcon sx={{ fontSize: 50 }} />
+              <Link to="/">  
+                <KeyboardIcon sx={{ fontSize: 50 }} />   
+              </Link>           
               <Typography className={classes.link} fontSize={34}>
                 Keylab
               </Typography>

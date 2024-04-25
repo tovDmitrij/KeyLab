@@ -5,10 +5,12 @@ import MainPage from "../pages/MainPage/MainPage";
 import Constructors from "../pages/Constructors/ConstructorsMain";
 import ConstructorsSwitches from "../pages/ConstructorsSwitches/ConstructorsSwitches";
 import ConstrucrotBoxes from "../pages/ConstructorsBoxes/ConstructorsBoxes";
+import ConstructorKeys from "../pages/ConstructorsKeys/ConstructorsKeys";
 
 const AppRouter = () => {
   return (
     <Routes>
+      <Route path="/constrKeys" element={<ConstructorKeys/>} />
       <Route path="/constrBoxes" element={<ConstrucrotBoxes/>} />
       <Route path="/constrSwitch" element={<ConstructorsSwitches />} />
       <Route path="/constructors" element={<Constructors />} />

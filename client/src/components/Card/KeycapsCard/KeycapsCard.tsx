@@ -12,7 +12,7 @@ const KeycapsCard = () => {
 
   return (
     <Card className={classes.card} sx={{ borderRadius: 10 }}>
-      <CardActionArea onClick={() => navigate("/constructors")}>
+      <CardActionArea onClick={() => navigate("/constrKeys")}>
         <CardContent className={classes.card_content}>
           <Typography sx={{ mt: 1, fontSize: 20, color: "#AEAEAE" }}>
             Выберите кнопки
