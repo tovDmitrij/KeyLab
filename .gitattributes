@@ -15,4 +15,4 @@ Dockerfile.*    linguist-language=Dockerfile
 *.sass          linguist-detectable=false
 *.css           linguist-detectable=false
 *.js            linguist-detectable=false
-*.cjs            linguist-detectable=false
+.eslintrc.cjs   linguist-detectable=false
