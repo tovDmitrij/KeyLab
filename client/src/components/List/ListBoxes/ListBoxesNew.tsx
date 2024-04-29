@@ -21,7 +21,7 @@ const ListBoxesNew: FC<props> = ({
   saveNewBox,
 }) => {
 
-  const [color, setColor] = useState({ r: 200, g: 150, b: 35, a: 0.5 });
+  const [color, setColor] = useState({ r: 205, g: 214, b: 199 });
   const [title, setTitle] = useState<string>();
 
   const onChange = (newColor: RgbaColor) => {

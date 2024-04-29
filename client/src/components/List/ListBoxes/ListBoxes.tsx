@@ -1,11 +1,4 @@
 import { FC, useEffect, useRef, useState } from "react";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import classes from "./ListBoxes.module.scss";
 import {
   Accordion,
   AccordionActions,
@@ -14,14 +7,8 @@ import {
   Button,
   Collapse,
   Container,
-  Grid,
-  ListItemIcon,
-  TextField,
-  Typography,
 } from "@mui/material";
 import AccordionElement from "./AccordionElement/AccordionElement";
-import { HexColorPicker } from "react-colorful";
-import { PopoverPicker } from "../../ColorPicker/PopoverPicker";
 
 type TBoxes = {
   /**

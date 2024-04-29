@@ -11,6 +11,11 @@ type TPages = {
    * Размер страницы
    */
   pageSize?: number;
+
+  /**
+   * id типа 
+   */
+  typeID?: string;
 };
 
 type TKits = {
@@ -33,8 +38,8 @@ export const kitsService = createApi({
   baseQuery: getBaseQuery,
   endpoints: (builder) => ({
     getAuthKits: builder.query<TKits[], TPages>({
-      query: ({ page, pageSize }) => ({
-        url: `/kits/auth?page=${page}&pageSize=${pageSize}`,
+      query: ({ page, pageSize, typeID }) => ({
+        url: `/kits/auth?page=${page}&pageSize=${pageSize}&boxTypeID=${typeID}`,
         method: "GET",
       }),
     }),
@@ -45,8 +50,8 @@ export const kitsService = createApi({
       }),
     }),
     getDefaultKits: builder.query<TKits[], TPages>({
-      query: ({ page, pageSize }) => ({
-        url: `/kits/default?page=${page}&pageSize=${pageSize}`,
+      query: ({ page, pageSize, typeID }) => ({
+        url: `/kits/default?page=${page}&pageSize=${pageSize}&boxTypeID=${typeID}`,
         method: "GET",
       }),
     }),

@@ -4,6 +4,8 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { Button, Container, Typography } from "@mui/material";
+import AccordionElementKit from "./AccordionElement/AccordionElementKit";
+import { useGetBoxesTypesQuery } from "../../../services/boxesService";
 
 type TKits = {
   /**
@@ -19,14 +21,21 @@ type TKits = {
 type props = {
   kits?: TKits[];
   handleChoose: (data: string) => void;
+  handleNew: (data: string) => void;
 };
 
-const KitsList: FC<props> = ({ kits, handleChoose }) => {
+const KitsList: FC<props> = ({ kits, handleChoose, handleNew }) => {
+
+  const { data : dataType } = useGetBoxesTypesQuery();
 
   const onClick = (value: TKits) => {
-    console.log(value);
     if (!value.id) return;
     handleChoose(value.id);
+  };
+
+  const onClickNew = (boxTypeId: string) => {
+    if (!boxTypeId) return;
+    handleNew(boxTypeId);
   };
 
   return (
@@ -40,48 +49,29 @@ const KitsList: FC<props> = ({ kits, handleChoose }) => {
         overflow: "hidden",
       }}
     >
-     
-      <List
+      <Container
+        disableGutters
         sx={{
+          pr: "0",
           mt: "66px",
           height: "76%",
+          width: "100%",
           position: "relative",
           overflowY: "auto",
         }}
-      > 
-        <Typography
-          sx={{
-            color: "white",
-          }}> 
-          Новый набор 
-        </Typography>
-        {kits?.map((value) => {
-          const labelId = `checkbox-list-label-${value}`;
-
+      >
+        {dataType && dataType?.map((item : any) => {
           return (
-            <ListItem
-              sx={{ textAlign: "center", minWidth: "100" }}
-              key={value.id}
-              disablePadding
-            >
-              <ListItemButton
-                role={undefined}
-                onClick={() => onClick(value)}
-                dense
-              >
-                <ListItemText
-                  sx={{
-                    color: "white",
-                    m: "5px",
-                  }}
-                  id={labelId}
-                  primary={`${value.title}`}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
+            <AccordionElementKit
+              name= {`${item.title} percent`}
+              handleChoose={onClick}
+              handleNew={onClickNew}
+              boxTypeId={item.id}
+            />
+          )
         })}
-      </List>
+       
+      </Container>
       <Container>
         <Button
           sx={{

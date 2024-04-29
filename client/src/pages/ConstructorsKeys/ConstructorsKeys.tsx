@@ -35,9 +35,11 @@ const ConstructorKeys = () => {
   const [idKit, setIdKit] = useState<string>();
   const [keycaps, setKeycaps] = useState<TKeycaps[]>();
   const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
+  const [modelKit, setModelKit] = useState<THREE.Group<THREE.Object3DEventMap>[]>([]);
   const [color, setColor] = useState<any>(undefined);
   const [getKeycaps] = useLazyGetKeycapsQuery();  
   const [getKeycap] = useLazyGetKeycapQuery();
+  const loader = new GLTFLoader();
 
   const { data } = useGetDefaultKitsQuery({
     page: 1,
@@ -72,14 +74,30 @@ const ConstructorKeys = () => {
     })
       .unwrap()
       .then((data) => {
+        console.log(data)
         setKeycaps(data);
       });
   }, [idKit]);
 
   useEffect(() => {
-    console.log(model?.children[0].position.set(0, 0, 0));  
-    //console.log(model?.children[0].position);  
-  }, [model]);
+    if (!keycaps) return;
+    keycaps.map((keycap) => {
+      if (!keycap?.id) return;
+      setModelKit([])
+      getKeycap(keycap?.id)
+      .unwrap()
+      .then((payload) => {
+        loader.parse(payload, "", (gltf) => {
+        setModelKit(prevModelKit => [...prevModelKit, gltf.scene]);
+        });
+      });
+    })
+  }, [keycaps]);
+
+  // useEffect(() => {
+  //   console.log(model?.children[0].position.set(0, 0, 0));  
+  //   //console.log(model?.children[0].position);  
+  // }, [model]);
 
   useEffect(() => {
     model?.children[0].children[0].material?.color?.setRGB(color.r / 255, color.g / 255, color.b /  255);  
@@ -116,16 +134,18 @@ const ConstructorKeys = () => {
               enablePan={false}
               target={[0, 0, 0]}
             />
-            {model && (
+            {modelKit && (
               <mesh ref={refModel}>
-                <primitive object={model} scale={"12"} />
+                {modelKit.map((item) => (
+                  <primitive object={item} scale={12} />
+                ))}
               </mesh>
             )}
           </Canvas>
         </Grid>
         <Grid item xs={2}>
-          {keycaps && <KeycapsList keykaps={keycaps} handleChooseKey={handleChooseKey} handleChooseColor={handleChooseColor}/>}
-          {!keycaps && <KitsList kits={data} handleChoose={handleChoose} /> }
+          {/* {keycaps && <KeycapsList keykaps={keycaps} handleChooseKey={handleChooseKey} handleChooseColor={handleChooseColor}/>} */}
+          {    <KitsList kits={data} handleChoose={handleChoose} /> }
         </Grid>
       </Grid>
     </>

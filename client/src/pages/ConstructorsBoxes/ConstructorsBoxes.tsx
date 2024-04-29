@@ -143,9 +143,9 @@ const ConstrucrotBoxes = () => {
     if (!ref.current && ref.current === null) return;
     //@ts-ignore
     ref?.current?.toBlob((blob: any) => {
-      setPreviewFile(blob);
-    }, 'image/jpeg');
-  }, [model])
+      setPreviewFile(blob)
+    }, 'image/png');
+  }, [model, color])
  
   return (
     <>
@@ -157,7 +157,7 @@ const ConstrucrotBoxes = () => {
           item
           xs={10}
         >
-          <Canvas  ref={ref}>
+          <Canvas camera={{ fov: 90, zoom: 10, position: [0, 10, 8]}} gl={{ preserveDrawingBuffer: true }} ref={ref}>
             <directionalLight  args={[0xffffff]} position={[0, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, 0, -3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, -3, 0]} intensity={1} />
@@ -171,8 +171,6 @@ const ConstrucrotBoxes = () => {
             <directionalLight  args={[0xffffff]} position={[-3, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, 0, 3]} intensity={1} />
             <OrbitControls
-              maxPolarAngle={Math.PI / 2.2}
-              minPolarAngle={Math.PI / 20}
               maxDistance={2}
               minDistance={1}
               enablePan={false}
@@ -180,7 +178,7 @@ const ConstrucrotBoxes = () => {
             />
             {model && (
               <mesh ref={refModel}>
-                <primitive object={model} scale={"2"} />
+                <primitive object={model} />
               </mesh>
             )}
           </Canvas>
