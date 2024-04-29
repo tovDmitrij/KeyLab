@@ -78,6 +78,12 @@ export const boxesService = createApi({
         responseHandler: (response) => response.arrayBuffer(),
       }),
     }),
+    getBoxesTypes: builder.query<any, void>({
+      query: () => ({
+        url: `boxes/types`,
+        method: "GET",
+      }),
+    }),
     postBox: builder.mutation<any, any>({
       query: (bodyFormData) => {
         let formData = new FormData();
@@ -98,6 +104,8 @@ export const boxesService = createApi({
 
 export const {
   usePostBoxMutation,
+  useGetBoxesTypesQuery,
+  useLazyGetBoxesTypesQuery,
   useLazyGetAuthBoxesQuery,
   useLazyGetAuthBoxesTotalPagesQuery,
   useGetAuthBoxesQuery,

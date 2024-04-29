@@ -13,7 +13,6 @@ import {
 } from "../../services/switchesService";
 import SwitchesList from "../../components/List/SwitchesList/SwitchesList";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { saveAs } from "file-saver";
 import { OrbitControls } from "@react-three/drei";
 
 const ConstructorsSwitches = () => {
@@ -44,15 +43,15 @@ const ConstructorsSwitches = () => {
   useEffect(() => {
     if (!ref.current && ref.current === null) return;
     //@ts-ignore
-    ref?.current?.toBlob((blob: any) => {
-      setPreviewFile(blob);
-    }, 'image/jpeg');
+    //saveImage()
+    //domtoimage.toBlob(ref.current).then((blob) => FileSaver.saveAs(blob, `image.png`));
   }, [model])
+  
 
-  useEffect(() => {
-    if (!previewFile) return;
-    saveAs(previewFile, "image.png");
-  }, [previewFile])
+  // useEffect(() => {
+  //   if (!previewFile) return;
+  //   //saveAs(previewFile, "image.png");
+  // }, [previewFile])
 
   return (
     <>
@@ -64,7 +63,7 @@ const ConstructorsSwitches = () => {
           item
           xs={10}
         >
-          <Canvas ref={ref}>
+          <Canvas camera={{ fov: 35, zoom: 16, position: [-10, 10, 20]}}  gl={{ preserveDrawingBuffer: true }} ref={ref}>
 
             <directionalLight  args={[0xffffff]} position={[0, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, 0, -3]} intensity={1} />
@@ -74,24 +73,22 @@ const ConstructorsSwitches = () => {
             <directionalLight  args={[0xffffff]} position={[3, 0, 0]} intensity={1} />
 
             <directionalLight  args={[0xffffff]} position={[0, 3, 3]} intensity={1} />
-            <directionalLight  args={[0xffffff]} position={[0, -3, -3]} intensity={0.1} />
+            <directionalLight  args={[0xffffff]} position={[0, -3, -3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, -3, 0]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, 3, 0]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[-3, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, 0, 3]} intensity={1} />
             
             <OrbitControls
-              maxPolarAngle={Math.PI / 2.2}
-              minPolarAngle={Math.PI / 20}
+              //maxPolarAngle={Math.PI / 2.2}
+              //minPolarAngle={Math.PI / 20}
               maxDistance={2}
               minDistance={1}
               enablePan={false}
               target={[0, 0, 0]}
             />
             {model && (
-              <mesh ref={refModel}>
-                <primitive object={model} scale={"50"} />
-              </mesh>
+                <primitive object={model} />
             )}
           </Canvas>
         </Grid>
