@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { RgbaColorPicker } from "react-colorful";
+import { RgbColorPicker } from "react-colorful";
 
 import classes from './style.module.scss'
 import useClickOutside from "./useClickOutside";
@@ -32,7 +32,7 @@ export const PopoverPicker = ({ color, onChange }: any) => {
         {isOpen && (
           //@ts-ignore
           <div className={classes.popover} ref={popover as React.RefObject<HTMLDivElement>}>
-            <RgbaColorPicker color={color} onChange={onChange} />
+            <RgbColorPicker color={color} onChange={onChange} />
           </div>
         )}
       </div>

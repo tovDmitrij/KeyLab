@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
-import { Box, Container, Grid, Typography } from "@mui/material";
-
-import classes from "./MainPage.module.scss";
+import { Container } from "@mui/material";
 import { useGetAuthKeyboardsQuery } from "../../services/keyboardService";
-import PreviewCard from "../../components/Card/PreviewCard/PreviewCard";
 
+import Title from "../../components/MainPage/Title";
+import About from "../../components/MainPage/About";
+import Scheme from "../../components/MainPage/Scheme";
+import Models from "../../components/MainPage/Models";
+import ScrollButton from "../../components/MainPage/ScrollButton";
+import Constructor from "../../components/MainPage/Constructor";
 
 const MainPage = () => {
+
   const { data } = useGetAuthKeyboardsQuery({
     page: 1,
     pageSize: 10,
   });
 
-  console.log(data);
-
   return (
     <>
       <Header />
-        <Container maxWidth='lg' className={classes.container} disableGutters>
-          <Typography fontSize={32} sx={{ textAlign: "center" }}>
-            3D - модели
-          </Typography>
-          <Grid container spacing={5}>
-            <Grid item>
-              <PreviewCard />
-            </Grid>
-          </Grid>
-        </Container>
+      <Container maxWidth={false} disableGutters>
+        <Title />
+        <About />
+        <Scheme />
+        <Models />
+        <Constructor />
+        <ScrollButton/>
+      </Container>
     </>
   );
 };

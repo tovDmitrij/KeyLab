@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { useGetSwitchPreviewQuery, useLazyGetSwitchPreviewQuery } from "../../../services/switchesService";
 import SwitchPng from "./switch.png"; 
+
 type props = {
   type: string;
   id?: string;

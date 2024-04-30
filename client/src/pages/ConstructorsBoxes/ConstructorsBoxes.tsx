@@ -150,7 +150,7 @@ const ConstrucrotBoxes = () => {
   return (
     <>
       <Header />
-      <Grid sx={{ bgcolor: "#2D393B" }} container spacing={2}>
+      <Grid sx={{ bgcolor: "#2D393B" }} container spacing={0}>
         <Grid
           sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}
           className={classes.editor}

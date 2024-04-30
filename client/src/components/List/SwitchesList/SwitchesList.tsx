@@ -40,7 +40,6 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        //width: "100%",
         textAlign: "center",
         bgcolor: "#2A2A2A",
         height: "100vh",
@@ -70,6 +69,7 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
                   minWidth: "100",
                   borderTop: "1px solid grey",
                   borderBottom: "1px solid grey",
+                  margin: "0 0 -1px 0px",
                 }}
                 role={undefined}
                 onClick={() => onClick(value)}
@@ -107,7 +107,7 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
             border: "1px solid #c1c0c0",
           }}
           variant="contained"
-          onClick={() => set }
+          //onClick={() => set }
         >
           <Typography
             sx={{

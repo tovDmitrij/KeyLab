@@ -94,6 +94,8 @@ const ConstructorKeys = () => {
     })
   }, [keycaps]);
 
+  console.log(modelKit);
+
   // useEffect(() => {
   //   console.log(model?.children[0].position.set(0, 0, 0));  
   //   //console.log(model?.children[0].position);  
