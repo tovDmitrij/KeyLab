@@ -16,30 +16,26 @@ type props = {
   saveNewBox: (title: string) => void;
 };
 
-const ListBoxesNew: FC<props> = ({
-  handleChooseColor,
-  saveNewBox,
-}) => {
-
+const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
   const [color, setColor] = useState({ r: 205, g: 214, b: 199 });
   const [title, setTitle] = useState<string>();
 
   const onChange = (newColor: RgbaColor) => {
     handleChooseColor(newColor);
     setColor(newColor);
-  }
+  };
 
   const onSave = () => {
     if (!title) return;
     saveNewBox(title);
-  }
-  
+  };
 
   return (
     <Container
       disableGutters
       sx={{
-        width: "100%",
+        display: "flex",
+        flexDirection: "column",
         textAlign: "center",
         bgcolor: "#2A2A2A",
         height: "100vh",
@@ -49,7 +45,6 @@ const ListBoxesNew: FC<props> = ({
       <Container
         disableGutters
         sx={{
-          pr: "0",
           mt: "66px",
           height: "76%",
           width: "100%",
@@ -58,15 +53,23 @@ const ListBoxesNew: FC<props> = ({
         }}
       >
         <List>
-          <ListItem disablePadding>
-            <Typography color={"white"} sx={{ m: "10px" }}>
+          <ListItem
+            sx={{
+              height: "80px",
+              borderTop: "1px solid grey",
+              borderBottom: "1px solid grey",
+              margin: "0 0 -1px 0px",
+            }}
+            disablePadding
+          >
+            <Typography color={"#c1c0c0"} sx={{ m: "10px" }}>
               Name
             </Typography>
             <TextField
               InputProps={{
                 sx: {
-                  border: "1px solid white",
-                  color: "white",
+                  color: "#c1c0c0",
+                  backgroundColor: "#191919",
                 },
               }}
               size="small"
@@ -76,30 +79,50 @@ const ListBoxesNew: FC<props> = ({
                 m: "10px",
                 width: "100%",
               }}
-              onChange={(event) =>
-                setTitle(event.target.value)
-              }
+              onChange={(event) => setTitle(event.target.value)}
             />
           </ListItem>
-          <ListItem disablePadding>
-            <Typography color={"white"} sx={{ m: "10px" }}>
+          <ListItem
+            sx={{
+              height: "80px",
+              borderTop: "1px solid grey",
+              borderBottom: "1px solid grey",
+              margin: "0 0 -1px 0px",
+            }}
+            disablePadding
+          >
+            <Typography color={"#c1c0c0"} sx={{ m: "10px" }}>
               Color
             </Typography>
             <PopoverPicker color={color} onChange={onChange} />
           </ListItem>
         </List>
       </Container>
-      <Container>
+      <Container
+        disableGutters
+        sx={{
+          //height: "76%",
+          //position: "rela",
+          marginTop: "auto",
+        }}
+      >
         <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
+            border: "1px solid #c1c0c0",
           }}
           variant="contained"
           onClick={onSave}
         >
-          Сохранить 
+          <Typography
+            sx={{
+              color: "#c1c0c0",
+            }}
+          >
+            добавить
+          </Typography>
         </Button>
       </Container>
     </Container>

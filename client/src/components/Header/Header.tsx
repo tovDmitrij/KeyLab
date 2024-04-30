@@ -27,7 +27,7 @@ const Header = () => {
 
   useEffect(() => {
     if (currentUrl.includes("/constrSwitch")) {
-      setTitle("Выбор свитчей") 
+      setTitle("Выбор свитчей");
     } else if (currentUrl.includes("/constrBoxes")) {
       setTitle("Выбор размера клавиатуры");
     } else if (currentUrl.includes("/constrKeys")) {
@@ -39,30 +39,50 @@ const Header = () => {
 
   const handleClickExit = () => {};
 
+  const scrollToSection = (sectionId: string) => {
+    const sectionElement = document.getElementById(sectionId);
+    const offset = 128;
+    if (sectionElement) {
+      const targetScroll = sectionElement.offsetTop - offset;
+      sectionElement.scrollIntoView({ behavior: 'smooth' });
+      window.scrollTo({
+        top: targetScroll,
+        behavior: 'smooth',
+      });
+
+    }
+  };
+
+
   return (
     <AppBar position="absolute">
       <Container maxWidth={false}>
         {location.pathname.includes("/register") ||
         location.pathname.includes("/login") ? (
           <Toolbar className={classes.header_log_reg} disableGutters>
-            <KeyboardIcon sx={{ fontSize: 50 }} />
-            <Typography fontSize={34}> Keylab </Typography>
+              <div className={classes.logo} onClick={() => navigate("/")}>
+                <KeyboardIcon sx={{ fontSize: 50 }} />
+                <Typography className={classes.link} fontSize={34}>
+                  Keylab
+                </Typography>
+              </div>
           </Toolbar>
         ) : (
           <Toolbar disableGutters>
             <Box component="div" className={classes.header_left}>
-              <Link to="/">  
-                <KeyboardIcon sx={{ fontSize: 50 }} />   
-              </Link>           
-              <Typography className={classes.link} fontSize={34}>
-                Keylab
-              </Typography>
+              <div className={classes.logo} onClick={() => navigate("/")}>
+                <KeyboardIcon sx={{ fontSize: 50 }} />
+                <Typography className={classes.link} fontSize={34}>
+                  Keylab
+                </Typography>
+              </div>
               {!title && (
                 <>
                   <Typography
                     className={classes.link}
                     fontSize={14}
                     sx={{ marginLeft: 8 }}
+                    onClick={() => scrollToSection('about')}
                   >
                     О нас
                   </Typography>
@@ -70,6 +90,7 @@ const Header = () => {
                     className={classes.link}
                     fontSize={14}
                     sx={{ marginLeft: 8 }}
+                    onClick={() => scrollToSection('models')}
                   >
                     3D - модели
                   </Typography>
@@ -77,6 +98,7 @@ const Header = () => {
                     className={classes.link}
                     fontSize={14}
                     sx={{ marginLeft: 8 }}
+                    onClick={() => scrollToSection('constructor')}
                   >
                     Конструктор
                   </Typography>
@@ -92,14 +114,13 @@ const Header = () => {
                 </>
               )}
             </Box>
-            {title && <Box component="div" className={classes.header_right}>
-              <Typography
-                className={classes.link}
-                fontSize={14}
-              >
-                {title}
-              </Typography>
-            </Box>} 
+            {title && (
+              <Box component="div" className={classes.header_right}>
+                <Typography className={classes.link} fontSize={14}>
+                  {title}
+                </Typography>
+              </Box>
+            )}
             <Box component="div" className={classes.header_right}>
               <Typography
                 className={classes.link}

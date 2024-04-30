@@ -7,6 +7,7 @@ import {
   Button,
   Collapse,
   Container,
+  Typography,
 } from "@mui/material";
 import AccordionElement from "./AccordionElement/AccordionElement";
 
@@ -68,7 +69,8 @@ const BoxesList: FC<props> = ({
     <Container
       disableGutters
       sx={{
-        width: "100%",
+        display: "flex",
+        flexDirection: "column",
         textAlign: "center",
         bgcolor: "#2A2A2A",
         height: "100vh",
@@ -123,26 +125,49 @@ const BoxesList: FC<props> = ({
           />
         }
       </Container>
-      <Container>
+      <Container
+        disableGutters
+        sx={{
+          //height: "76%",
+          //position: "rela",
+          marginTop: "auto",
+        }}
+       >
         <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
+            border: "1px solid #c1c0c0",
           }}
           variant="contained"
+          //onClick={() => set }
         >
-          добавить
+          <Typography
+            sx={{
+              color: "#c1c0c0",
+            }}
+          >
+            добавить
+          </Typography>
         </Button>
         <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
+            border: "1px solid #c1c0c0",
           }}
           variant="contained"
+          onClick={() => navigate("/constructors")}
         >
-          назад
+          <Typography
+            sx={{
+              color: "#c1c0c0",
+            }}
+          >
+            назад
+          </Typography>
         </Button>
       </Container>
     </Container>
