@@ -41,8 +41,8 @@ namespace api.v1.stats.Controllers
         [HttpPost("attendance/quantity/atom")]
         public IActionResult GetAttendanceQuantityAtom([FromBody] PostAttendanceStatDTO body)
         {
-            var seconds = _stat.GetAttendanceQuantityAtom(body);
-            return Ok(new { seconds });
+            var quantity = _stat.GetAttendanceQuantityAtom(body);
+            return Ok(new { quantity });
         }
 
 
@@ -73,8 +73,8 @@ namespace api.v1.stats.Controllers
         [HttpPost("activities/quantity/atom")]
         public IActionResult GetActivityQuantityAtom([FromBody] PostActivityStatDTO body)
         {
-            var seconds = _stat.GetActivityQuantityAtom(body);
-            return Ok(new { seconds });
+            var quantity = _stat.GetActivityQuantityAtom(body);
+            return Ok(new { quantity });
         }
     }
 }
