@@ -84,7 +84,6 @@ services:
     ports:
       - 7011:5432
     volumes:
-      - ./postgres/dev/keyboards/data:/var/lib/postgresql/data
       - ./postgres/dev/keyboards/create.sql:/docker-entrypoint-initdb.d/create.sql
       - ./postgres/dev/keyboards/init:/postgres/keyboards/init
 
@@ -99,7 +98,6 @@ services:
     ports:
       - 7012:5432
     volumes:
-      - ./postgres/dev/users/data:/var/lib/postgresql/data
       - ./postgres/dev/users/create.sql:/docker-entrypoint-initdb.d/create.sql
       - ./postgres/dev/users/init:/postgres/users/init
 
@@ -114,7 +112,6 @@ services:
     ports:
       - 7013:5432
     volumes:
-      - ./postgres/dev/stats/data:/var/lib/postgresql/data
       - ./postgres/dev/stats/create.sql:/docker-entrypoint-initdb.d/create.sql
       - ./postgres/dev/stats/init:/postgres/stats/init
 
@@ -130,7 +127,6 @@ services:
       - 7021:7021
     command: redis-server --include /usr/local/etc/redis/redis.conf
     volumes:
-      - ./redis/dev/keyboards/data:/data
       - ./configurations/dev/redis.keyboards.conf:/usr/local/etc/redis/redis.conf
 
   redis_stats:
@@ -145,7 +141,6 @@ services:
       - 7022:7022
     command: redis-server --include /usr/local/etc/redis/redis.conf
     volumes:
-      - ./redis/dev/stats/data:/data
       - ./configurations/dev/redis.stats.conf:/usr/local/etc/redis/redis.conf
 
   rabbitmq:
@@ -159,8 +154,6 @@ services:
       - 7031:7031
       - 7032:7032
     volumes:
-      - ./rabbitmq/dev/data/:/var/lib/rabbitmq/
-      - ./rabbitmq/dev/log/:/var/log.rabbitmq/
       - ./configurations/dev/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
 
   adminer:
