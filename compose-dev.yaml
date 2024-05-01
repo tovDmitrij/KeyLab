@@ -1,0 +1,173 @@
+version: "3.9"
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.23.3
+    restart: always
+    ports:
+      - 7001:7001
+    volumes:
+      - ./configurations/dev/nginx.conf:/etc/nginx/nginx.conf
+
+  api_users:
+    container_name: api_users
+    restart: always
+    depends_on:
+      - rabbitmq
+      - db_users
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.api.users
+    entrypoint: [ "dotnet", "api.v1.users.dll" ]
+    ports:
+      - 7002:8080
+    volumes:
+      - ./api/logs:/logs
+      - ./configurations/dev:/configurations
+
+  api_keyboards:
+    container_name: api_keyboards
+    restart: always
+    depends_on:
+      - rabbitmq
+      - db_keyboards
+      - redis_keyboards
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.api.keyboards
+    entrypoint: [ "dotnet", "api.v1.keyboards.dll" ]
+    ports:
+      - 7003:8080
+    volumes:
+      - ./api/logs:/logs
+      - ./files:/files
+      - ./configurations/dev:/configurations
+
+  api_email:
+    container_name: api_email
+    restart: always
+    depends_on:
+      - rabbitmq
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.api.email
+    entrypoint: [ "dotnet", "api.v1.email.dll" ]
+    ports:
+      - 7004:8080
+    volumes:
+      - ./configurations/dev:/configurations
+
+  api_stats:
+    container_name: api_stats
+    restart: always
+    depends_on:
+      - db_stats
+      - redis_stats
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.api.stats
+    entrypoint: [ "dotnet", "api.v1.stats.dll" ]
+    ports:
+      - 7005:8080
+    volumes:
+      - ./api/logs:/logs
+      - ./configurations/dev:/configurations
+
+  db_keyboards:
+    container_name: db_keyboards
+    image: postgres:16.0
+    restart: always
+    environment:
+      POSTGRES_DB: keyboards
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 7011:5432
+    volumes:
+      - ./postgres/dev/keyboards/data:/var/lib/postgresql/data
+      - ./postgres/dev/keyboards/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./postgres/dev/keyboards/init:/postgres/keyboards/init
+
+  db_users:
+    container_name: db_users
+    image: postgres:16.0
+    restart: always
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 7012:5432
+    volumes:
+      - ./postgres/dev/users/data:/var/lib/postgresql/data
+      - ./postgres/dev/users/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./postgres/dev/users/init:/postgres/users/init
+
+  db_stats:
+    container_name: db_stats
+    image: postgres:16.0
+    restart: always
+    environment:
+      POSTGRES_DB: stats
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 7013:5432
+    volumes:
+      - ./postgres/dev/stats/data:/var/lib/postgresql/data
+      - ./postgres/dev/stats/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./postgres/dev/stats/init:/postgres/stats/init
+
+  redis_keyboards:
+    container_name: redis_keyboards
+    image: redis:7.2.4
+    restart: always
+    environment:
+      - REDIS_PASSWORD=admin
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    ports:
+      - 7021:7021
+    command: redis-server --include /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/dev/keyboards/data:/data
+      - ./configurations/dev/redis.keyboards.conf:/usr/local/etc/redis/redis.conf
+
+  redis_stats:
+    container_name: redis_stats
+    image: redis:7.2.4
+    restart: always
+    environment:
+      - REDIS_PASSWORD=admin
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    ports:
+      - 7022:7022
+    command: redis-server --include /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/dev/stats/data:/data
+      - ./configurations/dev/redis.stats.conf:/usr/local/etc/redis/redis.conf
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.13.0-management
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - 7031:7031
+      - 7032:7032
+    volumes:
+      - ./rabbitmq/dev/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/dev/log/:/var/log.rabbitmq/
+      - ./configurations/dev/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
+
+  adminer:
+    container_name: adminer
+    image: adminer:4.8.1
+    restart: always
+    environment:
+      ADMINER_DESIGN: 'nette'
+    ports:
+      - 7041:8080

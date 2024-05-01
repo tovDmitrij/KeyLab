@@ -1,9 +1,8 @@
-﻿using api.v1.keyboards.DTOs;
-using api.v1.keyboards.DTOs.Keyboard;
+﻿using api.v1.keyboards.DTOs.Keyboard;
 
 using component.v1.exceptions;
 
-using db.v1.keyboards.DTOs.Keyboard;
+using db.v1.keyboards.DTOs;
 using db.v1.keyboards.Repositories.Box;
 using db.v1.keyboards.Repositories.Keyboard;
 using db.v1.keyboards.Repositories.Switch;
@@ -28,40 +27,43 @@ namespace api.v1.keyboards.Services.Keyboard
         private readonly IKeyboardRepository _keyboard = keyboard;
         private readonly IBoxRepository _box = box;
         private readonly ISwitchRepository _switch = @switch;
-
         private readonly IKeyboardRegexHelper _rgx = rgx;
         private readonly ITimeHelper _time = time;
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
-        public async Task AddKeyboard(PostKeyboardDTO body, Guid statsID)
-        {
-            ValidateKeyboardTitle(body.UserID, body.Title);
-            ValidateBoxType(body.BoxTypeID);
-            ValidateSwitchType(body.SwitchTypeID);
 
-            var names = UploadFile(body.File, body.Preview, body.UserID, body.Title!, _fileCfg.GetKeyboardFilePath);
+
+        public async Task AddKeyboard(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid boxTypeID, 
+            Guid switchTypeID, Guid statsID)
+        {
+            ValidateKeyboardTitle(userID, title);
+            ValidateBoxType(boxTypeID);
+            ValidateSwitchType(switchTypeID);
+
+            var fileName = UploadFile(file, preview, userID, _fileCfg.GetModelFilenameExtension, 
+                _fileCfg.GetPreviewFilenameExtension, _fileCfg.GetKeyboardFilePath);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var insertKeyboardBody = new InsertKeyboardDTO(body.UserID, body.SwitchTypeID, body.BoxTypeID, body.Title!, names.FileName, names.PreviewName, currentTime);
-            _keyboard.InsertKeyboardInfo(insertKeyboardBody);
+            _keyboard.InsertKeyboard(userID, switchTypeID, boxTypeID, title!, fileName, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
         }
 
-        public async Task UpdateKeyboard(PutKeyboardDTO body, Guid statsID)
+        public async Task UpdateKeyboard(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid keyboardID,
+            Guid boxTypeID, Guid switchTypeID, Guid statsID)
         {
-            ValidateKeyboardID(body.KeyboardID);
-            ValidateKeyboardTitle(body.UserID, body.Title);
-            ValidateBoxType(body.BoxTypeID);
-            ValidateSwitchType(body.SwitchTypeID);
-            ValidateKeyboardOwner(body.KeyboardID, body.UserID);
+            ValidateKeyboardID(keyboardID);
+            ValidateKeyboardTitle(userID, title);
+            ValidateBoxType(boxTypeID);
+            ValidateSwitchType(switchTypeID);
+            ValidateKeyboardOwner(keyboardID, userID);
 
-            var names = UpdateFile(body.File, body.Preview, body.UserID, body.KeyboardID, body.Title!, 
-                                         _keyboard.SelectKeyboardFileName!, _keyboard.SelectKeyboardPreviewName!, _fileCfg.GetKeyboardFilePath);
+           UpdateFile(file, preview, userID, keyboardID!, _keyboard.SelectKeyboardFileName!, 
+               _fileCfg.GetModelFilenameExtension, _fileCfg.GetPreviewFilenameExtension, _fileCfg.GetKeyboardFilePath);
 
-            var updateKeyboardBody = new UpdateKeyboardDTO(body.KeyboardID, body.SwitchTypeID, body.BoxTypeID, body.Title!, names.FileName, names.PreviewName);
-            _keyboard.UpdateKeyboardInfo(updateKeyboardBody);
+            var currentTime = _time.GetCurrentUNIXTime();
+            _keyboard.UpdateKeyboard(keyboardID, switchTypeID, boxTypeID, title!, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
         }
@@ -72,17 +74,20 @@ namespace api.v1.keyboards.Services.Keyboard
             ValidateKeyboardID(body.KeyboardID);
             ValidateKeyboardOwner(body.KeyboardID, userID);
 
-            var modelFileName = _keyboard.SelectKeyboardFileName(body.KeyboardID)!;
-            var modelFilePath = _fileCfg.GetKeyboardFilePath(userID, modelFileName);
+            var fileName = _keyboard.SelectKeyboardFileName(body.KeyboardID)!;
+            var fileExtension = _fileCfg.GetModelFilenameExtension();
+            var filePath = _fileCfg.GetKeyboardFilePath(userID, fileName, fileExtension);
 
-            var imgFileName = _keyboard.SelectKeyboardPreviewName(body.KeyboardID)!;
-            var imgFilePath = _fileCfg.GetKeyboardFilePath(userID, imgFileName);
+            var previewExtension = _fileCfg.GetPreviewFilenameExtension();
+            var previewPath = _fileCfg.GetKeyboardFilePath(userID, fileName, previewExtension);
 
-            _file.DeleteFile(modelFilePath);
-            _file.DeleteFile(imgFilePath);
-            _cache.DeleteValue(modelFilePath);
-            _cache.DeleteValue(imgFilePath);
-            _keyboard.DeleteKeyboardInfo(body.KeyboardID);
+            _file.DeleteFile(filePath);
+            _file.DeleteFile(previewPath);
+
+            _cache.DeleteValue(filePath);
+            _cache.DeleteValue(previewPath);
+
+            _keyboard.DeleteKeyboard(body.KeyboardID);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
         }
@@ -94,7 +99,8 @@ namespace api.v1.keyboards.Services.Keyboard
             ValidateKeyboardOwner(body.KeyboardID, userID);
             ValidateKeyboardTitle(userID, body.Title);
 
-            _keyboard.UpdateKeyboardTitle(body.Title, body.KeyboardID);
+            var currentTime = _time.GetCurrentUNIXTime();
+            _keyboard.UpdateKeyboardTitle(body.KeyboardID, body.Title, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeyboardActivityTag);
         }
@@ -105,9 +111,10 @@ namespace api.v1.keyboards.Services.Keyboard
         {
             ValidateKeyboardID(keyboardID);
 
-            var fileName = _keyboard.SelectKeyboardFileName(keyboardID);
             var userID = _keyboard.SelectKeyboardOwnerID(keyboardID);
-            var filePath = _fileCfg.GetKeyboardFilePath((Guid)userID!, fileName!);
+            var fileName = _keyboard.SelectKeyboardFileName(keyboardID);
+            var fileExtension = _fileCfg.GetModelFilenameExtension();
+            var filePath = _fileCfg.GetKeyboardFilePath((Guid)userID!, fileName!, fileExtension);
 
             var file = await ReadFile(filePath);
 
@@ -119,9 +126,10 @@ namespace api.v1.keyboards.Services.Keyboard
         {
             ValidateKeyboardID(keyboardID);
 
-            var previewName = _keyboard.SelectKeyboardPreviewName(keyboardID);
             var userID = _keyboard.SelectKeyboardOwnerID(keyboardID);
-            var filePath = _fileCfg.GetKeyboardFilePath((Guid)userID!, previewName!);
+            var previewName = _keyboard.SelectKeyboardFileName(keyboardID);
+            var previewExtension = _fileCfg.GetPreviewFilenameExtension();
+            var filePath = _fileCfg.GetKeyboardFilePath((Guid)userID!, previewName!, previewExtension);
 
             var preview = await ReadFile(filePath);
             return Convert.ToBase64String(preview);
@@ -129,20 +137,20 @@ namespace api.v1.keyboards.Services.Keyboard
 
 
 
-        public async Task<List<SelectKeyboardDTO>> GetDefaultKeyboardsList(PaginationDTO body, Guid statsID)
+        public async Task<List<SelectKeyboardDTO>> GetDefaultKeyboardsList(int page, int pageSize, Guid statsID)
         {
             var userID = _fileCfg.GetDefaultModelsUserID();
-            var keyboards = GetPaginationListOfObjects(body.Page, body.PageSize, userID, _keyboard.SelectUserKeyboards);
+            var keyboards = GetPaginationListOfObjects(page, pageSize, userID, _keyboard.SelectUserKeyboards);
 
             await PublishActivity(statsID, _activityCfg.GetSeeKeyboardActivityTag);
             return keyboards;
         }
 
-        public async Task<List<SelectKeyboardDTO>> GetUserKeyboardsList(PaginationDTO body, Guid userID, Guid statsID)
+        public async Task<List<SelectKeyboardDTO>> GetUserKeyboardsList(int page, int pageSize, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
 
-            var keyboards = GetPaginationListOfObjects(body.Page, body.PageSize, userID, _keyboard.SelectUserKeyboards);
+            var keyboards = GetPaginationListOfObjects(page, pageSize, userID, _keyboard.SelectUserKeyboards);
 
             await PublishActivity(statsID, _activityCfg.GetSeeKeyboardActivityTag);
             return keyboards;

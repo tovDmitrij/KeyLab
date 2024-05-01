@@ -1,7 +1,6 @@
 ﻿using api.v1.keyboards.DTOs.Keyboard;
-using api.v1.keyboards.DTOs;
 
-using db.v1.keyboards.DTOs.Keyboard;
+using db.v1.keyboards.DTOs;
 
 using component.v1.exceptions;
 
@@ -10,9 +9,11 @@ namespace api.v1.keyboards.Services.Keyboard
     public interface IKeyboardService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task AddKeyboard(PostKeyboardDTO body, Guid statsID);
+        public Task AddKeyboard(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid boxTypeID, Guid switchTypeID, 
+            Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task UpdateKeyboard(PutKeyboardDTO body, Guid statsID);
+        public Task UpdateKeyboard(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid keyboardID, 
+            Guid boxTypeID, Guid switchTypeID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
         public Task DeleteKeyboard(DeleteKeyboardDTO body, Guid userID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
@@ -28,9 +29,9 @@ namespace api.v1.keyboards.Services.Keyboard
 
 
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectKeyboardDTO>> GetDefaultKeyboardsList(PaginationDTO body, Guid statsID);
+        public Task<List<SelectKeyboardDTO>> GetDefaultKeyboardsList(int page, int pageSize, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectKeyboardDTO>> GetUserKeyboardsList(PaginationDTO body, Guid userID, Guid statsID);
+        public Task<List<SelectKeyboardDTO>> GetUserKeyboardsList(int page, int pageSize, Guid userID, Guid statsID);
 
 
 

@@ -2,10 +2,9 @@
 
 using component.v1.exceptions;
 
-using db.v1.keyboards.DTOs.Box;
+using db.v1.keyboards.DTOs;
 using db.v1.keyboards.Repositories.Box;
 using db.v1.users.Repositories.User;
-using db.v1.keyboards.DTOs.BoxType;
 
 using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
@@ -23,37 +22,38 @@ namespace api.v1.keyboards.Services.Box
         BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), IBoxService
     {
         private readonly IBoxRepository _box = box;
-
         private readonly IBoxRegexHelper _rgx = rgx;
         private readonly ITimeHelper _time = time;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
 
-        public async Task AddBox(PostBoxDTO body, Guid statsID)
-        {
-            ValidateUserID(body.UserID);
-            ValidateBoxType(body.TypeID);
-            ValidateBoxTitle(body.UserID, body.Title);
 
-            var names = UploadFile(body.File, body.Preview, body.UserID, body.Title!, _fileCfg.GetBoxFilePath);
+
+        public async Task AddBox(IFormFile? file, IFormFile? preview, string? title, Guid typeID, Guid userID, Guid statsID)
+        {
+            ValidateUserID(userID);
+            ValidateBoxType(typeID);
+            ValidateBoxTitle(userID, title);
+
+            var fileName = UploadFile(file, preview, userID,  _fileCfg.GetModelFilenameExtension, 
+                _fileCfg.GetPreviewFilenameExtension, _fileCfg.GetBoxFilePath);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var insertBoxBody = new InsertBoxDTO(body.UserID, body.TypeID, body.Title!, names.FileName, names.PreviewName, currentTime);
-            _box.InsertBoxInfo(insertBoxBody);
+            _box.InsertBox(userID, typeID, title!, fileName, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
         }
 
-        public async Task UpdateBox(PutBoxDTO body, Guid statsID)
+        public async Task UpdateBox(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid boxID, Guid statsID)
         {
-            ValidateBoxTitle(body.UserID, body.Title);
-            ValidateBoxOwner(body.BoxID, body.UserID);
+            ValidateBoxTitle(userID, title);
+            ValidateBoxOwner(boxID, userID);
 
-            var names = UpdateFile(body.File, body.Preview, body.UserID, body.BoxID, body.Title!, 
-                _box.SelectBoxFileName!, _box.SelectBoxPreviewName!, _fileCfg.GetBoxFilePath);
+            UpdateFile(file, preview, userID, boxID, _box.SelectBoxFileName!,
+                _fileCfg.GetModelFilenameExtension, _fileCfg.GetPreviewFilenameExtension, _fileCfg.GetBoxFilePath);
 
-            var updateBoxBody = new UpdateBoxDTO(body.BoxID, body.Title!, names.FileName, names.PreviewName);
-            _box.UpdateBoxInfo(updateBoxBody);
+            var currentTime = _time.GetCurrentUNIXTime();
+            _box.UpdateBoxTitle(boxID, title!, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
         }
@@ -65,7 +65,8 @@ namespace api.v1.keyboards.Services.Box
             ValidateBoxTitle(userID, body.Title);
             ValidateBoxOwner(body.BoxID, userID);
 
-            _box.UpdateBoxTitle(body.Title, body.BoxID);
+            var currentTime = _time.GetCurrentUNIXTime();
+            _box.UpdateBoxTitle(body.BoxID, body.Title, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
         }
@@ -74,17 +75,20 @@ namespace api.v1.keyboards.Services.Box
         {
             ValidateBoxOwner(body.BoxID, userID);
 
-            var modelFileName = _box.SelectBoxFileName(body.BoxID)!;
-            var modelFilePath = _fileCfg.GetBoxFilePath(userID, modelFileName);
+            var fileName = _box.SelectBoxFileName(body.BoxID)!;
+            var fileExtension = _fileCfg.GetModelFilenameExtension();
+            var filePath = _fileCfg.GetBoxFilePath(userID, fileName, fileExtension);
 
-            var imgFileName = _box.SelectBoxPreviewName(body.BoxID)!;
-            var imgFilePath = _fileCfg.GetBoxFilePath(userID, imgFileName);
+            var previewExtension = _fileCfg.GetPreviewFilenameExtension();
+            var previewPath = _fileCfg.GetBoxFilePath(userID, fileName, previewExtension);
 
-            _file.DeleteFile(modelFilePath);
-            _file.DeleteFile(imgFilePath);
-            _cache.DeleteValue(modelFilePath);
-            _cache.DeleteValue(imgFilePath);
-            _box.DeleteBoxInfo(body.BoxID);
+            _file.DeleteFile(filePath);
+            _file.DeleteFile(previewPath);
+
+            _cache.DeleteValue(filePath);
+            _cache.DeleteValue(previewPath);
+
+            _box.DeleteBox(body.BoxID);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
         }
@@ -93,12 +97,7 @@ namespace api.v1.keyboards.Services.Box
 
         public async Task<byte[]> GetBoxFileBytes(Guid boxID, Guid statsID)
         {
-            ValidateBoxID(boxID);
-            var fileName = _box.SelectBoxFileName(boxID);
-            var userID = _box.SelectBoxOwnerID(boxID);
-            var filePath = _fileCfg.GetBoxFilePath((Guid)userID!, fileName!);
-
-            var file = await ReadFile(filePath);
+            var file = await GetFile(boxID, _fileCfg.GetModelFilenameExtension);
 
             await PublishActivity(statsID, _activityCfg.GetSeeBoxActivityTag);
             return file;
@@ -106,33 +105,41 @@ namespace api.v1.keyboards.Services.Box
 
         public async Task<string> GetBoxBase64Preview(Guid boxID)
         {
-            ValidateBoxID(boxID);
-            var previewName = _box.SelectBoxPreviewName(boxID);
-            var userID = _box.SelectBoxOwnerID(boxID);
-            var previewPath = _fileCfg.GetBoxFilePath((Guid)userID!, previewName!);
-
-            var preview = await ReadFile(previewPath);
+            var preview = await GetFile(boxID, _fileCfg.GetPreviewFilenameExtension);
             return Convert.ToBase64String(preview);
+        }
+
+        private async Task<byte[]> GetFile(Guid boxID, Func<string> cfgFuncFileExtension)
+        {
+            ValidateBoxID(boxID);
+
+            var userID = _box.SelectBoxOwnerID(boxID);
+            var fileName = _box.SelectBoxFileName(boxID);
+            var fileExtension = cfgFuncFileExtension();
+            var filePath = _fileCfg.GetBoxFilePath((Guid)userID!, fileName!, fileExtension);
+
+            var file = await ReadFile(filePath);
+            return file;
         }
 
 
 
-        public async Task<List<SelectBoxDTO>> GetDefaultBoxesList(BoxPaginationDTO body, Guid statsID)
+        public async Task<List<SelectBoxDTO>> GetDefaultBoxesList(int page, int pageSize, Guid boxTypeID, Guid statsID)
         {
-            ValidateBoxType(body.TypeID);
+            ValidateBoxType(boxTypeID);
             var userID = _fileCfg.GetDefaultModelsUserID();
 
-            var boxes = GetPaginationListOfObjects(body.Page, body.PageSize, body.TypeID, userID, _box.SelectUserBoxes);
+            var boxes = GetPaginationListOfObjects(page, pageSize, boxTypeID, userID, _box.SelectUserBoxes);
 
             await PublishActivity(statsID, _activityCfg.GetSeeBoxActivityTag);
             return boxes;
         }
-        public async Task<List<SelectBoxDTO>> GetUserBoxesList(BoxPaginationDTO body, Guid userID, Guid statsID)
+        public async Task<List<SelectBoxDTO>> GetUserBoxesList(int page, int pageSize, Guid boxTypeID, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
-            ValidateBoxType(body.TypeID);
+            ValidateBoxType(boxTypeID);
 
-            var boxes = GetPaginationListOfObjects(body.Page, body.PageSize, body.TypeID, userID, _box.SelectUserBoxes);
+            var boxes = GetPaginationListOfObjects(page, pageSize, boxTypeID, userID, _box.SelectUserBoxes);
 
             await PublishActivity(statsID, _activityCfg.GetSeeBoxActivityTag);
             return boxes;

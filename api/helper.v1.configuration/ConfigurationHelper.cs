@@ -82,39 +82,62 @@ namespace helper.v1.configuration
             return Guid.Parse(str);
         }
 
-        public string GetSwitchFilePath(string fileName)
+        public string GetSwitchFilePath(string fileName, string fileExtension)
         {
             var key = "File:SwitchFilePath";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, fileName);
+            return string.Format(str, fileName, fileExtension);
         }
 
-        public string GetSwitchSoundFilePath(string fileName)
+        public string GetSwitchSoundFilePath(string fileName, string fileExtension)
         {
             var key = "File:SwitchSoundPath";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, fileName);
+            return string.Format(str, fileName, fileExtension);
         }
 
-        public string GetKeyboardFilePath(Guid userID, string fileName)
+        public string GetKeyboardFilePath(Guid userID, string fileName, string fileExtension)
         {
             var key = "File:KeyboardFilePath";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, userID, fileName);
+            return string.Format(str, userID, fileName, fileExtension);
         }
 
-        public string GetBoxFilePath(Guid userID, string fileName)
+        public string GetBoxFilePath(Guid userID, string fileName, string fileExtension)
         {
             var key = "File:BoxFilePath";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, userID, fileName);
+            return string.Format(str, userID, fileName, fileExtension);
         }
 
-        public string GetKeycapFilePath(Guid userID, Guid kitID, string fileName)
+        public string GetKeycapFilePath(Guid userID, Guid kitID, string fileName, string fileExtension)
         {
             var key = "File:KeycapFilePath";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, userID, kitID, fileName);
+            return string.Format(str, userID, kitID, fileName, fileExtension);
+        }
+
+
+
+        public string GetModelFilenameExtension()
+        {
+            var key = "File:ModelFilenameExtension";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetPreviewFilenameExtension()
+        {
+            var key = "File:PreviewFilenameExtension";
+            ValidateConfigurationKey(key, out var str);
+            return str;
+        }
+
+        public string GetSoundFilenameExtension()
+        {
+            var key = "File:SoundFilenameExtension";
+            ValidateConfigurationKey(key, out var str);
+            return str;
         }
 
 

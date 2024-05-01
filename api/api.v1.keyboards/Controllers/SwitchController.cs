@@ -2,8 +2,6 @@
 
 using component.v1.apicontroller;
 
-using helper.v1.localization.Helper;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,11 +16,13 @@ namespace api.v1.keyboards.Controllers
     {
         private readonly ISwitchService _switch = @switch;
 
+
+
         [HttpGet("default")]
         public async Task<IActionResult> GetSwitchesList([Required] int page, [Required] int pageSize)
         {
             var statsID = GetStatsID();
-            var switches = await _switch.GetSwitchesList(new(page, pageSize), statsID);
+            var switches = await _switch.GetSwitchesList(page, pageSize, statsID);
             return Ok(switches);
         }
 

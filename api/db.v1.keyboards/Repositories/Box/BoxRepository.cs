@@ -1,6 +1,5 @@
 ﻿using db.v1.keyboards.Contexts.Interfaces;
-using db.v1.keyboards.DTOs.Box;
-using db.v1.keyboards.DTOs.BoxType;
+using db.v1.keyboards.DTOs;
 using db.v1.keyboards.Entities;
 
 namespace db.v1.keyboards.Repositories.Box
@@ -9,66 +8,45 @@ namespace db.v1.keyboards.Repositories.Box
     {
         private readonly IBoxContext _db = db;
 
-        public Guid InsertBoxInfo(InsertBoxDTO body)
+        public Guid InsertBox(Guid ownerID, Guid boxTypeID, string title, string fileName, double creationDate)
         {
-            var box = new BoxEntity(body.OwnerID, body.BoxTypeID, body.Title, body.FileName, body.PreviewName, body.CreationDate);
+            var box = new BoxEntity(ownerID, boxTypeID, title, fileName, creationDate);
+
             _db.Boxes.Add(box);
             SaveChanges();
 
             return box.ID;
         }
 
-        public void UpdateBoxInfo(UpdateBoxDTO body)
-        {
-            var box = _db.Boxes.First(box => box.ID == body.BoxID);
-            box.Title = body.Title;
-            box.FileName = body.FileName;
-            box.PreviewName = body.PreviewName;
-
-            _db.Boxes.Update(box);
-            SaveChanges();
-        }
-
-        public void UpdateBoxTitle(string title, Guid boxID)
+        public void UpdateBoxTitle(Guid boxID, string title, double updateDate)
         {
             var box = _db.Boxes.First(box => box.ID == boxID);
             box.Title = title;
+            box.CreationDate = updateDate;
 
             _db.Boxes.Update(box);
             SaveChanges();
         }
 
-        public void DeleteBoxInfo(Guid boxID)
+        public void DeleteBox(Guid boxID)
         {
             var box = _db.Boxes.First(box => box.ID == boxID);
+
             _db.Boxes.Remove(box);
             SaveChanges();
         }
 
 
 
-        public bool IsBoxExist(Guid boxID) => _db.Boxes
-            .Any(box => box.ID == boxID);
-
-        public bool IsBoxOwner(Guid boxID, Guid userID) => _db.Boxes
-            .Any(box => box.ID == boxID && box.OwnerID == userID);
-
-        public bool IsBoxTitleBusy(Guid userID, string title) => _db.Boxes
-            .Any(box => box.OwnerID == userID && box.Title == title);
-
-        public bool IsBoxTypeExist(Guid boxTypeID) => _db.BoxTypes
-            .Any(box => box.ID == boxTypeID);
+        public bool IsBoxExist(Guid boxID) => _db.Boxes.Any(x => x.ID == boxID);
+        public bool IsBoxOwner(Guid boxID, Guid userID) => _db.Boxes.Any(x => x.ID == boxID && x.OwnerID == userID);
+        public bool IsBoxTitleBusy(Guid userID, string title) => _db.Boxes.Any(x => x.OwnerID == userID && x.Title == title);
+        public bool IsBoxTypeExist(Guid boxTypeID) => _db.BoxTypes.Any(x => x.ID == boxTypeID);
 
 
 
-        public string? SelectBoxFileName(Guid boxID) => _db.Boxes
-            .FirstOrDefault(box => box.ID == boxID)?.FileName;
-
-        public string? SelectBoxPreviewName(Guid boxID) => _db.Boxes
-            .FirstOrDefault(box => box.ID == boxID)?.PreviewName;
-
-        public Guid? SelectBoxOwnerID(Guid boxID) => _db.Boxes
-            .FirstOrDefault(box => box.ID == boxID)?.OwnerID;
+        public string? SelectBoxFileName(Guid boxID) => _db.Boxes.FirstOrDefault(x => x.ID == boxID)?.FileName;
+        public Guid? SelectBoxOwnerID(Guid boxID) => _db.Boxes.FirstOrDefault(x => x.ID == boxID)?.OwnerID;
 
 
 
@@ -84,11 +62,11 @@ namespace db.v1.keyboards.Repositories.Box
             return boxes.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public int SelectCountOfBoxes(Guid userID) => _db.Boxes
-            .Count(box => box.OwnerID == userID);
+        public int SelectCountOfBoxes(Guid userID) => _db.Boxes.Count(x => x.OwnerID == userID);
 
-        public List<SelectBoxTypeDTO> SelectBoxTypes() => _db.BoxTypes
-            .Select(box => new SelectBoxTypeDTO(box.ID, box.Title)).ToList();
+
+
+        public List<SelectBoxTypeDTO> SelectBoxTypes() => _db.BoxTypes.Select(x => new SelectBoxTypeDTO(x.ID, x.Title)).ToList();
         
 
 

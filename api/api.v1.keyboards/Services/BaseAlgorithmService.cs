@@ -23,19 +23,17 @@ namespace api.v1.keyboards.Services
         protected readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
 
 
-        protected InitFileDTO UploadFile(
-            IFormFile? file,
-            IFormFile? preview,
-            Guid userID,
-            string title,
-            Func<Guid, string, string> filePathFunction)
+
+        protected string UploadFile(IFormFile? file, IFormFile? preview, Guid userID, Func<string> cfgFuncFileExtension,
+            Func<string> cfgFuncPreviewExtension, Func<Guid, string, string, string> cfgFuncFilePath)
         {
             ValidateUserID(userID);
             ValidateFile(file);
             ValidatePreview(preview);
 
-            var fileName = $"{title}.glb";
-            var filePath = filePathFunction(userID, fileName);
+            var fileName = Guid.NewGuid().ToString();
+            var fileExtension = cfgFuncFileExtension();
+            var filePath = cfgFuncFilePath(userID, fileName, fileExtension);
             using (var ms = new MemoryStream())
             {
                 file!.CopyTo(ms);
@@ -43,8 +41,8 @@ namespace api.v1.keyboards.Services
                 _file.UploadFileAsync(modelBytes, filePath);
             }
 
-            var previewName = $"{title}.jpeg";
-            var previewPath = filePathFunction(userID, previewName);
+            var previewExtension = cfgFuncPreviewExtension();
+            var previewPath = cfgFuncFilePath(userID, fileName, previewExtension);
             using (var ms = new MemoryStream())
             {
                 preview!.CopyTo(ms);
@@ -52,87 +50,66 @@ namespace api.v1.keyboards.Services
                 _file.UploadFileAsync(imgBytes, previewPath);
             }
 
-            return new(fileName, previewName);
+            return fileName;
         }
 
-        protected InitFileDTO UploadFile(
-            IFormFile? file,
-            IFormFile? preview,
-            Guid userID,
-            Guid objectID,
-            string title,
-            Func<Guid, Guid, string, string> filePathFunction)
+        protected void UpdateFile(IFormFile? file, IFormFile? preview, Guid userID, Guid objectID,
+            Func<Guid, string> reposFuncFileName, Func<string> cfgFuncFileExtension, Func<string> cfgFuncPreviewExtension,
+            Func<Guid, string, string, string> cfgFuncFilePath)
         {
             ValidateUserID(userID);
             ValidateFile(file);
             ValidatePreview(preview);
 
-            var fileName = $"{title}.glb";
-            var filePath = filePathFunction(userID, objectID, fileName);
+            var fileName = reposFuncFileName(objectID);
+            var fileExtension = cfgFuncFileExtension();
+            var filePath = cfgFuncFilePath(userID, fileName, fileExtension);
             using (var ms = new MemoryStream())
             {
                 file!.CopyTo(ms);
-                var modelBytes = ms.ToArray();
-                _file.UploadFileAsync(modelBytes, filePath);
+                var bytes = ms.ToArray();
+                _file.DeleteFile(filePath);
+                _file.UploadFileAsync(bytes, filePath);
             }
 
-            var previewName = $"{title}.jpeg";
-            var previewPath = filePathFunction(userID, objectID, previewName);
-            using (var ms = new MemoryStream())
-            {
-                preview!.CopyTo(ms);
-                var imgBytes = ms.ToArray();
-                _file.UploadFileAsync(imgBytes, previewPath);
-            }
-
-            return new(fileName, previewName);
-        }
-
-        protected InitFileDTO UpdateFile(
-            IFormFile? file,
-            IFormFile? preview,
-            Guid userID,
-            Guid objectID,
-            string title,
-            Func<Guid, string> fileNameFunction,
-            Func<Guid, string> previewNameFunction,
-            Func<Guid, string, string> filePathFunction)
-        {
-            ValidateUserID(userID);
-            ValidateFile(file);
-            ValidatePreview(preview);
-
-            var oldFileName = fileNameFunction(objectID);
-            var oldFilePath = filePathFunction(userID, oldFileName);
-            var newFileName = $"{title}.glb";
-            var newFilePath = filePathFunction(userID, newFileName);
-            using (var ms = new MemoryStream())
-            {
-                file!.CopyTo(ms);
-                var modelBytes = ms.ToArray();
-                _file.DeleteFile(oldFilePath);
-                _file.UploadFileAsync(modelBytes, newFilePath);
-            }
-
-            var oldPreviewFileName = previewNameFunction(objectID)!;
-            var oldPreviewFilePath = filePathFunction(userID, oldPreviewFileName);
-            var newPreviewName = $"{title}.jpeg";
-            var newPreviewPath = filePathFunction(userID, newPreviewName);
+            var previewExtension = cfgFuncPreviewExtension();
+            var previewPath = cfgFuncFilePath(userID, fileName, previewExtension);
             using (var memoryStream = new MemoryStream())
             {
                 preview!.CopyTo(memoryStream);
                 var imgBytes = memoryStream.ToArray();
-                _file.DeleteFile(oldPreviewFilePath);
-                _file.UploadFileAsync(imgBytes, newPreviewPath);
+                _file.DeleteFile(previewPath);
+                _file.UploadFileAsync(imgBytes, previewPath);
             }
 
-            var cacheKey = _cacheCfg.GetFileCacheKey(oldFilePath);
-            _cache.DeleteValue(cacheKey);
+            var fileCacheKey = _cacheCfg.GetFileCacheKey(filePath);
+            _cache.DeleteValue(fileCacheKey);
 
-            return new(newFileName, newPreviewName);
+            var previewCacheKey = _cacheCfg.GetFileCacheKey(previewPath);
+            _cache.DeleteValue(previewCacheKey);
         }
 
+        protected void UpdateFile(IFormFile? file, Guid userID, Guid childObjectID, Guid parentObjectID,
+            Func<Guid, string> reposFuncFileName, Func<string> cfgFuncFileExtension,
+            Func<Guid, Guid, string, string, string> cfgFuncFilePath)
+        {
+            ValidateUserID(userID);
+            ValidateFile(file);
 
+            var fileName = reposFuncFileName(childObjectID);
+            var fileExtension = cfgFuncFileExtension();
+            var filePath = cfgFuncFilePath(userID, parentObjectID, fileName!, fileExtension);
+            using (var ms = new MemoryStream())
+            {
+                file!.CopyTo(ms);
+                var bytes = ms.ToArray();
+                _file.DeleteFile(filePath);
+                _file.UploadFileAsync(bytes, filePath);
+            }
+
+            var cacheKey = _cacheCfg.GetFileCacheKey(filePath);
+            _cache.DeleteValue(cacheKey);
+        }
 
         protected async Task<byte[]> ReadFile(string filePath)
         {
@@ -150,90 +127,51 @@ namespace api.v1.keyboards.Services
         }
 
 
-        protected List<Object> GetPaginationListOfObjects<Object>(
-            int page,
-            int pageSize,
-            Func<int, int, List<Object>> repositoryFunction)
+
+        protected List<Object> GetPaginationListOfObjects<Object>(int page, int pageSize, Func<int, int, List<Object>> reposFunc)
         {
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize);
-            /*
-            var cacheKey = _cacheCfg.GetPaginationListCacheKey(page, pageSize, repositoryFunction.GetHashCode());
-            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
-            {
-                objects = repositoryFunction(page, pageSize);
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(cacheKey, objects, minutes);
-            }
-            */
+            var objects = reposFunc(page, pageSize);
             return objects!;
         }
 
-        protected List<Object> GetPaginationListOfObjects<Object>(
-            int page,
-            int pageSize,
-            Guid param1,
-            Func<int, int, Guid, List<Object>> repositoryFunction)
+        protected List<Object> GetPaginationListOfObjects<Object>(int page, int pageSize, Guid param1, 
+            Func<int, int, Guid, List<Object>> reposFunc)
         {
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, param1);
-            /*
-            var cacheKey = _cacheCfg.GetPaginationListCacheKey(page, pageSize, repositoryFunction.GetHashCode(), param1);
-            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
-            {
-                objects = repositoryFunction(page, pageSize, param1);
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(cacheKey, objects, minutes);
-            }
-            */
+            var objects = reposFunc(page, pageSize, param1);
             return objects!;
         }
 
-        protected List<Object> GetPaginationListOfObjects<Object>(
-            int page,
-            int pageSize,
-            Guid param1,
-            Guid param2,
-            Func<int, int, Guid, Guid, List<Object>> repositoryFunction)
+        protected List<Object> GetPaginationListOfObjects<Object>(int page, int pageSize, Guid param1, Guid param2,
+            Func<int, int, Guid, Guid, List<Object>> reposFunc)
         {
             ValidatePageSize(pageSize);
             ValidatePage(page);
 
-            var objects = repositoryFunction(page, pageSize, param1, param2);
-            /*
-            var cacheKey = _cacheCfg.GetPaginationListCacheKey(page, pageSize, repositoryFunction.GetHashCode(), param1, param2);
-            if (!_cache.TryGetValue(cacheKey, out List<Object>? objects))
-            {
-                objects = repositoryFunction(page, pageSize, param1, param2);
-
-                var minutes = _cacheCfg.GetCacheExpirationMinutes();
-                _cache.SetValue(cacheKey, objects, minutes);
-            }
-             */
+            var objects = reposFunc(page, pageSize, param1, param2);
             return objects!;
         }
 
 
 
-        protected int GetPaginationTotalPages(int pageSize, Func<int> repositoryFunction)
+        protected int GetPaginationTotalPages(int pageSize, Func<int> reposFunc)
         {
             ValidatePageSize(pageSize);
 
-            var count = repositoryFunction();
+            var count = reposFunc();
             return GetTotalPages(count, pageSize);
         }
 
-        protected int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> repositoryFunction)
+        protected int GetPaginationTotalPages(int pageSize, Guid param, Func<Guid, int> reposFunc)
         {
             ValidatePageSize(pageSize);
 
-            var count = repositoryFunction(param);
+            var count = reposFunc(param);
             return GetTotalPages(count, pageSize);
         }
 

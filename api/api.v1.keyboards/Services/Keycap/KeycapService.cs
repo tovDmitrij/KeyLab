@@ -1,9 +1,8 @@
-﻿using api.v1.keyboards.DTOs;
-using api.v1.keyboards.DTOs.Keycap;
+﻿using api.v1.keyboards.DTOs.Keycap;
 
 using component.v1.exceptions;
 
-using db.v1.keyboards.DTOs.Keycap;
+using db.v1.keyboards.DTOs;
 using db.v1.keyboards.Repositories.Keycap;
 using db.v1.keyboards.Repositories.Kit;
 using db.v1.users.Repositories.User;
@@ -24,46 +23,23 @@ namespace api.v1.keyboards.Services.Keycap
     {
         private readonly IKitRepository _kit = kit;
         private readonly IKeycapRepository _keycap = keycap;
-
         private readonly ITimeHelper _time = time;
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
 
-        public async Task AddKeycap(PostKeycapDTO body, Guid statsID)
-        {
-            ValidateUserID(body.UserID);
-            ValidateKitID(body.KitID);
 
-            var names = UploadFile(body.File, body.Preview, body.UserID, body.KitID, body.Title, _fileCfg.GetKeycapFilePath);
 
-            var currentTime = _time.GetCurrentUNIXTime();
-            var insertKeycapBody = new InsertKeycapDTO(body.KitID, body.Title, names.FileName, names.PreviewName, currentTime);
-            _keycap.InsertKeycap(insertKeycapBody);
-
-            await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
-        }
-
-        public async Task UpdateKeycap(PutKeycapDTO body, Guid statsID)
-        {
-            ValidateUserID(body.UserID);
-            ValidateKeycapID(body.KeycapID);
-            var kitID = _keycap.SelectKitIDByKeycapID(body.KeycapID);
-
-            var names = UploadFile(body.File, body.Preview, body.UserID, (Guid)kitID!, body.Title, _fileCfg.GetKeycapFilePath);
-
-            var currentTime = _time.GetCurrentUNIXTime();
-            var updateKeycapBody = new UpdateKeycapDTO(body.KeycapID, body.Title, names.FileName, names.PreviewName);
-            _keycap.UpdateKeycap(updateKeycapBody);
-
-            await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
-        }
-
-        public async Task PatchKeycapTitle(PatchKeycapTitleDTO body, Guid userID, Guid statsID)
+        public async Task UpdateKeycap(IFormFile? file, Guid keycapID, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
-            ValidateKeycapID(userID);
+            ValidateKeycapID(keycapID);
+            var kitID = _keycap.SelectKitIDByKeycapID(keycapID) ?? throw new BadRequestException(_localization.KitIsNotExist());
 
-            _keycap.UpdateKeycapTitle(body.Title, body.KeycapID);
+            UpdateFile(file, userID, keycapID, kitID, _keycap.SelectKeycapFileName!, _fileCfg.GetModelFilenameExtension, 
+                _fileCfg.GetKeycapFilePath);
+
+            var currentTime = _time.GetCurrentUNIXTime();
+            _keycap.UpdateKeycap(keycapID, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
         }
@@ -72,11 +48,14 @@ namespace api.v1.keyboards.Services.Keycap
 
         public async Task<byte[]> GetKeycapFileBytes(Guid keycapID, Guid statsID)
         {
+            ValidateKeycapID(keycapID);
+
             var kitID = _keycap.SelectKitIDByKeycapID(keycapID) ?? throw new BadRequestException(_localization.KitIsNotExist());
 
-            var fileName = _keycap.SelectKeycapFileName(keycapID) ?? throw new BadRequestException(_localization.FileIsNotExist());
             var userID = _kit.SelectKitOwnerID(kitID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var filePath = _fileCfg.GetKeycapFilePath(userID, kitID, fileName);
+            var fileName = _keycap.SelectKeycapFileName(keycapID) ?? throw new BadRequestException(_localization.FileIsNotExist());
+            var fileExtension = _fileCfg.GetModelFilenameExtension();
+            var filePath = _fileCfg.GetKeycapFilePath(userID, kitID, fileName, fileExtension);
 
             var file = await ReadFile(filePath);
 
@@ -84,23 +63,13 @@ namespace api.v1.keyboards.Services.Keycap
             return file;
         }
 
-        public async Task<string> GetKeycapBase64Preview(Guid keycapID)
-        {
-            var kitID = _keycap.SelectKitIDByKeycapID(keycapID) ?? throw new BadRequestException(_localization.KitIsNotExist());
 
-            var fileName = _keycap.SelectKeycapPreviewName(kitID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var userID = _kit.SelectKitOwnerID(kitID) ?? throw new BadRequestException(_localization.FileIsNotExist());
-            var filePath = _fileCfg.GetKeycapFilePath(userID, kitID, fileName);
 
-            var preview = await ReadFile(filePath);
-            return Convert.ToBase64String(preview);
-        }
-
-        public async Task<List<SelectKeycapDTO>> GetKeycaps(PaginationDTO body, Guid kitID, Guid statsID)
+        public async Task<List<SelectKeycapDTO>> GetKeycaps(int page, int pageSize, Guid kitID, Guid statsID)
         {
             ValidateKitID(kitID);
 
-            var keycaps = GetPaginationListOfObjects(body.Page, body.PageSize, kitID, _keycap.SelectKeycaps);
+            var keycaps = GetPaginationListOfObjects(page, pageSize, kitID, _keycap.SelectKeycaps);
 
             await PublishActivity(statsID, _activityCfg.GetSeeKeycapActivityTag);
             return keycaps;

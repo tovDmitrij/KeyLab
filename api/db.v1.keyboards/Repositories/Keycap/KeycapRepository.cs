@@ -1,5 +1,5 @@
 ﻿using db.v1.keyboards.Contexts.Interfaces;
-using db.v1.keyboards.DTOs.Keycap;
+using db.v1.keyboards.DTOs;
 using db.v1.keyboards.Entities;
 
 namespace db.v1.keyboards.Repositories.Keycap
@@ -8,9 +8,9 @@ namespace db.v1.keyboards.Repositories.Keycap
     {
         private readonly IKeycapContext _db = db;
 
-        public Guid InsertKeycap(InsertKeycapDTO body)
+        public Guid InsertKeycap(Guid kitID, string title, string fileName, double creationDate)
         {
-            var keycap = new KeycapEntity(body.KitID, body.Title, body.FileName, body.PreviewName, body.CreationDate);
+            var keycap = new KeycapEntity(kitID, title, fileName, creationDate);
 
             _db.Keycaps.Add(keycap);
             _db.SaveChanges();
@@ -18,62 +18,38 @@ namespace db.v1.keyboards.Repositories.Keycap
             return keycap.ID;
         }
 
-        public void UpdateKeycap(UpdateKeycapDTO body)
+        public void UpdateKeycap(Guid keycapID, double updateDate)
         {
-            var keycap = _db.Keycaps.First(keycap => keycap.ID == body.KeycapID);
-            keycap.Title = body.Title;
-            keycap.FileName = body.FileName;
-            keycap.PreviewName = body.PreviewName;
+            var keycap = _db.Keycaps.First(x => x.ID == keycapID);
+            keycap.CreationDate = updateDate;
 
-            _db.Keycaps.Update(keycap);
-            _db.SaveChanges();
-        }
-
-        public void UpdateKeycapTitle(string title, Guid keycapID)
-        {
-            var keycap = _db.Keycaps.First(keycap => keycap.ID == keycapID);
-            keycap.Title = title;
-
-            _db.Keycaps.Update(keycap);
             _db.SaveChanges();
         }
 
         public void DeleteKeycap(Guid keycapID)
         {
-            var keycap = _db.Keycaps.First(keycap =>  keycap.ID == keycapID);
+            var keycap = _db.Keycaps.First(x =>  x.ID == keycapID);
 
             _db.Keycaps.Remove(keycap);
             _db.SaveChanges();
         }
 
-        public List<SelectKeycapDTO> SelectKeycaps(Guid kitID) => _db.Keycaps
-            .Where(keycap => keycap.KitID == kitID)
-            .Select(keycap => new SelectKeycapDTO(keycap.ID, keycap.Title, keycap.CreationDate)).ToList();
 
-        public List<SelectKeycapDTO> SelectKeycaps(int page, int pageSize, Guid kitID) => _db.Keycaps
-            .Where(keycap => keycap.KitID == kitID)
-            .Select(keycap => new SelectKeycapDTO(keycap.ID, keycap.Title, keycap.CreationDate))
-            .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        public bool IsKeycapExist(Guid keycapID) => _db.Keycaps.Any(x => x.ID == keycapID);
 
 
 
-        public int SelectCountOfKeycaps(Guid kitID) => _db.Keycaps
-            .Count(keycap => keycap.KitID == kitID);
+        public string? SelectKeycapFileName(Guid keycapID) => _db.Keycaps.FirstOrDefault(x => x.ID == keycapID)?.FileName;
+        public Guid? SelectKitIDByKeycapID(Guid keycapID) => _db.Keycaps.FirstOrDefault(x => x.ID == keycapID)?.KitID;
 
 
 
-        public string? SelectKeycapFileName(Guid keycapID) => _db.Keycaps
-            .FirstOrDefault(keycap => keycap.ID == keycapID)?.FileName;
+        public List<SelectKeycapDTO> SelectKeycaps(Guid kitID) => _db.Keycaps.Where(x => x.KitID == kitID)
+            .Select(x => new SelectKeycapDTO(x.ID, x.Title, x.CreationDate)).ToList();
+        public List<SelectKeycapDTO> SelectKeycaps(int page, int pageSize, Guid kitID) => _db.Keycaps.Where(x => x.KitID == kitID)
+            .Select(x => new SelectKeycapDTO(x.ID, x.Title, x.CreationDate)).Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        public string? SelectKeycapPreviewName(Guid keycapID) => _db.Keycaps
-            .FirstOrDefault(keycap => keycap.ID == keycapID)?.PreviewName;
-
-        public Guid? SelectKitIDByKeycapID(Guid keycapID) => _db.Keycaps
-            .FirstOrDefault(keycap => keycap.ID == keycapID)?.KitID;
-
-
-
-        public bool IsKeycapExist(Guid keycapID) => _db.Keycaps
-            .Any(keycap => keycap.ID == keycapID);
+        public int SelectCountOfKeycaps(Guid kitID) => _db.Keycaps.Count(x => x.KitID == kitID);
     }
 }

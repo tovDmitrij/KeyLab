@@ -1,8 +1,6 @@
 ﻿using component.v1.exceptions;
 
-using api.v1.keyboards.DTOs;
-
-using db.v1.keyboards.DTOs.Switch;
+using db.v1.keyboards.DTOs;
 
 namespace api.v1.keyboards.Services.Switch
 {
@@ -17,7 +15,7 @@ namespace api.v1.keyboards.Services.Switch
 
 
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectSwitchDTO>> GetSwitchesList(PaginationDTO body, Guid statsID);
+        public Task<List<SelectSwitchDTO>> GetSwitchesList(int page, int pageSize, Guid statsID);
 
 
 

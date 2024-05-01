@@ -16,12 +16,14 @@ namespace api.v1.keyboards.Controllers
     {
         private readonly IKeyboardService _keyboard = keyboard;
 
+
+
         [HttpGet("default")]
         [AllowAnonymous]
         public async Task<IActionResult> GetDefaultKeyboardsList([Required] int page, [Required] int pageSize)
         {
             var statsID = GetStatsID();
-            var keyboards = await _keyboard.GetDefaultKeyboardsList(new(page, pageSize), statsID);
+            var keyboards = await _keyboard.GetDefaultKeyboardsList(page, pageSize, statsID);
             return Ok(keyboards);
         }
 
@@ -31,7 +33,7 @@ namespace api.v1.keyboards.Controllers
         {
             var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
-            var keyboards = await _keyboard.GetUserKeyboardsList(new(page, pageSize), userID, statsID);
+            var keyboards = await _keyboard.GetUserKeyboardsList(page, pageSize, userID, statsID);
             return Ok(keyboards);
         }
 
@@ -84,11 +86,8 @@ namespace api.v1.keyboards.Controllers
             var boxTypeID = GetFormDataBoxType();
 
             var userID = GetAccessTokenUserID();
-
-            var body = new PostKeyboardDTO(file, preview, title, userID, boxTypeID, switchTypeID);
-
             var statsID = GetStatsID();
-            await _keyboard.AddKeyboard(body, statsID);
+            await _keyboard.AddKeyboard(file, preview, title, userID, boxTypeID, switchTypeID, statsID);
 
             return Ok();
         }
@@ -105,10 +104,8 @@ namespace api.v1.keyboards.Controllers
             var keyboardID = GetFormDataKeyboardID();
 
             var userID = GetAccessTokenUserID();
-
-            var body = new PutKeyboardDTO(file, preview, title, userID, keyboardID, boxTypeID, switchTypeID);
             var statsID = GetStatsID();
-            await _keyboard.UpdateKeyboard(body, statsID);
+            await _keyboard.UpdateKeyboard(file, preview, title, userID, keyboardID, boxTypeID, switchTypeID, statsID);
 
             return Ok();
         }

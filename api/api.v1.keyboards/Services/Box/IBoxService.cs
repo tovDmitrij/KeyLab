@@ -2,17 +2,16 @@
 
 using component.v1.exceptions;
 
-using db.v1.keyboards.DTOs.Box;
-using db.v1.keyboards.DTOs.BoxType;
+using db.v1.keyboards.DTOs;
 
 namespace api.v1.keyboards.Services.Box
 {
     public interface IBoxService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task AddBox(PostBoxDTO body, Guid statsID);
+        public Task AddBox(IFormFile? file, IFormFile? preview, string? title, Guid typeID, Guid userID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task UpdateBox(PutBoxDTO body, Guid statsID);
+        public Task UpdateBox(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid boxID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
         public Task DeleteBox(DeleteBoxDTO body, Guid userID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
@@ -28,9 +27,9 @@ namespace api.v1.keyboards.Services.Box
 
 
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectBoxDTO>> GetDefaultBoxesList(BoxPaginationDTO body, Guid statsID);
+        public Task<List<SelectBoxDTO>> GetDefaultBoxesList(int page, int pageSize, Guid boxTypeID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
-        public Task<List<SelectBoxDTO>> GetUserBoxesList(BoxPaginationDTO body, Guid userID, Guid statsID);
+        public Task<List<SelectBoxDTO>> GetUserBoxesList(int page, int pageSize, Guid boxTypeID, Guid userID, Guid statsID);
 
 
 

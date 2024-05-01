@@ -1,5 +1,5 @@
 ﻿using db.v1.keyboards.Contexts.Interfaces;
-using db.v1.keyboards.DTOs.Keyboard;
+using db.v1.keyboards.DTOs;
 using db.v1.keyboards.Entities;
 
 namespace db.v1.keyboards.Repositories.Keyboard
@@ -8,66 +8,58 @@ namespace db.v1.keyboards.Repositories.Keyboard
     {
         private readonly IKeyboardContext _db = db;
 
-        public Guid InsertKeyboardInfo(InsertKeyboardDTO body)
+        public Guid InsertKeyboard(Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, string fileName, double creationDate)
         {
-            var keyboard = new KeyboardEntity(body.OwnerID, body.SwitchTypeID, body.BoxTypeID, 
-                                              body.Title, body.FileName, body.PreviewName, body.CreationDate);
+            var keyboard = new KeyboardEntity(ownerID, switchTypeID, boxTypeID, title, fileName, creationDate);
+
             _db.Keyboards.Add(keyboard);
             SaveChanges();
 
             return keyboard.ID;
         }
 
-        public void UpdateKeyboardInfo(UpdateKeyboardDTO body)
+        public void UpdateKeyboard(Guid keyboardID, Guid switchTypeID, Guid boxTypeID, string title, double updateDate)
         {
-            var keyboard = GetKeyboardByID(body.KeyboardID);
-            keyboard.SwitchTypeID = body.SwitchTypeID;
-            keyboard.BoxTypeID = body.BoxTypeID;
-            keyboard.Title = body.Title;
-            keyboard.FileName = body.FileName;
-            keyboard.PreviewName = body.PreviewName;
-
-            _db.Keyboards.Update(keyboard);
-            SaveChanges();
-        }
-
-        public void UpdateKeyboardTitle(string title, Guid keyboardID)
-        {
-            var keyboard = GetKeyboardByID(keyboardID);
+            var keyboard = _db.Keyboards.First(x => x.ID == keyboardID);
+            keyboard.SwitchTypeID = switchTypeID;
+            keyboard.BoxTypeID = boxTypeID;
             keyboard.Title = title;
+            keyboard.CreationDate = updateDate;
 
             _db.Keyboards.Update(keyboard);
             SaveChanges();
         }
 
-        public void DeleteKeyboardInfo(Guid keyboardID)
+        public void UpdateKeyboardTitle(Guid keyboardID, string title, double updateDate)
         {
-            var keyboard = GetKeyboardByID(keyboardID);
+            var keyboard = _db.Keyboards.First(x => x.ID == keyboardID);
+            keyboard.Title = title;
+            keyboard.CreationDate = updateDate;
+
+            _db.Keyboards.Update(keyboard);
+            SaveChanges();
+        }
+
+        public void DeleteKeyboard(Guid keyboardID)
+        {
+            var keyboard = _db.Keyboards.First(x => x.ID == keyboardID);
+
             _db.Keyboards.Remove(keyboard);
             SaveChanges();
         }
 
 
 
-        public bool IsKeyboardTitleBusy(Guid userID, string title) =>
-            _db.Keyboards.Any(keyboard => keyboard.OwnerID == userID && keyboard.Title == title);
-
-        public bool IsKeyboardExist(Guid keyboardID) =>
-            _db.Keyboards.Any(keyboard => keyboard.ID == keyboardID);
-
-        public bool IsKeyboardOwner(Guid keyboardID, Guid userID) => 
-            _db.Keyboards.Any(keyboard => keyboard.ID == keyboardID && keyboard.OwnerID == userID);
+        public bool IsKeyboardTitleBusy(Guid userID, string title) => _db.Keyboards.Any(x => x.OwnerID == userID && x.Title == title);
+        public bool IsKeyboardExist(Guid keyboardID) => _db.Keyboards.Any(x => x.ID == keyboardID);
+        public bool IsKeyboardOwner(Guid keyboardID, Guid userID) => _db.Keyboards.Any(x => x.ID == keyboardID && x.OwnerID == userID);
 
 
 
-        public string? SelectKeyboardFileName(Guid keyboardID) => _db.Keyboards
-            .FirstOrDefault(keyboard => keyboard.ID == keyboardID)?.FileName;
+        public string? SelectKeyboardFileName(Guid keyboardID) => _db.Keyboards.FirstOrDefault(x => x.ID == keyboardID)?.FileName;
+        public Guid? SelectKeyboardOwnerID(Guid keyboardID) => _db.Keyboards.FirstOrDefault(x => x.ID == keyboardID)?.OwnerID;
 
-        public string? SelectKeyboardPreviewName(Guid keyboardID) => _db.Keyboards
-            .FirstOrDefault(keyboard => keyboard.ID == keyboardID)?.PreviewName;
 
-        public Guid? SelectKeyboardOwnerID(Guid keyboardID) => _db.Keyboards
-            .FirstOrDefault(keyboard => keyboard.ID == keyboardID)?.OwnerID;
 
         public List<SelectKeyboardDTO> SelectUserKeyboards(int page, int pageSize, Guid userID)
         {
@@ -82,13 +74,9 @@ namespace db.v1.keyboards.Repositories.Keyboard
             return keyboards.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public int SelectCountOfKeyboards(Guid userID) => _db.Keyboards
-            .Count(keyboard => keyboard.OwnerID == userID);
+        public int SelectCountOfKeyboards(Guid userID) => _db.Keyboards.Count(x => x.OwnerID == userID);
 
 
-
-        private KeyboardEntity? GetKeyboardByID(Guid keyboardID) =>
-            _db.Keyboards.FirstOrDefault(keyboard => keyboard.ID == keyboardID);
 
         private void SaveChanges() => _db.SaveChanges();
     }

@@ -19,25 +19,30 @@ namespace db.v1.keyboards.Entities
         [Column("title")]
         public string Title { get; set; } = "";
 
+        [Column("preview_name")]
+        public string PreviewName { get; set; } = "";
+
         [Column("creation_date")]
         public double CreationDate { get; set; }
 
 
 
-        public KitEntity(Guid id, Guid ownerID, Guid boxTypeID, string title, double creationDate)
+        public KitEntity(Guid id, Guid ownerID, Guid boxTypeID, string title, string previewName, double creationDate)
         {
             ID = id;
             OwnerID = ownerID;
             BoxTypeID = boxTypeID;
             Title = title;
+            PreviewName = previewName;
             CreationDate = creationDate;
         }
 
-        public KitEntity(Guid ownerID, Guid boxTypeID, string title, double creationDate)
+        public KitEntity(Guid ownerID, Guid boxTypeID, string title, string previewName, double creationDate)
         {
             OwnerID = ownerID;
             BoxTypeID = boxTypeID;
             Title = title;
+            PreviewName = previewName;
             CreationDate = creationDate;
         }
 
