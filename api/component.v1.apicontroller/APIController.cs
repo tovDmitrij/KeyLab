@@ -1,5 +1,6 @@
 ﻿using component.v1.exceptions;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using System.IdentityModel.Tokens.Jwt;
@@ -26,6 +27,19 @@ namespace component.v1.apicontroller
             if (statsID == null)
                 return Guid.Empty;
             return Guid.Parse(statsID);
+        }
+
+        
+
+        protected IFormFile? GetFormDataFile(string key) => Request.Form.Files.FirstOrDefault(x => x.Name == key);
+
+        protected string? GetFormDataString(string key) => Request.Form[key];
+
+        protected Guid GetFormDataGuid(string key)
+        {
+            if (!Guid.TryParse(Request.Form[key], out Guid result))
+                result = Guid.Empty;
+            return result;
         }
 
 

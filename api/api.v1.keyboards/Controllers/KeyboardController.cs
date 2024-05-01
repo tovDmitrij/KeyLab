@@ -79,11 +79,11 @@ namespace api.v1.keyboards.Controllers
         [Authorize]
         public async Task<IActionResult> AddKeyboard()
         {
-            var file = GetFormDataKeyboardFile();
-            var preview = GetFormDataKeyboardPreview();
-            var title = GetFormDataKeyboardTitle();
-            var switchTypeID = GetFormDataSwitchType();
-            var boxTypeID = GetFormDataBoxType();
+            var file = GetFormDataFile("file");
+            var preview = GetFormDataFile("preview");
+            var title = GetFormDataString("title");
+            var switchTypeID = GetFormDataGuid("switchTypeID");
+            var boxTypeID = GetFormDataGuid("boxTypeID");
 
             var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
@@ -96,12 +96,12 @@ namespace api.v1.keyboards.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateKeyboard()
         {
-            var file = GetFormDataKeyboardFile();
-            var preview = GetFormDataKeyboardPreview();
-            var title = GetFormDataKeyboardTitle();
-            var switchTypeID = GetFormDataSwitchType();
-            var boxTypeID = GetFormDataBoxType();
-            var keyboardID = GetFormDataKeyboardID();
+            var file = GetFormDataFile("file");
+            var preview = GetFormDataFile("preview");
+            var title = GetFormDataString("title");
+            var switchTypeID = GetFormDataGuid("switchTypeID");
+            var boxTypeID = GetFormDataGuid("boxTypeID");
+            var keyboardID = GetFormDataGuid("keyboardID");
 
             var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
@@ -132,41 +132,6 @@ namespace api.v1.keyboards.Controllers
             await _keyboard.DeleteKeyboard(body, userID, statsID);
 
             return Ok();
-        }
-
-
-
-        [NonAction]
-        private IFormFile? GetFormDataKeyboardFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
-
-        [NonAction]
-        private IFormFile? GetFormDataKeyboardPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
-
-        [NonAction]
-        private string? GetFormDataKeyboardTitle() => Request.Form["title"];
-
-        [NonAction]
-        private Guid GetFormDataSwitchType()
-        {
-            if (!Guid.TryParse(Request.Form["switchTypeID"], out Guid result))
-                result = Guid.Empty;
-            return result;
-        }
-
-        [NonAction]
-        private Guid GetFormDataBoxType()
-        {
-            if (!Guid.TryParse(Request.Form["boxTypeID"], out Guid result))
-                result = Guid.Empty;
-            return result;
-        }
-
-        [NonAction]
-        private Guid GetFormDataKeyboardID()
-        {
-            if (!Guid.TryParse(Request.Form["keyboardID"], out Guid result))
-                result = Guid.Empty;
-            return result;
         }
     }
 }

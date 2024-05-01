@@ -1,5 +1,4 @@
-﻿using api.v1.keyboards.DTOs.Keycap;
-using api.v1.keyboards.Services.Keycap;
+﻿using api.v1.keyboards.Services.Keycap;
 
 using component.v1.apicontroller;
 
@@ -22,8 +21,8 @@ namespace api.v1.keyboards.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateKeycap()
         {
-            var file = GetFormDataKeycapFile();
-            var keycapID = GetFormDataKeycapID();
+            var file = GetFormDataFile("file");
+            var keycapID = GetFormDataGuid("keycapID");
 
             var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
@@ -60,19 +59,6 @@ namespace api.v1.keyboards.Controllers
             var statsID = GetStatsID();
             var file = await _keycap.GetKeycapFileBytes(keycapID, statsID);
             await Response.Body.WriteAsync(file);
-        }
-
-
-
-        [NonAction]
-        private IFormFile? GetFormDataKeycapFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
-
-        [NonAction]
-        private Guid GetFormDataKeycapID()
-        {
-            if (!Guid.TryParse(Request.Form["keycapID"], out Guid result))
-                result = Guid.Empty;
-            return result;
         }
     }
 }

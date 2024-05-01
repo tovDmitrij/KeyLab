@@ -92,10 +92,10 @@ namespace api.v1.keyboards.Controllers
         [Authorize]
         public async Task<IActionResult> AddBoxFile()
         {
-            var file = GetFormDataBoxFile();
-            var preview = GetFormDataBoxPreview();
-            var title = GetFormDataBoxTitle();
-            var typeID = GetFormDataBoxTypeID();
+            var file = GetFormDataFile("file");
+            var preview = GetFormDataFile("preview");
+            var title = GetFormDataString("title");
+            var typeID = GetFormDataGuid("typeID");
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
@@ -108,11 +108,11 @@ namespace api.v1.keyboards.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateBoxFile()
         {
-            var file = GetFormDataBoxFile();
-            var preview = GetFormDataBoxPreview();
-            var title = GetFormDataBoxTitle();
+            var file = GetFormDataFile("file");
+            var preview = GetFormDataFile("preview");
+            var title = GetFormDataString("title");
+            var boxID = GetFormDataGuid("boxID");
             var userID = GetAccessTokenUserID();
-            var boxID = GetFormDataBoxID();
 
             var statsID = GetStatsID();
             await _box.UpdateBox(file, preview, title, userID, boxID, statsID);
@@ -141,33 +141,6 @@ namespace api.v1.keyboards.Controllers
             await _box.DeleteBox(body, userID, statsID);
 
             return Ok();
-        }
-
-
-
-        [NonAction]
-        private IFormFile? GetFormDataBoxFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
-
-        [NonAction]
-        private IFormFile? GetFormDataBoxPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
-
-        [NonAction]
-        private string? GetFormDataBoxTitle() => Request.Form["title"];
-
-        [NonAction]
-        private Guid GetFormDataBoxTypeID()
-        {
-            if (!Guid.TryParse(Request.Form["typeID"], out Guid result))
-                result = Guid.Empty;
-            return result;
-        }
-
-        [NonAction]
-        private Guid GetFormDataBoxID()
-        {
-            if (!Guid.TryParse(Request.Form["boxID"], out Guid result))
-                result = Guid.Empty;
-            return result;
         }
     }
 }

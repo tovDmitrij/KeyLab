@@ -32,7 +32,6 @@
         "KeyboardFilePath": "/files/{0}/keyboards/{1}.{2}",
         "BoxFilePath": "/files/{0}/boxes/{1}.{2}",
         "KeycapFilePath": "/files/{0}/kits/{1}/{2}.{3}",
-        "KitFilePath": "/files/{0}/kits/{1}",
 
         "ModelFilenameExtension": "glb",
         "PreviewFilenameExtension": "webp",

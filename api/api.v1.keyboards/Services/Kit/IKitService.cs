@@ -9,7 +9,7 @@ namespace api.v1.keyboards.Services.Kit
     public interface IKitService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task<Guid> CreateKit(IFormFile? preview, Guid boxTypeID, string? title, Guid userID, Guid statsID);
+        public Task<Guid> CreateKit(Guid boxTypeID, string? title, Guid userID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
         public Task PatchKitTitle(Guid kitID, string title, Guid userID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>

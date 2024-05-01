@@ -22,13 +22,12 @@ namespace api.v1.keyboards.Controllers
         [Authorize]
         public async Task<IActionResult> CreateKit()
         {
-            var preview = GetFormDataKitPreview();
-            var boxTypeID = GetFormDataBoxTypeID();
-            var title = GetFormDataKitTitle();
+            var boxTypeID = GetFormDataGuid("boxTypeID");
+            var title = GetFormDataString("title");
 
             var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
-            var kitID = await _kit.CreateKit(preview, boxTypeID, title, userID, statsID);
+            var kitID = await _kit.CreateKit(boxTypeID, title, userID, statsID);
             return Ok(new { kitID });
         }
 
@@ -47,8 +46,8 @@ namespace api.v1.keyboards.Controllers
         [Authorize]
         public async Task<IActionResult> PatchKitPreview()
         {
-            var preview = GetFormDataKitPreview();
-            var kitID = GetFormDataKitID();
+            var preview = GetFormDataFile("preview");
+            var kitID = GetFormDataGuid("kitID");
 
             var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
@@ -117,30 +116,6 @@ namespace api.v1.keyboards.Controllers
 
             var totalPages = _kit.GetUserKitsTotalPages(pageSize, userID);
             return Ok(new { totalPages });
-        }
-
-
-
-        [NonAction]
-        private IFormFile? GetFormDataKitPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
-
-        [NonAction]
-        private string? GetFormDataKitTitle() => Request.Form["title"];
-
-        [NonAction]
-        private Guid GetFormDataBoxTypeID()
-        {
-            if (!Guid.TryParse(Request.Form["boxTypeID"], out Guid result))
-                result = Guid.Empty;
-            return result;
-        }
-
-        [NonAction]
-        private Guid GetFormDataKitID()
-        {
-            if (!Guid.TryParse(Request.Form["kitID"], out Guid result))
-                result = Guid.Empty;
-            return result;
         }
     }
 }
