@@ -5,10 +5,10 @@ namespace api.v1.stats.Services.Stat
 {
     public interface IStatService
     {
-        public List<AttendancePlotDTO> GetAttendanceTimePlot(PostAttendanceStatDTO body);
+        public List<AttendanceTimePlotDTO> GetAttendanceTimePlot(PostAttendanceStatDTO body);
         public double GetAttendanceTimeAtom(PostAttendanceStatDTO body);
 
-        public List<AttendancePlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body);
+        public List<AttendanceQuantityPlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body);
         public double GetAttendanceQuantityAtom(PostAttendanceStatDTO body);
 
         public List<ActivityPlotDTO> GetActivityTimePlot(PostActivityStatDTO body);
