@@ -16,19 +16,11 @@ namespace db.v1.keyboards.Entities
         [Column("file_name")]
         public string FileName { get; set; } = "";
 
-        [Column("preview_name")]
-        public string PreviewName { get; set; } = "";
-
-        [Column("sound_name")]
-        public string SoundName { get; set; } = "";
-
-        public SwitchEntity(Guid id, string title, string fileName, string previewName, string soundName)
+        public SwitchEntity(Guid id, string title, string fileName)
         {
             ID = id;
             Title = title;
             FileName = fileName;
-            PreviewName = previewName;
-            SoundName = soundName;
         }
 
         public SwitchEntity() { }

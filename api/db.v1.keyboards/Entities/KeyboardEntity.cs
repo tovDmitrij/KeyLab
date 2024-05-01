@@ -25,14 +25,10 @@ namespace db.v1.keyboards.Entities
         [Column("file_name")]
         public string FileName { get; set; } = "";
 
-        [Column("preview_name")]
-        public string PreviewName { get; set; } = "";
-
         [Column("creation_date")]
         public double CreationDate { get; set; }
 
-        public KeyboardEntity(Guid id, Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, 
-                              string fileName, string previewName, double creationDate)
+        public KeyboardEntity(Guid id, Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, string fileName, double creationDate)
         {
             ID = id;
             OwnerID = ownerID;
@@ -40,19 +36,16 @@ namespace db.v1.keyboards.Entities
             BoxTypeID = boxTypeID;
             Title = title;
             FileName = fileName;
-            PreviewName = previewName;
             CreationDate = creationDate;
         }
 
-        public KeyboardEntity(Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, 
-                              string fileName, string previewName, double creationDate)
+        public KeyboardEntity(Guid ownerID, Guid switchTypeID, Guid boxTypeID, string title, string fileName, double creationDate)
         {
             OwnerID = ownerID;
             SwitchTypeID = switchTypeID;
             BoxTypeID = boxTypeID;
             Title = title;
             FileName = fileName;
-            PreviewName = previewName;
             CreationDate = creationDate;
         }
 

@@ -16,25 +16,44 @@ namespace api.v1.keyboards.Controllers
     {
         private readonly IKitService _kit = kit;
 
+
+
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateKit([FromBody] PostKitDTO body)
+        public async Task<IActionResult> CreateKit()
         {
-            var userID = GetAccessTokenUserID();
+            var preview = GetFormDataKitPreview();
+            var boxTypeID = GetFormDataBoxTypeID();
+            var title = GetFormDataKitTitle();
 
+            var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
-            var kitID = await _kit.CreateKit(body, userID, statsID);
+            var kitID = await _kit.CreateKit(preview, boxTypeID, title, userID, statsID);
             return Ok(new { kitID });
         }
 
-        [HttpPut]
+        [HttpPatch("title")]
         [Authorize]
-        public async Task<IActionResult> UpdateKit([FromBody] PutKitDTO body)
+        public async Task<IActionResult> PatchKitTitle([FromBody] PatchKitTitleDTO body)
         {
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            await _kit.UpdateKit(body, userID, statsID);
+            await _kit.PatchKitTitle(body.KitID, body.Title, userID, statsID);
+            return Ok();
+        }
+
+        [HttpPatch("preview")]
+        [Authorize]
+        public async Task<IActionResult> PatchKitPreview()
+        {
+            var preview = GetFormDataKitPreview();
+            var kitID = GetFormDataKitID();
+
+            var userID = GetAccessTokenUserID();
+            var statsID = GetStatsID();
+            await _kit.PatchKitPreview(preview, kitID, userID, statsID);
+
             return Ok();
         }
 
@@ -50,13 +69,22 @@ namespace api.v1.keyboards.Controllers
         }
 
 
+        [HttpGet("preview")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetKitPreview([Required] Guid kitID)
+        {
+            var previewBase64 = await _kit.GetKitPreviewBase64(kitID);
+            return Ok(previewBase64);
+        }
+
+
 
         [HttpGet("default")]
         [AllowAnonymous]
         public async Task<IActionResult> GetDefaultKits([Required] int page, [Required] int pageSize, [Required] Guid boxTypeID)
         {
             var statsID = GetStatsID();
-            var kits = await _kit.GetDefaultKits(new(page, pageSize), boxTypeID, statsID);
+            var kits = await _kit.GetDefaultKits(page, pageSize, boxTypeID, statsID);
             return Ok(kits);
         }
 
@@ -67,7 +95,7 @@ namespace api.v1.keyboards.Controllers
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            var kits = await _kit.GetUserKits(new(page, pageSize), boxTypeID, userID, statsID);
+            var kits = await _kit.GetUserKits(page, pageSize, boxTypeID, userID, statsID);
             return Ok(kits);
         }
 
@@ -89,6 +117,30 @@ namespace api.v1.keyboards.Controllers
 
             var totalPages = _kit.GetUserKitsTotalPages(pageSize, userID);
             return Ok(new { totalPages });
+        }
+
+
+
+        [NonAction]
+        private IFormFile? GetFormDataKitPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
+
+        [NonAction]
+        private string? GetFormDataKitTitle() => Request.Form["title"];
+
+        [NonAction]
+        private Guid GetFormDataBoxTypeID()
+        {
+            if (!Guid.TryParse(Request.Form["boxTypeID"], out Guid result))
+                result = Guid.Empty;
+            return result;
+        }
+
+        [NonAction]
+        private Guid GetFormDataKitID()
+        {
+            if (!Guid.TryParse(Request.Form["kitID"], out Guid result))
+                result = Guid.Empty;
+            return result;
         }
     }
 }

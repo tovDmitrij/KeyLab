@@ -1,6 +1,9 @@
-postgres/keyboards/data
-postgres/users/data
-postgres/stats/data
+postgres/production/keyboards/data
+postgres/production/users/data
+postgres/production/stats/data
+postgres/dev/keyboards/data
+postgres/dev/users/data
+postgres/dev/stats/data
 .vs
 .github
 logs

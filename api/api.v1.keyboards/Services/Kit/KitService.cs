@@ -1,9 +1,8 @@
-﻿using api.v1.keyboards.DTOs;
-using api.v1.keyboards.DTOs.Kit;
+﻿using api.v1.keyboards.DTOs.Kit;
 
 using component.v1.exceptions;
 
-using db.v1.keyboards.DTOs.Kit;
+using db.v1.keyboards.DTOs;
 using db.v1.keyboards.Repositories.Box;
 using db.v1.keyboards.Repositories.Keycap;
 using db.v1.keyboards.Repositories.Kit;
@@ -27,50 +26,71 @@ namespace api.v1.keyboards.Services.Kit
         private readonly IKitRepository _kit = kit;
         private readonly IKeycapRepository _keycap = keycap;
         private readonly IBoxRepository _box = box;
-
         private readonly ITimeHelper _time = time;
         private readonly IKitRegexHelper _rgx = rgx;
         private readonly IFileConfigurationHelper _fileCfg = fileCfg;
         private readonly IActivityConfigurationHelper _activityCfg = activityCfg;
 
-        public async Task<Guid> CreateKit(PostKitDTO body, Guid userID, Guid statsID)
+
+
+        public async Task<Guid> CreateKit(IFormFile? preview, Guid boxTypeID, string? title, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
-            ValidateKitTitle(body.Title);
-            ValidateBoxTypeID(body.BoxTypeID);
+            ValidateKitTitle(title);
+            ValidateBoxTypeID(boxTypeID);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            var kitID =  _kit.InsertKit(userID, body.BoxTypeID, body.Title, currentTime);
+            var previewName = Guid.NewGuid().ToString();
+            var kitID =  _kit.InsertKit(userID, boxTypeID, title, previewName, currentTime);
 
             var defaultUserID = _fileCfg.GetDefaultModelsUserID();
-            var defaultKitID = _kit.SelectUserKits(defaultUserID, body.BoxTypeID).First().ID;
+            var defaultKitID = _kit.SelectUserKits(defaultUserID, boxTypeID).First().ID;
             var keycaps = _keycap.SelectKeycaps(defaultKitID);
 
+            var fileExtension = _fileCfg.GetModelFilenameExtension();
+            var time = _time.GetCurrentUNIXTime();
             foreach (var keycap in keycaps)
             {
-                var defaultFileName = _keycap.SelectKeycapFileName(keycap.ID);
-                var defaultFilePath = _fileCfg.GetKeycapFilePath(defaultUserID, defaultKitID, defaultFileName!);
+                var fileName = _keycap.SelectKeycapFileName(keycap.ID);
+                var defaultFilePath = _fileCfg.GetKeycapFilePath(defaultUserID, defaultKitID, fileName!, fileExtension);
 
-                var newFilePath = _fileCfg.GetKeycapFilePath(userID, kitID, defaultFileName!);
+                var newFilePath = _fileCfg.GetKeycapFilePath(userID, kitID, fileName!, fileExtension);
 
                 _file.CopyFile(defaultFilePath, newFilePath);
 
-                var time = _time.GetCurrentUNIXTime();
-
-                var previewName = $"{keycap.Title}.jpeg";
-                _keycap.InsertKeycap(new(kitID, keycap.Title, defaultFileName!, previewName, time));
+                _keycap.InsertKeycap(kitID, keycap.Title, fileName!, time);
             }
+
+            var defaultPreviewName = _kit.SelectKitPreviewName(defaultKitID);
+            var previewExtension = _fileCfg.GetPreviewFilenameExtension();
+            var defaultPreviewFilePath = _fileCfg.GetKeycapFilePath(defaultUserID, defaultKitID, defaultPreviewName!, previewExtension);
+            var newPreviewFilePath = _fileCfg.GetKeycapFilePath(userID, kitID, previewName, previewExtension);
+
+            _file.CopyFile(defaultPreviewFilePath, newPreviewFilePath);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
             return kitID;
         }
 
-        public async Task UpdateKit(PutKitDTO body, Guid userID, Guid statsID)
+        public async Task PatchKitTitle(Guid kitID, string title, Guid userID, Guid statsID)
         {
-            ValidateKitOwner(body.KitID, userID);
-            ValidateKitTitle(body.Title);
+            ValidateUserID(userID);
+            ValidateKitOwner(kitID, userID);
+            ValidateKitTitle(title);
 
-            _kit.UpdateKit(body.KitID, body.Title);
+            var currentTime = _time.GetCurrentUNIXTime();
+            _kit.UpdateKit(kitID, title, currentTime);
+
+            await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
+        }
+
+        public async Task PatchKitPreview(IFormFile? preview, Guid kitID, Guid userID, Guid statsID)
+        {
+            ValidateUserID(userID);
+            ValidateKitOwner(kitID, userID);
+
+            UpdateFile(preview, userID, kitID, kitID, _kit.SelectKitPreviewName!, _fileCfg.GetPreviewFilenameExtension,
+                _fileCfg.GetKeycapFilePath);
 
             await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
         }
@@ -80,22 +100,29 @@ namespace api.v1.keyboards.Services.Kit
             ValidateKitOwner(body.KitID, userID);
 
             var keycaps = _keycap.SelectKeycaps(body.KitID);
+            var fileExtension = _fileCfg.GetModelFilenameExtension();
+            var previewExtension = _fileCfg.GetPreviewFilenameExtension();
             foreach (var keycap in keycaps)
             {
                 var fileName = _keycap.SelectKeycapFileName(keycap.ID);
-                var filePath = _fileCfg.GetKeycapFilePath(userID, body.KitID, fileName!);
+                var filePath = _fileCfg.GetKeycapFilePath(userID, body.KitID, fileName!, fileExtension);
                 _file.DeleteFile(filePath);
+
+                var previewPath = _fileCfg.GetKeycapFilePath(userID, body.KitID, fileName!, previewExtension);
+                _file.DeleteFile(previewPath);
+
                 var cacheKey = _cacheCfg.GetFileCacheKey(filePath);
                 _cache.DeleteValue(cacheKey);
 
-                var previewName = _keycap.SelectKeycapPreviewName(keycap.ID);
-                var previewPath = _fileCfg.GetKeycapFilePath(userID, body.KitID, previewName!);
-                _file.DeleteFile(previewPath);
                 cacheKey = _cacheCfg.GetFileCacheKey(previewPath);
                 _cache.DeleteValue(cacheKey);
 
                 _keycap.DeleteKeycap(keycap.ID);
             }
+
+            var kitPreviewName = _kit.SelectKitPreviewName(body.KitID);
+            var kitPreviewPath = _fileCfg.GetKeycapFilePath(userID, body.KitID, kitPreviewName!, previewExtension);
+            _file.DeleteFile(kitPreviewPath);
 
             _kit.DeleteKit(body.KitID);
             await PublishActivity(statsID, _activityCfg.GetEditKeycapActivityTag);
@@ -103,21 +130,36 @@ namespace api.v1.keyboards.Services.Kit
 
 
 
-        public async Task<List<SelectKitDTO>> GetDefaultKits(PaginationDTO body, Guid boxTypeID, Guid statsID)
+        public async Task<string> GetKitPreviewBase64(Guid kitID)
+        {
+            ValidateKitID(kitID);
+
+            var userID = _kit.SelectKitOwnerID(kitID);
+            var previewName = _kit.SelectKitPreviewName(kitID);
+            var previewExtension = _fileCfg.GetPreviewFilenameExtension();
+            var previewPath = _fileCfg.GetKeycapFilePath((Guid)userID!, kitID, previewName!, previewExtension);
+
+            var preview = await ReadFile(previewPath);
+            return Convert.ToBase64String(preview);
+        }
+
+
+
+        public async Task<List<SelectKitDTO>> GetDefaultKits(int page, int pageSize, Guid boxTypeID, Guid statsID)
         {
             ValidateBoxTypeID(boxTypeID);
 
-            var kits = GetPaginationListOfObjects(body.Page, body.PageSize, _fileCfg.GetDefaultModelsUserID(), boxTypeID, _kit.SelectUserKits);
+            var kits = GetPaginationListOfObjects(page, pageSize, _fileCfg.GetDefaultModelsUserID(), boxTypeID, _kit.SelectUserKits);
             await PublishActivity(statsID, _activityCfg.GetSeeKeycapActivityTag);
             return kits;
         }
 
-        public async Task<List<SelectKitDTO>> GetUserKits(PaginationDTO body, Guid boxTypeID, Guid userID, Guid statsID)
+        public async Task<List<SelectKitDTO>> GetUserKits(int page, int pageSize, Guid boxTypeID, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
             ValidateBoxTypeID(boxTypeID);
 
-            var kits = GetPaginationListOfObjects(body.Page, body.PageSize, userID, boxTypeID, _kit.SelectUserKits);
+            var kits = GetPaginationListOfObjects(page, pageSize, userID, boxTypeID, _kit.SelectUserKits);
             await PublishActivity(statsID, _activityCfg.GetSeeKeycapActivityTag);
             return kits;
         }
@@ -144,6 +186,12 @@ namespace api.v1.keyboards.Services.Kit
         {
             if (!_kit.IsKitOwner(kitID, userID))
                 throw new BadRequestException(_localization.UserIsNotKitOwner());
+        }
+
+        private void ValidateKitID(Guid kitID)
+        {
+            if (!_kit.IsKitExist(kitID))
+                throw new BadRequestException(_localization.KitIsNotExist());
         }
 
         private void ValidateKitTitle(string title)

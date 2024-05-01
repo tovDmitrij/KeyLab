@@ -1,5 +1,5 @@
 ﻿using db.v1.keyboards.Contexts.Interfaces;
-using db.v1.keyboards.DTOs.Switch;
+using db.v1.keyboards.DTOs;
 
 namespace db.v1.keyboards.Repositories.Switch
 {
@@ -7,27 +7,17 @@ namespace db.v1.keyboards.Repositories.Switch
     {
         private readonly ISwitchContext _db = db;
 
-        public bool IsSwitchExist(Guid switchID) => _db.Switches
-            .Any(@switch => @switch.ID == switchID);
+        public bool IsSwitchExist(Guid switchID) => _db.Switches.Any(x => x.ID == switchID);
 
         
 
-        public string? SelectSwitchFileName(Guid switchID) => _db.Switches
-            .FirstOrDefault(@switch => @switch.ID == switchID)?.FileName;
-
-        public string? SelectSwitchSoundName(Guid switchID) => _db.Switches
-            .FirstOrDefault(@switch => @switch.ID == switchID)?.SoundName;
-
-        public string? SelectSwitchPreviewName(Guid switchID) => _db.Switches
-            .FirstOrDefault(@switch => @switch.ID == switchID)?.PreviewName;
+        public string? SelectSwitchFileName(Guid switchID) => _db.Switches.FirstOrDefault(x => x.ID == switchID)?.FileName;
 
 
 
         public List<SelectSwitchDTO> SelectSwitches(int page, int pageSize) => _db.Switches
-            .Select(@switch => new SelectSwitchDTO(@switch.ID, @switch.Title))
-            .Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            .Select(x => new SelectSwitchDTO(x.ID, x.Title)).Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        public int SelectCountOfSwitch() => _db.Switches
-            .Count();
+        public int SelectCountOfSwitch() => _db.Switches.Count();
     }
 }

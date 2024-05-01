@@ -16,48 +16,19 @@ namespace api.v1.keyboards.Controllers
     {
         private readonly IKeycapService _keycap = keycap;
 
-        [HttpPost, DisableRequestSizeLimit]
-        [Authorize]
-        public async Task<IActionResult> AddKeycap()
-        {
-            var file = GetFormDataKeycapFile();
-            var preview = GetFormDataKeycapPreview();
-            var title = GetFormDataKeycapTitle();
-            var kitID = GetFormDataKitID();
 
-            var userID = GetAccessTokenUserID();
-
-            var body = new PostKeycapDTO(file, preview, title, kitID, userID);
-            var statsID = GetStatsID();
-            await _keycap.AddKeycap(body, statsID);
-
-            return Ok();
-        }
 
         [HttpPut, DisableRequestSizeLimit]
         [Authorize]
         public async Task<IActionResult> UpdateKeycap()
         {
             var file = GetFormDataKeycapFile();
-            var preview = GetFormDataKeycapPreview();
-            var title = GetFormDataKeycapTitle();
             var keycapID = GetFormDataKeycapID();
 
             var userID = GetAccessTokenUserID();
-
-            var body = new PutKeycapDTO(file, preview, title, keycapID, userID);
             var statsID = GetStatsID();
-            await _keycap.UpdateKeycap(body, statsID);
+            await _keycap.UpdateKeycap(file, keycapID, userID, statsID);
 
-            return Ok();
-        }
-
-        public async Task<IActionResult> PatchKeycapTitle([FromBody] PatchKeycapTitleDTO body)
-        {
-            var userID = GetAccessTokenUserID();
-            var statID = GetStatsID();
-
-            await _keycap.PatchKeycapTitle(body, userID, statID);
             return Ok();
         }
 
@@ -68,7 +39,7 @@ namespace api.v1.keyboards.Controllers
         public async Task<IActionResult> GetKeycapsList([Required] int page, [Required] int pageSize, [Required] Guid kitID)
         {
             var statsID = GetStatsID();
-            var keycaps = await _keycap.GetKeycaps(new(page, pageSize), kitID, statsID);
+            var keycaps = await _keycap.GetKeycaps(page, pageSize, kitID, statsID);
             return Ok(keycaps);
         }
 
@@ -91,32 +62,10 @@ namespace api.v1.keyboards.Controllers
             await Response.Body.WriteAsync(file);
         }
 
-        [HttpGet("preview")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetKeycapPreview([Required] Guid keycapID)
-        {
-            var previewBase64 = await _keycap.GetKeycapBase64Preview(keycapID);
-            return Ok(new { previewBase64 });
-        }
-
 
 
         [NonAction]
         private IFormFile? GetFormDataKeycapFile() => Request.Form.Files.FirstOrDefault(x => x.Name == "file");
-
-        [NonAction]
-        private IFormFile? GetFormDataKeycapPreview() => Request.Form.Files.FirstOrDefault(x => x.Name == "preview");
-
-        [NonAction]
-        private string? GetFormDataKeycapTitle() => Request.Form["title"];
-
-        [NonAction]
-        private Guid GetFormDataKitID()
-        {
-            if (!Guid.TryParse(Request.Form["kitID"], out Guid result))
-                result = Guid.Empty;
-            return result;
-        }
 
         [NonAction]
         private Guid GetFormDataKeycapID()

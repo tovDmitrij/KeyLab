@@ -16,6 +16,8 @@ namespace api.v1.keyboards.Controllers
     {
         private readonly IBoxService _box = box;
 
+
+
         [HttpGet("types")]
         [AllowAnonymous]
         public IActionResult GetBoxTypes()
@@ -31,7 +33,7 @@ namespace api.v1.keyboards.Controllers
         public async Task<IActionResult> GetDefaultBoxesList([Required] int page, [Required] int pageSize, [Required] Guid typeID)
         {
             var statsID = GetStatsID();
-            var boxes = await _box.GetDefaultBoxesList(new(page, pageSize, typeID), statsID);
+            var boxes = await _box.GetDefaultBoxesList(page, pageSize, typeID, statsID);
             return Ok(boxes);
         }
 
@@ -42,7 +44,7 @@ namespace api.v1.keyboards.Controllers
             var userID = GetAccessTokenUserID();
             var statsID = GetStatsID();
 
-            var boxes = await _box.GetUserBoxesList(new(page, pageSize, typeID), userID, statsID);
+            var boxes = await _box.GetUserBoxesList(page, pageSize, typeID, userID, statsID);
             return Ok(boxes);
         }
 
@@ -96,10 +98,8 @@ namespace api.v1.keyboards.Controllers
             var typeID = GetFormDataBoxTypeID();
             var userID = GetAccessTokenUserID();
 
-            var body = new PostBoxDTO(file, preview, title, typeID, userID);
-
             var statsID = GetStatsID();
-            await _box.AddBox(body, statsID);
+            await _box.AddBox(file, preview, title, typeID, userID, statsID);
 
             return Ok();
         }
@@ -114,9 +114,8 @@ namespace api.v1.keyboards.Controllers
             var userID = GetAccessTokenUserID();
             var boxID = GetFormDataBoxID();
 
-            var body = new PutBoxDTO(file, preview, title, userID, boxID);
             var statsID = GetStatsID();
-            await _box.UpdateBox(body, statsID);
+            await _box.UpdateBox(file, preview, title, userID, boxID, statsID);
 
             return Ok();
         }
