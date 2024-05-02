@@ -17,3 +17,5 @@ Dockerfile.*    linguist-language=Dockerfile
 *.js            linguist-detectable=false
 *.cjs           linguist-detectable=false
 client/.eslintrc.cjs   linguist-detectable=false
+*.mjs           linguist-detectable=false
+client/vite.config.ts.timestamp-1711208312144-692e016ea594f.mjs linguist-detectable=false
