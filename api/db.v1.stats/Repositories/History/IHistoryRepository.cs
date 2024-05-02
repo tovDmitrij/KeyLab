@@ -11,5 +11,6 @@ namespace db.v1.stats.Repositories.History
 
         public int SelectCountOfDistinctUserID(double leftDate, double rightDate);
         public int SelectCountOfDistinctUserID(double leftDate, double rightDate, Guid activityID);
+        public int SelectCountOfDistinctUserID(double leftDate, double rightDate, Guid[] activityIDs);
     }
 }

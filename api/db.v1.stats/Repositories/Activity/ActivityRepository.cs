@@ -8,19 +8,19 @@ namespace db.v1.stats.Repositories.Activity
         private readonly IActivityContext _db = db;
 
         public Guid? SelectActivityIDByTag(string tag) => _db.Activities
-            .FirstOrDefault(activity => activity.Tag == tag)?.ID;
+            .FirstOrDefault(x => x.Tag == tag)?.ID;
 
 
 
         public List<SelectActivityDTO> SelectActivities() => _db.Activities
-            .Select(activity => new SelectActivityDTO(activity.ID, activity.Title)).ToList();
+            .Select(x => new SelectActivityDTO(x.ID, x.Title)).ToList();
 
 
 
         public bool IsActivityExistByID(Guid activityID) => _db.Activities
-            .Any(activity => activity.ID == activityID);
+            .Any(x => x.ID == activityID);
 
         public bool IsActivityExistByTag(string tag) => _db.Activities
-            .Any(activity => activity.Tag == tag);
+            .Any(x => x.Tag == tag);
     }
 }

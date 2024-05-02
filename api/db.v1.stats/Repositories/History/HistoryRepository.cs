@@ -18,23 +18,28 @@ namespace db.v1.stats.Repositories.History
 
 
         public List<SelectHistoryDTO> SelectHistories(double leftDate, double rightDate) => _db.Histories
-            .Where(activity => leftDate <= activity.Date && activity.Date <= rightDate)
-            .Select(activity => new SelectHistoryDTO(activity.UserID, activity.Date)).ToList();
+            .Where(x => leftDate <= x.Date && x.Date <= rightDate)
+            .Select(x => new SelectHistoryDTO(x.UserID, x.Date)).ToList();
 
         public List<SelectHistoryDTO> SelectHistories(double leftDate, double rightDate, Guid activityID) => _db.Histories
-            .Where(activity => leftDate <= activity.Date && activity.Date <= rightDate && activity.ActivityID == activityID)
-            .Select(activity => new SelectHistoryDTO(activity.UserID, activity.Date)).ToList();
+            .Where(x => leftDate <= x.Date && x.Date <= rightDate && x.ActivityID == activityID)
+            .Select(x => new SelectHistoryDTO(x.UserID, x.Date)).ToList();
 
 
 
         public int SelectCountOfDistinctUserID(double leftDate, double rightDate) => _db.Histories
-            .Where(activity => leftDate <= activity.Date && activity.Date <= rightDate)
-            .Select(activity => activity.UserID)
+            .Where(x => leftDate <= x.Date && x.Date <= rightDate)
+            .Select(x => x.UserID)
             .Distinct().Count();
 
         public int SelectCountOfDistinctUserID(double leftDate, double rightDate, Guid activityID) => _db.Histories
-            .Where(activity => leftDate <= activity.Date && activity.Date <= rightDate && activity.ActivityID == activityID)
-            .Select(activity => activity.UserID)
+            .Where(x => leftDate <= x.Date && x.Date <= rightDate && x.ActivityID == activityID)
+            .Select(x => x.UserID)
+            .Distinct().Count();
+
+        public int SelectCountOfDistinctUserID(double leftDate, double rightDate, Guid[] activityIDs) => _db.Histories
+            .Where(x => leftDate <= x.Date && x.Date <= rightDate && activityIDs.Contains(x.ActivityID))
+            .Select(x => x.UserID)
             .Distinct().Count();
     }
 }

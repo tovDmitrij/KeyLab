@@ -9,12 +9,12 @@ namespace api.v1.stats.Services.Stat
         public double GetAttendanceTimeAtom(PostAttendanceStatDTO body);
 
         public List<AttendanceQuantityPlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body);
-        public double GetAttendanceQuantityAtom(PostAttendanceStatDTO body);
+        public int GetAttendanceQuantityAtom(PostAttendanceStatDTO body);
 
-        public List<ActivityPlotDTO> GetActivityTimePlot(PostActivityStatDTO body);
+        public List<ActivityTimePlotDTO> GetActivityTimePlot(PostActivityStatDTO body);
         public double GetActivityTimeAtom(PostActivityStatDTO body);
 
-        public List<ActivityPlotDTO> GetActivityQuantityPlot(PostActivityStatDTO body);
-        public double GetActivityQuantityAtom(PostActivityStatDTO body);
+        public List<ActivityQuantityPlotDTO> GetActivityQuantityPlot(PostActivityStatDTO body);
+        public int GetActivityQuantityAtom(PostActivityStatDTO body);
     }
 }
