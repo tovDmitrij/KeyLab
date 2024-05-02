@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-
 import { Box, Container, Typography } from "@mui/material";
 
 import SchemePic from "/src/assets/scheme.png";

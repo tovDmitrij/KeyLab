@@ -12,15 +12,17 @@ type TUserState = {
 const initialState: TUserState = {
   nickName: undefined,
   email: undefined,
-  isAdmin: false,
-};
+  isAdmin: !!localStorage.getItem("isAdmin")
+}; 
 
 export const profileSlice = createSlice({
   name: "profile",
   initialState: initialState,
   reducers: {
     setNickName: (state, action: PayloadAction<string | undefined>) => {
-      state.nickName = action.payload;
+      const nickName = action.payload;
+      state.nickName = nickName;
+      localStorage.setItem("nickName", nickName || '');
     },
 
     setEmail: (state, action: PayloadAction<string | undefined>) => {
@@ -28,10 +30,19 @@ export const profileSlice = createSlice({
     },
 
     setIsAdmin: (state, action: PayloadAction<boolean>) => {
-      state.isAdmin = action.payload;
+      const isAdmin = action.payload; 
+      state.isAdmin = isAdmin;
+      localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
     },
+
+    resetState: (state) => {
+      state.isAdmin = false;
+      state.nickName = undefined;
+      localStorage.removeItem("isAdmin");
+      localStorage.removeItem("nickName");
+    }
   },
 });
 
-export const { setNickName, setEmail, setIsAdmin } = profileSlice.actions;
+export const { setNickName, setEmail, setIsAdmin, resetState } = profileSlice.actions;
 export default profileSlice.reducer;

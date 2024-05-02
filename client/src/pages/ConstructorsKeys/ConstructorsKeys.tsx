@@ -74,24 +74,35 @@ const ConstructorKeys = () => {
     })
       .unwrap()
       .then((data) => {
-        console.log(data)
         setKeycaps(data);
       });
   }, [idKit]);
 
   useEffect(() => {
     if (!keycaps) return;
-    keycaps.map((keycap) => {
-      if (!keycap?.id) return;
-      setModelKit([])
-      getKeycap(keycap?.id)
+    // keycaps.map((keycap) => {
+    //   if (!keycap?.id) return;
+    //   setModelKit([])
+    //   getKeycap(keycap?.id)
+    //   .unwrap()
+    //   .then((payload) => {
+    //     loader.parse(payload, "", (gltf) => {
+    //     setModelKit(prevModelKit => [...prevModelKit, gltf.scene]);
+    //     });
+    //   });
+    // })
+    let i = 0;
+    while (i < 100) {
+      getKeycap('2fefaf65-6e3e-41f8-91ff-7a46529f734a')
       .unwrap()
       .then((payload) => {
         loader.parse(payload, "", (gltf) => {
         setModelKit(prevModelKit => [...prevModelKit, gltf.scene]);
         });
       });
-    })
+    
+      i+=1; 
+    }
   }, [keycaps]);
 
   console.log(modelKit);
