@@ -1,7 +1,7 @@
 #!/bin/sh
 
-docker compose -f compose-dev.yaml stop;
-docker compose -f compose-dev.yaml down;
+docker compose -p keyboards-dev stop;
+docker compose -p keyboards-dev down;
 docker image rm keyboards-dev-api_keyboards;
 docker image rm keyboards-dev-api_users;
 docker image rm keyboards-dev-api_email;

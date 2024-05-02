@@ -33,7 +33,7 @@ namespace api.v1.keyboards.Services.Kit
 
 
 
-        public async Task<Guid> CreateKit(IFormFile? preview, Guid boxTypeID, string? title, Guid userID, Guid statsID)
+        public async Task<Guid> CreateKit(Guid boxTypeID, string? title, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
             ValidateKitTitle(title);

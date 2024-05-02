@@ -101,7 +101,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var cultures = new List<CultureInfo>
     {
-        new("ru-RU")
+        new("ru-RU"),
+        new("en-US")
     };
     options.DefaultRequestCulture = new RequestCulture("ru-RU", "ru-RU");
     options.SupportedCultures = cultures;
@@ -147,6 +148,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<StatisticMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRequestLocalization();
 app.MapControllers();
 app.Run();
 

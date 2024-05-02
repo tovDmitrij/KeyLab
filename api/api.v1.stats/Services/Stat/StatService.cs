@@ -28,12 +28,12 @@ namespace api.v1.stats.Services.Stat
         private readonly IStatConfigurationHelper _statCfg = statCfg;
         private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
 
-        public List<AttendancePlotDTO> GetAttendanceTimePlot(PostAttendanceStatDTO body)
+        public List<AttendanceTimePlotDTO> GetAttendanceTimePlot(PostAttendanceStatDTO body)
         {
             ValidateBody(body);
             var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var plotData = new List<AttendancePlotDTO>();
+            var plotData = new List<AttendanceTimePlotDTO>();
             foreach (var period in periods)
             {
                 try
@@ -112,12 +112,12 @@ namespace api.v1.stats.Services.Stat
 
 
 
-        public List<AttendancePlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body)
+        public List<AttendanceQuantityPlotDTO> GetAttendanceQuantityPlot(PostAttendanceStatDTO body)
         {
             ValidateBody(body);
             var periods = GetPeriods(body.LeftDate, body.RightDate, body.IntervalID);
 
-            var plotData = new List<AttendancePlotDTO>();
+            var plotData = new List<AttendanceQuantityPlotDTO>();
             foreach (var period in periods)
             {
                 var cacheKey = _cacheCfg.GetAttendanceQuantityCacheKey(period.LeftDate, period.RightDate);

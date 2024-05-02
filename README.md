@@ -14,6 +14,12 @@
 2. Скачать архив с файлами [по ссылке](https://drive.google.com/file/d/1Id3OXdBQeUQqE8rKkgnQrbqrdmIlZ7qY/view?usp=sharing) и распаковать его в папку *files*;
 3. Запустить скрипт docker-production.bash
 
+*Пояснение:*
+```
+compose-production - необходим для запуска релизной версии ПО;
+compose-dev - необходим для тестирования ПО.
+```
+
 ## :computer: Технологический стек
 ```
 NGINX
