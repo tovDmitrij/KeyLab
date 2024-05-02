@@ -11,7 +11,7 @@
 
 ## :rocket: Запуск (только Docker)
 1. Установить Docker;
-2. Скачать архив с файлами [по ссылке](https://drive.google.com/file/d/1Id3OXdBQeUQqE8rKkgnQrbqrdmIlZ7qY/view?usp=sharing) и распаковать его в папку *files*;
+2. Скачать архив с файлами [по ссылке](https://drive.google.com/drive/folders/1msr1UAy3w1_vsBq9aF4zVs5QZepKXcow?usp=sharing) и распаковать его в папку *files*;
 3. Запустить скрипт docker-production.bash
 
 *Пояснение:*

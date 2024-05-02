@@ -9,7 +9,7 @@
         "SeeSwitch": "see_switch"
     },
     "Statistic":{
-        "AliveTimeSeconds": 300
+        "AliveTimeSeconds": 60
     },
     "Email": {
         "Host": "smtp.gmail.com",

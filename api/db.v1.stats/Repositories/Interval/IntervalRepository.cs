@@ -8,12 +8,12 @@ namespace db.v1.stats.Repositories.Interval
         private readonly IIntervalContext _db = db;
 
         public List<SelectIntervalDTO> SelectIntervals() => _db.Intervals
-            .Select(interval => new SelectIntervalDTO(interval.ID, interval.Title)).ToList();
+            .Select(x => new SelectIntervalDTO(x.ID, x.Title)).ToList();
 
         public int SelectIntervalSeconds(Guid intervalID) => _db.Intervals
-            .FirstOrDefault(interval => intervalID == interval.ID).Seconds;
+            .FirstOrDefault(x => intervalID == x.ID).Seconds;
 
         public bool IsIntervalExist(Guid intervalID) => _db.Intervals
-            .Any(interval => interval.ID == intervalID);
+            .Any(x => x.ID == intervalID);
     }
 }
