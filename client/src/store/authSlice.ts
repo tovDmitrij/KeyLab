@@ -35,8 +35,7 @@ export const authSlice = createSlice({
      */
     singnIn: (state, action) => {
       const accesToken = action.payload.accessToken;
-      state.accessToken = accesToken;
-      
+      state.accessToken = accesToken;  
       localStorage.setItem("token", accesToken);
       state.isAuth = true;
     },
@@ -46,7 +45,7 @@ export const authSlice = createSlice({
      */
     logOut: (state) => {
       //state.user = null;
-      state.accessToken = undefined;
+      
       localStorage.removeItem("token");
       state.isAuth = false;
       state.accessToken = undefined;

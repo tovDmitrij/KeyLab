@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 
 import classes from "./ConstructorsSwitches.module.scss";
@@ -13,12 +13,40 @@ import {
 } from "../../services/switchesService";
 import SwitchesList from "../../components/List/SwitchesList/SwitchesList";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+
+import { GLTF } from 'three-stdlib'
+import BlueSwitch from "/src/assets/mxblue.glb?url"
+
+
+type GLTFResult = GLTF & {
+  nodes: {
+    Switch230: THREE.Mesh
+    Switch230_1: THREE.Mesh
+    Switch230_2: THREE.Mesh
+  }
+  materials: {
+    ['Material.013']: THREE.MeshStandardMaterial
+    ['Material.014']: THREE.MeshStandardMaterial
+    ['Material.015']: THREE.MeshStandardMaterial
+  }   
+}
+
+
+const Switch: FC<any> = ({model}) =>  {
+  return (
+    <group rotation={[Math.PI / 2, 0, 0]} dispose={null} onClick={(e) => (console.log(e.object))}>
+        <mesh geometry={model.children[0].children[0].geometry} material={model.children[0].children[0].material}/>
+        <mesh geometry={model.children[0].children[1].geometry} material={model.children[0].children[1].material}/>
+        <mesh geometry={model.children[0].children[2].geometry} material={model.children[0].children[2].material}/>
+    </group>
+  )
+}
+
 
 const ConstructorsSwitches = () => {
   const ref = useRef(null);
-  const refModel = useRef(null);
-  const [previewFile, setPreviewFile] = useState();
+  
   const [getSwitch] = useLazyGetSwitchQuery();
   const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
 
@@ -80,16 +108,12 @@ const ConstructorsSwitches = () => {
             <directionalLight  args={[0xffffff]} position={[3, 0, 3]} intensity={1} />
             
             <OrbitControls
-              //maxPolarAngle={Math.PI / 2.2}
-              //minPolarAngle={Math.PI / 20}
               maxDistance={2}
               minDistance={1}
               enablePan={false}
               target={[0, 0, 0]}
             />
-            {model && (
-                <primitive object={model} />
-            )}
+            {model && ( <Switch model = {model}/>)}
           </Canvas>
         </Grid>
         <Grid item xs={2}>

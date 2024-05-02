@@ -38,7 +38,7 @@ export const getBaseQuery: BaseQueryFn<string | FetchArgs, unknown, unknown>
           console.log("🚀 ~ = ~ Token refreshed successfully")
           // @ts-ignore
           api.dispatch(updateToken({ accessToken: tryRefreshToken.data.accessToken }))
-
+          
           result = await baseQuery(args, api, extraOption)
           return result
         } else {

@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import AccordionElement from "./AccordionElement/AccordionElement";
+import { useNavigate } from "react-router-dom";
 
 type TBoxes = {
   /**
@@ -54,6 +55,8 @@ const BoxesList: FC<props> = ({
   handleChoose,
   handleNew,
 }) => {
+
+  const navigate = useNavigate()
 
   const onClick = (value: TBoxes) => {
     if (!value.id) return;

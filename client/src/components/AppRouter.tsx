@@ -6,8 +6,14 @@ import Constructors from "../pages/Constructors/ConstructorsMain";
 import ConstructorsSwitches from "../pages/ConstructorsSwitches/ConstructorsSwitches";
 import ConstrucrotBoxes from "../pages/ConstructorsBoxes/ConstructorsBoxes";
 import ConstructorKeys from "../pages/ConstructorsKeys/ConstructorsKeys";
+import Stats from "../pages/Stats/Stats";
+import { useAppSelector } from "../store/redux";
 
 const AppRouter = () => {
+  const { isAdmin } = useAppSelector(
+    (state) => state.profileReducer
+  );
+
   return (
     <Routes>
       <Route path="/constrKeys" element={<ConstructorKeys/>} />
@@ -16,6 +22,7 @@ const AppRouter = () => {
       <Route path="/constructors" element={<Constructors />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/stats" element={<Stats />} />
       <Route path="/" element={<MainPage />} />
     </Routes>
   );

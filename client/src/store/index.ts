@@ -6,10 +6,13 @@ import { switchesService } from '../services/switchesService.tsx';
 import { boxesService } from '../services/boxesService.tsx';
 import { keycapsService } from '../services/keycapsService.tsx';
 import { kitsService } from '../services/kitsService.tsx';
+import { statsService } from '../services/statsService.tsx';
+import statsSlice from './statsSlice.ts';
 
 const reducers = {
   authReducer: authSlice,
   profileReducer: profileSlice,
+  statsReducer: statsSlice,
   
   [authService.reducerPath]: authService.reducer,
   [userService.reducerPath]: userService.reducer,
@@ -18,6 +21,7 @@ const reducers = {
   [boxesService.reducerPath]:boxesService.reducer,
   [keycapsService.reducerPath]: keycapsService.reducer,
   [kitsService.reducerPath]: kitsService.reducer,
+  [statsService.reducerPath]: statsService.reducer,
 
 };
 

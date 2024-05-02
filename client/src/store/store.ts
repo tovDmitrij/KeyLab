@@ -7,6 +7,7 @@ import { switchesService } from "../services/switchesService";
 import { boxesService } from "../services/boxesService";
 import { kitsService } from "../services/kitsService";
 import { keycapsService } from "../services/keycapsService";
+import { statsService } from "../services/statsService";
 
 const rootReducer = combineReducers(reducers);
 
@@ -21,6 +22,7 @@ export const store = configureStore({
       boxesService.middleware,
       kitsService.middleware,
       keycapsService.middleware,
+      statsService.middleware,
     )
 });
 
