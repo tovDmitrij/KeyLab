@@ -180,7 +180,7 @@ const Register = () => {
             InputProps={{ sx: { borderRadius: 30 } }}
             size="small"
             name="repeatedPassword"
-            label="Павторите пароль"
+            label="Повторите пароль"
             variant="outlined"
             type="password"
             value={newUser?.repeatedPassword}

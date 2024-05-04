@@ -67,6 +67,8 @@ const Graph: FC<props> = ({chartData, flag})  => {
     },
   };
 
+  console.log(options)
+
   return (
     <ReactECharts option={options} />
   )
