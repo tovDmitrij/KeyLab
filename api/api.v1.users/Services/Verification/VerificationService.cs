@@ -2,7 +2,6 @@
 using component.v1.email;
 using component.v1.exceptions;
 
-using db.v1.users.DTOs.Verification;
 using db.v1.users.Repositories.User;
 using db.v1.users.Repositories.Verification;
 
@@ -37,8 +36,7 @@ namespace api.v1.users.Services.Verification
             var expireDate = _time.GetCurrentUNIXTime() + 300;
 
             var securityCode = _security.GenerateEmailVerificationCode(expireDate);
-            var insertEmailBody = new EmailVerificationDTO(body.Email, securityCode.Value, securityCode.ExpireDate);
-            _verification.InsertEmailCode(insertEmailBody);
+            _verification.InsertEmailCode(body.Email, securityCode.Value, securityCode.ExpireDate);
 
             var msgTitle = _localization.EmailVerificationEmailLabel();
             var msgText = _localization.EmailVerificationEmailText(securityCode.Value);

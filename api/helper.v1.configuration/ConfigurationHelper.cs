@@ -163,32 +163,25 @@ namespace helper.v1.configuration
             return string.Format(str, filePath);
         }
 
-        public string GetAttendanceTimeCacheKey(double leftDate, double rightDate)
+        public string GetAttendanceCacheKey(double leftDate, double rightDate)
         {
-            var key = "Cache:StatisticCacheKey";
+            var key = "Cache:AttendanceStatisticCacheKey";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "AttendanceTime");
+            return string.Format(str, leftDate, rightDate);
         }
 
-        public string GetAttendanceQuantityCacheKey(double leftDate, double rightDate)
+        public string GetActivityCacheKey(double leftDate, double rightDate, Guid activityID)
         {
-            var key = "Cache:StatisticCacheKey";
+            var key = "Cache:ActivityStatisticCacheKey";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "AttendanceQuantity");
+            return string.Format(str, leftDate, rightDate, activityID);
         }
 
-        public string GetActivityTimeCacheKey(double leftDate, double rightDate)
+        public string GetActivityCacheKey(double leftDate, double rightDate, Guid[] activityIDs)
         {
-            var key = "Cache:StatisticCacheKey";
+            var key = "Cache:ActivityStatisticCacheKey";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "ActivityTime");
-        }
-
-        public string GetActivityQuantityCacheKey(double leftDate, double rightDate)
-        {
-            var key = "Cache:StatisticCacheKey";
-            ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "ActivityQuantity");
+            return string.Format(str, leftDate, rightDate, activityIDs);
         }
 
 

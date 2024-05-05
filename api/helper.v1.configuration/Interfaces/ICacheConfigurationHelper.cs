@@ -11,12 +11,10 @@
         public string GetFileCacheKey(string filePath);
 
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetAttendanceTimeCacheKey(double leftDate, double rightDate);
+        public string GetAttendanceCacheKey(double leftDate, double rightDate);
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetAttendanceQuantityCacheKey(double leftDate, double rightDate);
+        public string GetActivityCacheKey(double leftDate, double rightDate, Guid activityID);
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetActivityTimeCacheKey(double leftDate, double rightDate);
-        /// <exception cref="ArgumentNullException"></exception>
-        public string GetActivityQuantityCacheKey(double leftDate, double rightDate);
+        public string GetActivityCacheKey(double leftDate, double rightDate, Guid[] activityIDs);
     }
 }

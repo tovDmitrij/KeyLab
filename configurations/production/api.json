@@ -55,6 +55,7 @@
         "ExpirationMinutes": 5,
         "PaginationListCacheKey": "Pagination-{0}-{1}-{2}-{3}-{4}",
         "FileCacheKey": "File-{0}",
-        "StatisticCacheKey": "Statistic-{0}-{1}-{2}"
+        "AttendanceStatisticCacheKey": "Statistic-{0}-{1}",
+        "ActivityStatisticCacheKey": "Statistic-{0}-{1}-{2}"
     }
 }
