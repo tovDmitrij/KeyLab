@@ -38,7 +38,7 @@ namespace api.v1.stats.Services.Stat
             {
                 try
                 {
-                    var cacheKey = _cacheCfg.GetAttendanceCacheKey(period.LeftDate, period.RightDate);
+                    var cacheKey = _cacheCfg.GetAttendanceTimeCacheKey(period.LeftDate, period.RightDate);
                     if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                     {
                         activities = _history.SelectHistories(period.LeftDate, period.RightDate)
@@ -79,7 +79,7 @@ namespace api.v1.stats.Services.Stat
             {
                 try
                 {
-                    var cacheKey = _cacheCfg.GetAttendanceCacheKey(period.LeftDate, period.RightDate);
+                    var cacheKey = _cacheCfg.GetAttendanceTimeCacheKey(period.LeftDate, period.RightDate);
                     if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                     {
                         activities = _history.SelectHistories(period.LeftDate, period.RightDate)
@@ -120,7 +120,7 @@ namespace api.v1.stats.Services.Stat
             var plotData = new List<AttendanceQuantityPlotDTO>();
             foreach (var period in periods)
             {
-                var cacheKey = _cacheCfg.GetAttendanceCacheKey(period.LeftDate, period.RightDate);
+                var cacheKey = _cacheCfg.GetAttendanceQuantityCacheKey(period.LeftDate, period.RightDate);
                 if (!_cache.TryGetValue(cacheKey, out int quantity))
                 {
                     quantity = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate);
@@ -141,7 +141,7 @@ namespace api.v1.stats.Services.Stat
             var shiftedLeftDate = periods.First().LeftDate;
             var rightDate = body.RightDate;
 
-            var cacheKey = _cacheCfg.GetAttendanceCacheKey(shiftedLeftDate, rightDate);
+            var cacheKey = _cacheCfg.GetAttendanceQuantityCacheKey(shiftedLeftDate, rightDate);
             if (!_cache.TryGetValue(cacheKey, out int quantity))
             {
                 quantity = _history.SelectCountOfDistinctUserID(shiftedLeftDate, rightDate);
@@ -168,7 +168,7 @@ namespace api.v1.stats.Services.Stat
                 {
                     try
                     {
-                        var cacheKey = _cacheCfg.GetActivityCacheKey(period.LeftDate, period.RightDate, activityID);
+                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate, activityID);
                         if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                         {
                             activities = _history.SelectHistories(period.LeftDate, period.RightDate, activityID)
@@ -214,7 +214,7 @@ namespace api.v1.stats.Services.Stat
                 {
                     try
                     {
-                        var cacheKey = _cacheCfg.GetActivityCacheKey(period.LeftDate, period.RightDate, activityID);
+                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate, activityID);
                         if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                         {
                             activities = _history.SelectHistories(period.LeftDate, period.RightDate, activityID)
@@ -263,7 +263,7 @@ namespace api.v1.stats.Services.Stat
                 var quantities = new Dictionary<Guid, int>();
                 foreach (var activityID in body.ActivityIDs)
                 {
-                    var cacheKey = _cacheCfg.GetActivityCacheKey(period.LeftDate, period.RightDate, activityID);
+                    var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(period.LeftDate, period.RightDate, activityID);
                     if (!_cache.TryGetValue(cacheKey, out int quantity))
                     {
                         quantity = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate, activityID);
@@ -287,7 +287,7 @@ namespace api.v1.stats.Services.Stat
             var shiftedLeftDate = periods.First().LeftDate;
             var rightDate = body.RightDate;
 
-            var cacheKey = _cacheCfg.GetActivityCacheKey(shiftedLeftDate, rightDate, body.ActivityIDs);
+            var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(shiftedLeftDate, rightDate, body.ActivityIDs);
             if (!_cache.TryGetValue(cacheKey, out int quantity))
             {
                 quantity = _history.SelectCountOfDistinctUserID(shiftedLeftDate, rightDate, body.ActivityIDs);
