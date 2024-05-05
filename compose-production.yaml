@@ -130,7 +130,6 @@ services:
       - 6021:6021
     command: redis-server --include /usr/local/etc/redis/redis.conf
     volumes:
-      - ./redis/production/keyboards/data:/data
       - ./configurations/production/redis.keyboards.conf:/usr/local/etc/redis/redis.conf
 
   redis_stats:
@@ -145,7 +144,6 @@ services:
       - 6022:6022
     command: redis-server --include /usr/local/etc/redis/redis.conf
     volumes:
-      - ./redis/production/stats/data:/data
       - ./configurations/production/redis.stats.conf:/usr/local/etc/redis/redis.conf
 
   rabbitmq:

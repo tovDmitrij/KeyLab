@@ -54,7 +54,7 @@ namespace api.v1.stats.Services.Stat
                     {
                         var currentUserActivities = activities!.Where(x => x.UserID == userID);
                         var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                        if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                        if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                         {
                             times.Add(aliveTime);
                         }
@@ -95,7 +95,7 @@ namespace api.v1.stats.Services.Stat
                     {
                         var currentUserActivities = activities!.Where(x => x.UserID == userID);
                         var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                        if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                        if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                         {
                             times.Add(aliveTime);
                         }
@@ -184,7 +184,7 @@ namespace api.v1.stats.Services.Stat
                         {
                             var currentUserActivities = activities!.Where(x => x.UserID == userID);
                             var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                            if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                            if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                             {
                                 times.Add(aliveTime);
                             }
@@ -230,7 +230,7 @@ namespace api.v1.stats.Services.Stat
                         {
                             var currentUserActivities = activities!.Where(x => x.UserID == userID);
                             var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                            if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                            if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                             {
                                 times.Add(aliveTime);
                             }
