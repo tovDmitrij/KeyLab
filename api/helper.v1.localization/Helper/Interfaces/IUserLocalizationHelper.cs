@@ -2,8 +2,6 @@
 {
     public interface IUserLocalizationHelper
     {
-        public string EmailVerificationEmailLabel();
-        public string EmailVerificationEmailText(string securityCode);
         public string EmailCodeIsNotExist();
         public string UserEmailIsBusy();
         public string UserPasswordsIsNotEqual();

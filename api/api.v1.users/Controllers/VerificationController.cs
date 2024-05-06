@@ -18,7 +18,7 @@ namespace api.v1.users.Controllers
         [HttpPost("email")]
         public async Task<IActionResult> VerificateEmail([FromBody] ConfirmEmailDTO body)
         {
-            await _verification.SendVerificationEmailCode(body);
+            await _verification.SendVerificationEmailCode(body.Email);
             return Ok();
         }
     }
