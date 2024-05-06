@@ -1,5 +1,4 @@
 ﻿using db.v1.users.Contexts.Interfaces;
-using db.v1.users.DTOs.User;
 using db.v1.users.Entities;
 
 namespace db.v1.users.Repositories.User
@@ -8,9 +7,9 @@ namespace db.v1.users.Repositories.User
     {
         private readonly IUserContext _db = db;
 
-        public Guid InsertUserInfo(InsertUserDTO body)
+        public Guid InsertUserInfo(string email, string salt, string hashPass, string nickname, double registrationDate)
         {
-            var user = new UserEntity(body.Email, body.Salt, body.HashPass, body.Nickname, body.RegistrationDate);
+            var user = new UserEntity(email, salt, hashPass, nickname, registrationDate);
 
             _db.Users.Add(user);
             SaveChanges();
@@ -18,19 +17,19 @@ namespace db.v1.users.Repositories.User
             return user.ID;
         }
 
-        public void InsertUserInfo(InsertUserDTO body, Guid userID)
+        public void InsertUserInfo(string email, string salt, string hashPass, string nickname, double registrationDate, Guid userID)
         {
-            var user = new UserEntity(userID, body.Email, body.Salt, body.HashPass, body.Nickname, body.RegistrationDate);
+            var user = new UserEntity(userID, email, salt, hashPass, nickname, registrationDate);
 
             _db.Users.Add(user);
             SaveChanges();
         }
 
-        public void UpdateRefreshToken(RefreshTokenDTO body)
+        public void UpdateRefreshToken(Guid userID, string refreshToken, double date)
         {
-            var user = _db.Users.FirstOrDefault(user => user.ID == body.UserID)!;
-            user.Token = body.RefreshToken;
-            user.TokenExpireDate = body.Date;
+            var user = _db.Users.FirstOrDefault(user => user.ID == userID)!;
+            user.Token = refreshToken;
+            user.TokenExpireDate = date;
 
             _db.Users.Update(user);
             SaveChanges();
@@ -51,10 +50,10 @@ namespace db.v1.users.Repositories.User
             _db.Users.Any(user => user.Email == email && 
                           user.Password == hashPass);
 
-        public bool IsRefreshTokenExpired(RefreshTokenDTO body) =>
-            _db.Users.Any(user => user.ID == body.UserID && 
-                          user.Token == body.RefreshToken && 
-                          user.TokenExpireDate > body.Date);
+        public bool IsRefreshTokenExpired(Guid userID, string refreshToken, double date) =>
+            _db.Users.Any(user => user.ID == userID && 
+                          user.Token == refreshToken && 
+                          user.TokenExpireDate > date);
 
 
 

@@ -12,6 +12,7 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.messageBroker;
 using helper.v1.regex.Interfaces;
 using helper.v1.time;
@@ -19,8 +20,8 @@ using helper.v1.time;
 namespace api.v1.keyboards.Services.Keyboard
 {
     public sealed class KeyboardService(IFileHelper file, ITimeHelper time, IKeyboardRepository keyboard, IUserRepository user, 
-        IKeyboardRegexHelper rgx, ICacheHelper cache, IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch, 
-        ILocalizationHelper localization, IActivityConfigurationHelper activityCfg, ICacheConfigurationHelper cacheCfg, 
+        IKeyboardRegexHelper rgx, ICacheHelper cache, IFileConfigurationHelper fileCfg, IBoxRepository box, ISwitchRepository @switch,
+        IFileLocalizationHelper localization, IActivityConfigurationHelper activityCfg, ICacheConfigurationHelper cacheCfg, 
         IMessageBrokerHelper broker) : 
         BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), IKeyboardService
     {

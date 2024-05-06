@@ -6,15 +6,15 @@ using db.v1.users.Repositories.User;
 using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
-using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.messageBroker;
 
 namespace api.v1.keyboards.Services
 {
-    public abstract class BaseAlgorithmService(ILocalizationHelper localization, IUserRepository user, ICacheHelper cache,
+    public abstract class BaseAlgorithmService(IFileLocalizationHelper localization, IUserRepository user, ICacheHelper cache,
         ICacheConfigurationHelper cacheCfg, IFileHelper file, IMessageBrokerHelper broker)
     {
-        protected readonly ILocalizationHelper _localization = localization;
+        protected readonly IFileLocalizationHelper _localization = localization;
         protected readonly IUserRepository _user = user;
         protected readonly ICacheHelper _cache = cache;
         protected readonly IFileHelper _file = file;

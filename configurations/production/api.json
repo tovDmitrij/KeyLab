@@ -9,7 +9,7 @@
         "SeeSwitch": "see_switch"
     },
     "Statistic":{
-        "AliveTimeSeconds": 60
+        "AliveTimeSeconds": 0
     },
     "Email": {
         "Host": "smtp.gmail.com",
@@ -55,6 +55,9 @@
         "ExpirationMinutes": 5,
         "PaginationListCacheKey": "Pagination-{0}-{1}-{2}-{3}-{4}",
         "FileCacheKey": "File-{0}",
-        "StatisticCacheKey": "Statistic-{0}-{1}-{2}"
+        "AttendanceTimeStatisticCacheKey": "AttendanceTimeStatistic-{0}-{1}",
+        "AttendanceQuantityStatisticCacheKey": "AttendanceQuantityStatistic-{0}-{1}",
+        "ActivityTimeStatisticCacheKey": "ActivityTimeStatistic-{0}-{1}-{2}",
+        "ActivityQuantityStatisticCacheKey": "ActivityQuantityStatistic-{0}-{1}-{2}"
     }
 }

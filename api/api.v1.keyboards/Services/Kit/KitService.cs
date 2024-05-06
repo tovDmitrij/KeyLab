@@ -12,13 +12,14 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.messageBroker;
 using helper.v1.regex.Interfaces;
 using helper.v1.time;
 
 namespace api.v1.keyboards.Services.Kit
 {
-    public sealed class KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, ILocalizationHelper localization, IUserRepository user, 
+    public sealed class KitService(IKitRepository kit, IFileConfigurationHelper fileCfg, IFileLocalizationHelper localization, IUserRepository user, 
         ITimeHelper time, IKitRegexHelper rgx, IFileHelper file, IKeycapRepository keycap, IActivityConfigurationHelper activityCfg, 
         ICacheHelper cache, ICacheConfigurationHelper cacheCfg, IMessageBrokerHelper broker, IBoxRepository box) : 
         BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), IKitService

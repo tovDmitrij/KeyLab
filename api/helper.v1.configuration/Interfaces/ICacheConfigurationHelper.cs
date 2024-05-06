@@ -15,8 +15,10 @@
         /// <exception cref="ArgumentNullException"></exception>
         public string GetAttendanceQuantityCacheKey(double leftDate, double rightDate);
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetActivityTimeCacheKey(double leftDate, double rightDate);
+        public string GetActivityTimeCacheKey(double leftDate, double rightDate, Guid activityID);
         /// <exception cref="ArgumentNullException"></exception>
-        public string GetActivityQuantityCacheKey(double leftDate, double rightDate);
+        public string GetActivityQuantityCacheKey(double leftDate, double rightDate, Guid activityID);
+        /// <exception cref="ArgumentNullException"></exception>
+        public string GetActivityQuantityCacheKey(double leftDate, double rightDate, Guid[] activityIDs);
     }
 }

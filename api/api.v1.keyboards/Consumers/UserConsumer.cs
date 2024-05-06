@@ -14,7 +14,7 @@ namespace api.v1.keyboards.Consumers
         {
             var msg = context.Message;
 
-            _user.InsertUserInfo(new(msg.Email, msg.Salt, msg.HashPass, msg.Nickname, msg.RegistrationDate), msg.UserID);
+            _user.InsertUserInfo(msg.Email, msg.Salt, msg.HashPass, msg.Nickname, msg.RegistrationDate, msg.UserID);
         }
     }
 }

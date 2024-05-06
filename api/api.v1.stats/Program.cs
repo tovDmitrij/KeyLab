@@ -16,6 +16,7 @@ using helper.v1.cache;
 using helper.v1.configuration;
 using helper.v1.configuration.Interfaces;
 using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.time;
 
 using MassTransit;
@@ -127,7 +128,7 @@ builder.Services.AddTransient<IHistoryRepository, HistoryRepository>();
 builder.Services.AddSingleton<ICacheConfigurationHelper, ConfigurationHelper>();
 builder.Services.AddSingleton<IStatConfigurationHelper, ConfigurationHelper>();
 
-builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
+builder.Services.AddSingleton<IStatLocalizationHelper, LocalizationHelper>();
 builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
 builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
 

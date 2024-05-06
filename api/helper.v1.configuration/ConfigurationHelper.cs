@@ -3,7 +3,7 @@ using helper.v1.configuration.Interfaces;
 
 namespace helper.v1.configuration
 {
-    public sealed class ConfigurationHelper(IConfiguration cfg) : IEmailConfigurationHelper, IJWTConfigurationHelper, IFileConfigurationHelper, 
+    public sealed class ConfigurationHelper(IConfiguration cfg) : IEmailConfigurationHelper, IJWTConfigurationHelper, IFileConfigurationHelper,
         ICacheConfigurationHelper, IActivityConfigurationHelper, IStatConfigurationHelper
     {
         private readonly IConfiguration _cfg = cfg;
@@ -163,32 +163,41 @@ namespace helper.v1.configuration
             return string.Format(str, filePath);
         }
 
+
+
         public string GetAttendanceTimeCacheKey(double leftDate, double rightDate)
         {
-            var key = "Cache:StatisticCacheKey";
+            var key = "Cache:AttendanceTimeStatisticCacheKey";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "AttendanceTime");
+            return string.Format(str, leftDate, rightDate);
         }
 
         public string GetAttendanceQuantityCacheKey(double leftDate, double rightDate)
         {
-            var key = "Cache:StatisticCacheKey";
+            var key = "Cache:AttendanceQuantityStatisticCacheKey";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "AttendanceQuantity");
+            return string.Format(str, leftDate, rightDate);
         }
 
-        public string GetActivityTimeCacheKey(double leftDate, double rightDate)
+        public string GetActivityTimeCacheKey(double leftDate, double rightDate, Guid activityID)
         {
-            var key = "Cache:StatisticCacheKey";
+            var key = "Cache:ActivityTimeStatisticCacheKey";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "ActivityTime");
+            return string.Format(str, leftDate, rightDate, activityID);
         }
 
-        public string GetActivityQuantityCacheKey(double leftDate, double rightDate)
+        public string GetActivityQuantityCacheKey(double leftDate, double rightDate, Guid activityID)
         {
-            var key = "Cache:StatisticCacheKey";
+            var key = "Cache:ActivityQuantityStatisticCacheKey";
             ValidateConfigurationKey(key, out var str);
-            return string.Format(str, leftDate, rightDate, "ActivityQuantity");
+            return string.Format(str, leftDate, rightDate, activityID);
+        }
+
+        public string GetActivityQuantityCacheKey(double leftDate, double rightDate, Guid[] activityIDs)
+        {
+            var key = "Cache:ActivityQuantityStatisticCacheKey";
+            ValidateConfigurationKey(key, out var str);
+            return string.Format(str, leftDate, rightDate, activityIDs);
         }
 
 

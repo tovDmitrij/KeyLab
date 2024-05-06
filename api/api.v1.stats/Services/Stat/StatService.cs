@@ -12,11 +12,12 @@ using db.v1.stats.Repositories.Interval;
 using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 
 namespace api.v1.stats.Services.Stat
 {
     public sealed class StatService(IIntervalRepository interval, IHistoryRepository history,
-        ICacheHelper cache, ILocalizationHelper localization, IStatConfigurationHelper statCfg, ICacheConfigurationHelper cacheCfg,
+        ICacheHelper cache, IStatLocalizationHelper localization, IStatConfigurationHelper statCfg, ICacheConfigurationHelper cacheCfg,
         IActivityRepository activity) : IStatService
     {
         private readonly IIntervalRepository _interval = interval;
@@ -24,7 +25,7 @@ namespace api.v1.stats.Services.Stat
         private readonly IHistoryRepository _history = history;
 
         private readonly ICacheHelper _cache = cache;
-        private readonly ILocalizationHelper _localization = localization;
+        private readonly IStatLocalizationHelper _localization = localization;
         private readonly IStatConfigurationHelper _statCfg = statCfg;
         private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
 
@@ -54,7 +55,7 @@ namespace api.v1.stats.Services.Stat
                     {
                         var currentUserActivities = activities!.Where(x => x.UserID == userID);
                         var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                        if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                        if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                         {
                             times.Add(aliveTime);
                         }
@@ -95,7 +96,7 @@ namespace api.v1.stats.Services.Stat
                     {
                         var currentUserActivities = activities!.Where(x => x.UserID == userID);
                         var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                        if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                        if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                         {
                             times.Add(aliveTime);
                         }
@@ -168,7 +169,7 @@ namespace api.v1.stats.Services.Stat
                 {
                     try
                     {
-                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate);
+                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate, activityID);
                         if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                         {
                             activities = _history.SelectHistories(period.LeftDate, period.RightDate, activityID)
@@ -184,7 +185,7 @@ namespace api.v1.stats.Services.Stat
                         {
                             var currentUserActivities = activities!.Where(x => x.UserID == userID);
                             var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                            if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                            if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                             {
                                 times.Add(aliveTime);
                             }
@@ -214,7 +215,7 @@ namespace api.v1.stats.Services.Stat
                 {
                     try
                     {
-                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate);
+                        var cacheKey = _cacheCfg.GetActivityTimeCacheKey(period.LeftDate, period.RightDate, activityID);
                         if (!_cache.TryGetValue(cacheKey, out List<SelectHistoryDTO>? activities))
                         {
                             activities = _history.SelectHistories(period.LeftDate, period.RightDate, activityID)
@@ -230,7 +231,7 @@ namespace api.v1.stats.Services.Stat
                         {
                             var currentUserActivities = activities!.Where(x => x.UserID == userID);
                             var aliveTime = currentUserActivities.Last().Date - currentUserActivities.First().Date;
-                            if (aliveTime > _statCfg.GetStatisticAliveTimeSeconds())
+                            if (aliveTime >= _statCfg.GetStatisticAliveTimeSeconds())
                             {
                                 times.Add(aliveTime);
                             }
@@ -263,7 +264,7 @@ namespace api.v1.stats.Services.Stat
                 var quantities = new Dictionary<Guid, int>();
                 foreach (var activityID in body.ActivityIDs)
                 {
-                    var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(period.LeftDate, period.RightDate);
+                    var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(period.LeftDate, period.RightDate, activityID);
                     if (!_cache.TryGetValue(cacheKey, out int quantity))
                     {
                         quantity = _history.SelectCountOfDistinctUserID(period.LeftDate, period.RightDate, activityID);
@@ -287,7 +288,7 @@ namespace api.v1.stats.Services.Stat
             var shiftedLeftDate = periods.First().LeftDate;
             var rightDate = body.RightDate;
 
-            var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(shiftedLeftDate, rightDate);
+            var cacheKey = _cacheCfg.GetActivityQuantityCacheKey(shiftedLeftDate, rightDate, body.ActivityIDs);
             if (!_cache.TryGetValue(cacheKey, out int quantity))
             {
                 quantity = _history.SelectCountOfDistinctUserID(shiftedLeftDate, rightDate, body.ActivityIDs);

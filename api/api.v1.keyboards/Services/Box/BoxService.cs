@@ -13,12 +13,14 @@ using helper.v1.time;
 using helper.v1.localization.Helper;
 using helper.v1.file;
 using helper.v1.messageBroker;
+using helper.v1.localization.Helper.Interfaces;
 
 namespace api.v1.keyboards.Services.Box
 {
     public sealed class BoxService(IBoxRepository box, IUserRepository user, ICacheHelper cache,
-        IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx, ITimeHelper time, ILocalizationHelper localization, 
-        IActivityConfigurationHelper activityCfg, IMessageBrokerHelper broker, ICacheConfigurationHelper cacheCfg) : 
+        IFileConfigurationHelper fileCfg, IFileHelper file, IBoxRegexHelper rgx, ITimeHelper time, 
+        IFileLocalizationHelper localization, IActivityConfigurationHelper activityCfg, IMessageBrokerHelper broker, 
+        ICacheConfigurationHelper cacheCfg) : 
         BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), IBoxService
     {
         private readonly IBoxRepository _box = box;

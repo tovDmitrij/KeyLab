@@ -1,15 +1,14 @@
 ﻿using component.v1.exceptions;
 
 using db.v1.users.Repositories.User;
-
-using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 
 namespace api.v1.users.Services.Profile
 {
-    public sealed class ProfileService(IUserRepository user, ILocalizationHelper localization) : IProfileService
+    public sealed class ProfileService(IUserRepository user, IUserLocalizationHelper localization) : IProfileService
     {
         private readonly IUserRepository _user = user;
-        private readonly ILocalizationHelper _localization = localization;
+        private readonly IUserLocalizationHelper _localization = localization;
 
         public string GetUserNickname(Guid userID)
         {

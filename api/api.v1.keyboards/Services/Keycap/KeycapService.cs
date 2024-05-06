@@ -11,12 +11,13 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.messageBroker;
 using helper.v1.time;
 
 namespace api.v1.keyboards.Services.Keycap
 {
-    public class KeycapService(IKeycapRepository keycap, IKitRepository kit, ILocalizationHelper localization, IFileConfigurationHelper fileCfg, 
+    public class KeycapService(IKeycapRepository keycap, IKitRepository kit, IFileLocalizationHelper localization, IFileConfigurationHelper fileCfg, 
         IUserRepository user, ITimeHelper time, IActivityConfigurationHelper activityCfg, ICacheHelper cache, ICacheConfigurationHelper cacheCfg,
         IFileHelper file, IMessageBrokerHelper broker) : 
         BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), IKeycapService
