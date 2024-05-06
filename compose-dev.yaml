@@ -164,3 +164,12 @@ services:
       ADMINER_DESIGN: 'nette'
     ports:
       - 7041:8080
+
+  client:
+    container_name: client
+    restart: always
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.client
+    ports:
+      - 7051:8000

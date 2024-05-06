@@ -8,3 +8,11 @@ Dockerfile.*    linguist-language=Dockerfile
 
 *.yaml          linguist-detectable=true
 *.yaml          linguist-language=Dockerfile
+
+*.html          linguist-language=TypeScript
+*.scss          linguist-language=TypeScript
+*.sass          linguist-language=TypeScript
+*.css           linguist-language=TypeScript
+*.js            linguist-language=TypeScript
+*.cjs           linguist-language=TypeScript
+*.mjs           linguist-language=TypeScript
