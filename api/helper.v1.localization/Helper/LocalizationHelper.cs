@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Localization;
 
 using helper.v1.localization.Localizations;
+using helper.v1.localization.Helper.Interfaces;
 
 namespace helper.v1.localization.Helper
 {
-    public sealed class LocalizationHelper(IStringLocalizer<Localization> localization) : ILocalizationHelper
+    public sealed class LocalizationHelper(IStringLocalizer<Localization> localization) : IUserLocalizationHelper, 
+        IStatLocalizationHelper, IRegexLocalizationHelper, IFileLocalizationHelper
     {
         private readonly IStringLocalizer<Localization> _localization = localization;
 

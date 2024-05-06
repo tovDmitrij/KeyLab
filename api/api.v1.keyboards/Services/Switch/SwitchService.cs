@@ -8,11 +8,12 @@ using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.file;
 using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.messageBroker;
 
 namespace api.v1.keyboards.Services.Switch
 {
-    public sealed class SwitchService(ISwitchRepository @switch, IFileConfigurationHelper fileCfg, ILocalizationHelper localization, 
+    public sealed class SwitchService(ISwitchRepository @switch, IFileConfigurationHelper fileCfg, IFileLocalizationHelper localization, 
         IActivityConfigurationHelper activityCfg, ICacheHelper cache, ICacheConfigurationHelper cacheCfg, IUserRepository user,
         IFileHelper file, IMessageBrokerHelper broker) : 
         BaseAlgorithmService(localization, user, cache, cacheCfg, file, broker), ISwitchService

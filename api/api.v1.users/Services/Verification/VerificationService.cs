@@ -4,8 +4,7 @@ using component.v1.exceptions;
 
 using db.v1.users.Repositories.User;
 using db.v1.users.Repositories.Verification;
-
-using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.messageBroker;
 using helper.v1.regex.Interfaces;
 using helper.v1.security.Helper;
@@ -14,7 +13,7 @@ using helper.v1.time;
 namespace api.v1.users.Services.Verification
 {
     public sealed class VerificationService(IVerificationRepository verigication, IVerificationRegexHelper rgx, 
-        ISecurityHelper security, IUserRepository user, ILocalizationHelper localization, ITimeHelper time, 
+        ISecurityHelper security, IUserRepository user, IUserLocalizationHelper localization, ITimeHelper time, 
         IMessageBrokerHelper broker) : IVerificationService
     {
         private readonly IVerificationRepository _verification = verigication;
@@ -22,7 +21,7 @@ namespace api.v1.users.Services.Verification
 
         private readonly IVerificationRegexHelper _rgx = rgx;
         private readonly ISecurityHelper _security = security;
-        private readonly ILocalizationHelper _localization = localization;
+        private readonly IUserLocalizationHelper _localization = localization;
         private readonly ITimeHelper _time = time;
         private readonly IMessageBrokerHelper _broker = broker;
 

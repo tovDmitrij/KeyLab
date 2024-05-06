@@ -38,6 +38,7 @@ using component.v1.middlewares;
 using db.v1.users.Repositories.User;
 using db.v1.users.Contexts;
 using db.v1.users.Contexts.Interfaces;
+using helper.v1.localization.Helper.Interfaces;
 
 
 
@@ -146,7 +147,7 @@ builder.Services.AddTransient<IKeycapRepository, KeycapRepository>();
 builder.Services.AddSingleton<IFileHelper, FileHelper>();
 builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
 builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
-builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
+builder.Services.AddSingleton<IFileLocalizationHelper, LocalizationHelper>();
 builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
 
 builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();

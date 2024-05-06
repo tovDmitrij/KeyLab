@@ -8,17 +8,17 @@ using db.v1.users.Repositories.User;
 using helper.v1.jwt.Helper;
 using helper.v1.security.Helper;
 using helper.v1.time;
-using helper.v1.localization.Helper;
 using helper.v1.regex.Interfaces;
 using helper.v1.configuration.Interfaces;
 using helper.v1.messageBroker;
 
 using api.v1.users.DTOs;
+using helper.v1.localization.Helper.Interfaces;
 
 namespace api.v1.users.Services.User
 {
     public sealed class UserService(IUserRepository user, IVerificationRepository verification, IUserRegexHelper rgx,
-        ISecurityHelper security, ITimeHelper time, IJWTHelper jwt, ILocalizationHelper localization,
+        ISecurityHelper security, ITimeHelper time, IJWTHelper jwt, IUserLocalizationHelper localization,
         IJWTConfigurationHelper cfgJWT, IFileConfigurationHelper cfgFile, IMessageBrokerHelper broker) : IUserService
     {
         private readonly IUserRepository _user = user;
@@ -28,7 +28,7 @@ namespace api.v1.users.Services.User
         private readonly ISecurityHelper _security = security;
         private readonly ITimeHelper _time = time;
         private readonly IJWTHelper _jwt = jwt;
-        private readonly ILocalizationHelper _localization = localization;
+        private readonly IUserLocalizationHelper _localization = localization;
         private readonly IJWTConfigurationHelper _cfgJWT = cfgJWT;
         private readonly IFileConfigurationHelper _cfgFile = cfgFile;
         private readonly IMessageBrokerHelper _broker = broker;

@@ -1,15 +1,14 @@
 ﻿using component.v1.exceptions;
-
-using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 using helper.v1.regex.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace helper.v1.regex
 {
-    public sealed partial class RegexHelper(ILocalizationHelper localization) : 
+    public sealed partial class RegexHelper(IRegexLocalizationHelper localization) : 
         IUserRegexHelper, IVerificationRegexHelper, IKeyboardRegexHelper, IBoxRegexHelper, IKitRegexHelper
     {
-        private readonly ILocalizationHelper _localization = localization;
+        private readonly IRegexLocalizationHelper _localization = localization;
 
         [GeneratedRegex(@"^[\w\-\.]+\@[\-\w]+\.[\w]+$")]
         private partial Regex EmailRgx();

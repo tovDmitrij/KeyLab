@@ -12,11 +12,12 @@ using db.v1.stats.Repositories.Interval;
 using helper.v1.cache;
 using helper.v1.configuration.Interfaces;
 using helper.v1.localization.Helper;
+using helper.v1.localization.Helper.Interfaces;
 
 namespace api.v1.stats.Services.Stat
 {
     public sealed class StatService(IIntervalRepository interval, IHistoryRepository history,
-        ICacheHelper cache, ILocalizationHelper localization, IStatConfigurationHelper statCfg, ICacheConfigurationHelper cacheCfg,
+        ICacheHelper cache, IStatLocalizationHelper localization, IStatConfigurationHelper statCfg, ICacheConfigurationHelper cacheCfg,
         IActivityRepository activity) : IStatService
     {
         private readonly IIntervalRepository _interval = interval;
@@ -24,7 +25,7 @@ namespace api.v1.stats.Services.Stat
         private readonly IHistoryRepository _history = history;
 
         private readonly ICacheHelper _cache = cache;
-        private readonly ILocalizationHelper _localization = localization;
+        private readonly IStatLocalizationHelper _localization = localization;
         private readonly IStatConfigurationHelper _statCfg = statCfg;
         private readonly ICacheConfigurationHelper _cacheCfg = cacheCfg;
 

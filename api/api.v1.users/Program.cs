@@ -28,6 +28,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using helper.v1.localization.Helper.Interfaces;
 
 
 
@@ -117,8 +118,9 @@ builder.Services.AddTransient<IVerificationRepository, VerificationRepository>()
 builder.Services.AddSingleton<IJWTHelper, JWTHelper>();
 builder.Services.AddSingleton<ISecurityHelper, SecurityHelper>();
 builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
-builder.Services.AddSingleton<ILocalizationHelper, LocalizationHelper>();
 builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
+builder.Services.AddSingleton<IUserLocalizationHelper, LocalizationHelper>();
+builder.Services.AddSingleton<IRegexLocalizationHelper, LocalizationHelper>();
 
 builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
 builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();
