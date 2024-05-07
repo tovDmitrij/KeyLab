@@ -5,10 +5,10 @@ using helper.v1.localization.Helper.Interfaces;
 
 namespace api.v1.users.Services.Profile
 {
-    public sealed class ProfileService(IUserRepository user, IUserLocalizationHelper localization) : IProfileService
+    public sealed class ProfileService(IUserRepository user, IProfileLocalizationHelper localization) : IProfileService
     {
         private readonly IUserRepository _user = user;
-        private readonly IUserLocalizationHelper _localization = localization;
+        private readonly IProfileLocalizationHelper _localization = localization;
 
         public string GetUserNickname(Guid userID)
         {

@@ -122,6 +122,7 @@ builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
 builder.Services.AddSingleton<IUserLocalizationHelper, LocalizationHelper>();
 builder.Services.AddSingleton<IRegexLocalizationHelper, LocalizationHelper>();
 builder.Services.AddSingleton<IVerificationLocalizationHelper, LocalizationHelper>();
+builder.Services.AddSingleton<IProfileLocalizationHelper, LocalizationHelper>();
 
 builder.Services.AddSingleton<IJWTConfigurationHelper, ConfigurationHelper>();
 builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();

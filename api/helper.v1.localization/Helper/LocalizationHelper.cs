@@ -6,7 +6,8 @@ using helper.v1.localization.Helper.Interfaces;
 namespace helper.v1.localization.Helper
 {
     public sealed class LocalizationHelper(IStringLocalizer<Localization> localization) : IUserLocalizationHelper, 
-        IStatLocalizationHelper, IRegexLocalizationHelper, IFileLocalizationHelper, IVerificationLocalizationHelper
+        IStatLocalizationHelper, IRegexLocalizationHelper, IFileLocalizationHelper, IVerificationLocalizationHelper,
+        IProfileLocalizationHelper
     {
         private readonly IStringLocalizer<Localization> _localization = localization;
 
