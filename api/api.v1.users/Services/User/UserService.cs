@@ -33,44 +33,44 @@ namespace api.v1.users.Services.User
         private readonly IFileConfigurationHelper _cfgFile = cfgFile;
         private readonly IMessageBrokerHelper _broker = broker;
 
-        public async Task SignUp(PostSignUpDTO body)
+        public async Task SignUp(string email, string password, string repeatedPassword, string nickname, string emailCode)
         {
-            _rgx.ValidateUserEmail(body.Email);
-            _rgx.ValidateUserPassword(body.Password);
-            _rgx.ValidateUserNickname(body.Nickname);
+            _rgx.ValidateUserEmail(email);
+            _rgx.ValidateUserPassword(password);
+            _rgx.ValidateUserNickname(nickname);
 
-            if (body.Password != body.RepeatedPassword)
+            if (password != repeatedPassword)
                 throw new BadRequestException(_localization.UserPasswordsIsNotEqual());
 
-            if (_user.IsEmailBusy(body.Email))
+            if (_user.IsEmailBusy(email))
                 throw new BadRequestException(_localization.UserEmailIsBusy());
 
             var currentDate = _time.GetCurrentUNIXTime();
 
-            if (!_verification.IsEmailCodeValid(body.Email, body.EmailCode, currentDate))
+            if (!_verification.IsEmailCodeValid(email, emailCode, currentDate))
                 throw new BadRequestException(_localization.EmailCodeIsNotExist());
 
             var salt = _security.GenerateRandomValue();
-            var hashPassword = _security.HashPassword(salt, body.Password);
+            var hashPassword = _security.HashPassword(salt, password);
 
-            var userID = _user.InsertUserInfo(body.Email, salt, hashPassword, body.Nickname, currentDate);
+            var userID = _user.InsertUserInfo(email, salt, hashPassword, nickname, currentDate);
 
-            var data = new UserDTO(userID, body.Email, salt, hashPassword, body.Nickname, currentDate);
+            var data = new UserDTO(userID, email, salt, hashPassword, nickname, currentDate);
             await _broker.PublishData(data);
         }
 
-        public SignInDTO SignIn(PostSignInDTO body)
+        public SignInDTO SignIn(string email, string password)
         {
-            _rgx.ValidateUserEmail(body.Email);
-            _rgx.ValidateUserPassword(body.Password);
+            _rgx.ValidateUserEmail(email);
+            _rgx.ValidateUserPassword(email);
 
-            var salt = _user.SelectUserSalt(body.Email) ??
+            var salt = _user.SelectUserSalt(email) ??
                 throw new BadRequestException(_localization.UserIsNotExist());
-            var userID = _user.SelectUserIDByEmail(body.Email) ??
+            var userID = _user.SelectUserIDByEmail(email) ??
                 throw new BadRequestException(_localization.UserIsNotExist());
 
-            var hashPassword = _security.HashPassword(salt, body.Password);
-            if (!_user.IsUserExist(body.Email, hashPassword))
+            var hashPassword = _security.HashPassword(salt, password);
+            if (!_user.IsUserExist(email, hashPassword))
                 throw new BadRequestException(_localization.UserIsNotExist());
 
             var isAdmin = false;

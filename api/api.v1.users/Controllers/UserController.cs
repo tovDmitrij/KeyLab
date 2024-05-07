@@ -16,14 +16,14 @@ namespace api.v1.users.Controllers
         [HttpPost("signUp")]
         public async Task<IActionResult> SignUp([FromBody] PostSignUpDTO body)
         {
-            await _user.SignUp(body);
+            await _user.SignUp(body.Email, body.Password, body.RepeatedPassword, body.Nickname, body.EmailCode);
             return Ok();
         }
 
         [HttpPost("signIn")]
         public IActionResult SignIn([FromBody] PostSignInDTO body)
         {
-            var response = _user.SignIn(body);
+            var response = _user.SignIn(body.Email, body.Password);
             SetRefreshTokenInCookie(response.RefreshToken);
             return Ok(new { response.AccessToken, response.IsAdmin });
         }
