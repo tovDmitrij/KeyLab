@@ -1,0 +1,34 @@
+import Header from "../../components/Header/Header";
+import { Container } from "@mui/material";
+import { useGetAuthKeyboardsQuery } from "../../services/keyboardService";
+
+import Title from "../../components/MainPage/Title";
+import About from "../../components/MainPage/About";
+import Scheme from "../../components/MainPage/Scheme";
+import Models from "../../components/MainPage/Models";
+import ScrollButton from "../../components/MainPage/ScrollButton";
+import Constructor from "../../components/MainPage/Constructor";
+
+const MainPage = () => {
+
+  const { data } = useGetAuthKeyboardsQuery({
+    page: 1,
+    pageSize: 10,
+  });
+
+  return (
+    <>
+      <Header />
+      <Container maxWidth={false} disableGutters>
+        <Title />
+        <About />
+        <Scheme />
+        <Models />
+        <Constructor />
+        <ScrollButton/>
+      </Container>
+    </>
+  );
+};
+
+export default MainPage;
