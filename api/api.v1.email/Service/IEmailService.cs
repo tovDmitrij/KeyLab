@@ -4,6 +4,6 @@ namespace api.v1.email.Service
 {
     public interface IEmailService
     {
-        public Task SendEmail(SendEmailDTO body);
+        public Task SendEmail(string emailTo, string msgTitle, string msgText);
     }
 }

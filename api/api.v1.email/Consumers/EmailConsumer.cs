@@ -15,7 +15,7 @@ namespace api.v1.email.Consumers
         {
             var data = context.Message;
             _logger.LogInformation($">>>New msg: {data.EmailTo} - {data.MsgTitle} - {data.MsgText}");
-            await _email.SendEmail(data);
+            await _email.SendEmail(data.EmailTo, data.MsgTitle, data.MsgText);
         }
     }
 }
