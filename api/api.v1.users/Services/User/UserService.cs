@@ -62,7 +62,7 @@ namespace api.v1.users.Services.User
         public SignInDTO SignIn(string email, string password)
         {
             _rgx.ValidateUserEmail(email);
-            _rgx.ValidateUserPassword(email);
+            _rgx.ValidateUserPassword(password);
 
             var salt = _user.SelectUserSalt(email) ??
                 throw new BadRequestException(_localization.UserIsNotExist());
