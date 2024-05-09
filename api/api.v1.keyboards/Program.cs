@@ -148,6 +148,7 @@ builder.Services.AddSingleton<IFileHelper, FileHelper>();
 builder.Services.AddSingleton<ITimeHelper, TimeHelper>();
 builder.Services.AddSingleton<ICacheHelper, RedisCacheHelper>();
 builder.Services.AddSingleton<IFileLocalizationHelper, LocalizationHelper>();
+builder.Services.AddSingleton<IRegexLocalizationHelper, LocalizationHelper>();
 builder.Services.AddSingleton<IMessageBrokerHelper, RabbitMQHelper>();
 
 builder.Services.AddSingleton<IFileConfigurationHelper, ConfigurationHelper>();

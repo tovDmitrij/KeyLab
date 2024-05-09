@@ -15,7 +15,7 @@ create index on users(email);
 create index on users(email, password);
 create index on users(token, token_expire_date);
 copy users(id, email, salt, password, nickname, registration_date)
-from '/postgres/users/init/users.csv'
+from '/postgres/users/init/users_100million.csv'
 delimiter ','
 csv header;
 
