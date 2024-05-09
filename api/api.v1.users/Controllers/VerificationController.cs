@@ -11,7 +11,7 @@ namespace api.v1.users.Controllers
     [ApiController]
     [AllowAnonymous]
     [Route("api/v1/verifications")]
-    public sealed class VerificationController(IVerificationService verification) : APIController
+    public sealed class VerificationController(IVerificationService verification) : ControllerBase
     {
         private readonly IVerificationService _verification = verification;
 

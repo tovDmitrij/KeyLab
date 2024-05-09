@@ -31,15 +31,15 @@ namespace api.v1.email.Service
 
 
 
-        public async Task SendEmail(SendEmailDTO body)
+        public async Task SendEmail(string emailTo, string msgTitle, string msgText)
         {
             var msg = new MimeMessage();
             msg.From.Add(_admin);
-            msg.To.Add(new MailboxAddress("", body.EmailTo));
-            msg.Subject = body.MsgTitle;
+            msg.To.Add(new MailboxAddress("", emailTo));
+            msg.Subject = msgTitle;
             msg.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
-                Text = body.MsgText
+                Text = msgText
             };
 
             await _smptClient.SendAsync(msg);
