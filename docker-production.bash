@@ -2,6 +2,7 @@
 
 docker compose -p keylab-production stop;
 docker compose -p keylab-production down;
+docker image rm keylab-production-client;
 docker image rm keylab-production-api_keyboards;
 docker image rm keylab-production-api_users;
 docker image rm keylab-production-api_email;
