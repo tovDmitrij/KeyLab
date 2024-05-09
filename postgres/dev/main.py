@@ -2,6 +2,7 @@ from uuid import UUID, uuid4
 import csv
 import string
 import random
+import time
 
 
 
@@ -26,7 +27,9 @@ def generateRegistrationDate() -> int:
 
 
 def generateFakeData(fileName: str, limit: int):
-    with open(f'{fileName}.csv', 'w', newline='') as file:
+    start = time.time()
+
+    with open(f'{fileName}', 'w', newline='') as file:
         fields = ["id", "email", "salt", "password", "nickname", "registration_date"]
         fileWriter = csv.writer(file)
         fileWriter.writerow(fields)
@@ -40,9 +43,16 @@ def generateFakeData(fileName: str, limit: int):
                 generateID(), generateEmail(), generateSalt(), 
                 generatePassword(), generateNickname(), generateRegistrationDate()
             ])
+    
+    end = time.time()
+    seconds = end - start
+    print(f'Генерация данных для файла {fileName} длины {limit} заняло {seconds} секунд!')
 
 
 
-#generateFakeData('users_1million', 1_000_000)
-generateFakeData('users_10million', 10_000_000)
-#generateFakeData('users_100million', 100_000_000)
+'''
+db_users
+'''
+#generateFakeData('./users/init/users_1million.csv', 1_000_000) #~3 минуты и ~111мб
+#generateFakeData('./users/init/users_10million.csv', 10_000_000) #~30 минут и ~1,1гб
+#generateFakeData('./users/init/users_30million.csv', 30_000_000)
