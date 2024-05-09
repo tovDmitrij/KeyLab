@@ -9,9 +9,12 @@ postgres/dev/stats/data
 logs
 files/*
 !files/README.md
+users_*.csv
 
 rabbitmq
 redis
+
+.venv
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/aspnetcore
