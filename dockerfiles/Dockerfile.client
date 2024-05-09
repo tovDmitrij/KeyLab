@@ -1,0 +1,10 @@
+FROM node:19.2.0
+WORKDIR /client
+
+COPY ../client/package.json .
+RUN npm i
+
+COPY ../client .
+EXPOSE 8000
+
+CMD npm run dev
