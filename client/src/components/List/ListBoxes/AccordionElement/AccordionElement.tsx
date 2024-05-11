@@ -1,6 +1,5 @@
 import { FC } from "react";
 
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Accordion,
   AccordionDetails,
@@ -12,8 +11,8 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { typeBoxesId } from "../../../../pages/ConstructorsBoxes/ConstructorsBoxes";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useGetAuthBoxesQuery, useGetBoxesQuery, useGetDefaultBoxesQuery } from "../../../../services/boxesService";
 
 type TBoxes = {
   /**
@@ -27,28 +26,39 @@ type TBoxes = {
 };
 
 type props = {
-  type: keyof typeof typeBoxesId;
+  boxTypeId: string;
   name: string;
-  boxes?: TBoxes[];
   handleChoose: (data: TBoxes) => void;
-  handleNew: (data: string) => void;
+  handleNew: (idType: string, idBaseBox : string) => void;
 };
 
 const AccordionElement: FC<props> = ({
-  type,
-  boxes: boxes,
-  name: name,
+  boxTypeId,
+  name,
   handleChoose,
   handleNew,
 }) => {
+
+  const { data : boxes } = useGetAuthBoxesQuery({
+    page: 1,
+    pageSize: 100,
+    typeID: boxTypeId,
+  });
+
+  const { data : boxesBase } = useGetDefaultBoxesQuery({
+    page: 1,
+    pageSize: 100,
+    typeID: boxTypeId,
+  });
+
   const onClick = (value: TBoxes) => {
     if (!value.id) return;
     handleChoose(value);
   };
 
   const onClickNew = () => {
-    //console.log(typeBoxesId[type])
-    handleNew(typeBoxesId[type]);
+    if (!boxesBase || !boxesBase[0]?.id) return;
+    handleNew(boxTypeId, boxesBase[0]?.id as string);
   };
 
   return (
@@ -83,7 +93,7 @@ const AccordionElement: FC<props> = ({
       >
         <Grid container direction="column">
           <List disablePadding>
-            {boxes?.map((value) => {
+            {boxesBase && boxes && boxesBase.concat(boxes).map((value) => {
               const labelId = `checkbox-list-label-${value}`;
 
               return (

@@ -84,6 +84,12 @@ export const boxesService = createApi({
         method: "GET",
       }),
     }),
+    getBoxPreview: builder.query<any, string>({
+      query: (ID : string ) => ({
+        url: `boxes/preview?boxID=${ID}`,
+        method: "GET",
+      }),
+    }),
     postBox: builder.mutation<any, any>({
       query: (bodyFormData) => {
         let formData = new FormData();
@@ -103,6 +109,8 @@ export const boxesService = createApi({
 });
 
 export const {
+  useGetBoxPreviewQuery,
+  useLazyGetBoxPreviewQuery,
   usePostBoxMutation,
   useGetBoxesTypesQuery,
   useLazyGetBoxesTypesQuery,

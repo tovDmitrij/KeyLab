@@ -10,6 +10,9 @@ import { Button, Container, ListItemIcon, Typography } from "@mui/material";
 import PlusImage from "./Plus.png";
 import Preview from "./Preview";
 import { useNavigate } from "react-router-dom";
+import { useLazyGetSwitchPreviewQuery } from "../../../services/switchesService";
+import { useAppDispatch } from "../../../store/redux";
+import { setSwitchTitle, setSwitchTypeID } from "../../../store/keyboardSlice";
 
 type TSwitches = {
   /**
@@ -28,9 +31,22 @@ type props = {
 };
 
 const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
-  const navigate = useNavigate()
+  const [title, setTitle] = useState<string | undefined>(undefined)
+  const [id, setId] = useState<string | undefined>(undefined)
+
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const switchAdd = () => {
+    dispatch(setSwitchTitle(title));
+    dispatch(setSwitchTypeID(id));
+    navigate("/constructors")
+  }
+
   const onClick = (value: TSwitches) => {
     if (!value.id) return;
+    setTitle(value.title);
+    setId(value.id);
     handleChoose(value.id);
   };
 
@@ -49,14 +65,11 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
       <List
         sx={{
           mt: "66px",
-          //height: "76%",
           position: "relative",
           overflowY: "auto",
         }}
       >
         {switches?.map((value) => {
-          const labelId = `checkbox-list-label-${value}`;
-
           return (
             <ListItem
               sx={{ textAlign: "center", minWidth: "100" }}
@@ -76,14 +89,18 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
                 dense
               >
                 <ListItemIcon>
-                  <Preview type="switch" id={value.id} />
+                    <Preview
+                      id = {value?.id}
+                      type="switch"
+                      width={65}
+                      height={65}
+                    />
                 </ListItemIcon>
                 <ListItemText
                   sx={{
                     color: "#c1c0c0",
                     m: "5px",
                   }}
-                  id={labelId}
                   primary={`${value.title}`}
                 />
               </ListItemButton>
@@ -94,20 +111,20 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
       <Container
         disableGutters
         sx={{
-          //height: "76%",
-          //position: "rela",
           marginTop: "auto",
         }}
-       >
+      >
         <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
             border: "1px solid #c1c0c0",
+            
           }}
+          disabled={!id}
+          onClick={() => switchAdd()}
           variant="contained"
-          //onClick={() => set }
         >
           <Typography
             sx={{

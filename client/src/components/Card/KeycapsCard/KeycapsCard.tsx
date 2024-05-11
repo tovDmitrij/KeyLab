@@ -15,7 +15,7 @@ const KeycapsCard = () => {
       <CardActionArea onClick={() => navigate("/constrKeys")}>
         <CardContent className={classes.card_content}>
           <Typography sx={{ mt: 1, fontSize: 20, color: "#AEAEAE" }}>
-            Выберите кнопки
+            Выберите набор клавиш
           </Typography>
           <IconPlus sx={{ fontSize: 50 }} />{" "}
         </CardContent>

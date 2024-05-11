@@ -12,8 +12,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { typeBoxesId } from "../../../../pages/ConstructorsBoxes/ConstructorsBoxes";
-import { useGetDefaultKitsQuery } from "../../../../services/kitsService";
+import { useGetAuthKitsQuery, useGetDefaultKitsQuery } from "../../../../services/kitsService";
 
 type TKits = {
   /**
@@ -27,7 +26,6 @@ type TKits = {
 };
 
 type props = {
-  type?: string;
   name: string;
   handleChoose: (data: TKits) => void;
   handleNew: (data: string) => void;
@@ -35,18 +33,24 @@ type props = {
 };
 
 const AccordionElementKit: FC<props> = ({
-  type: type,
-  boxTypeId: boxTypeId,
-  name: name,
+  boxTypeId,
+  name,
   handleChoose,
   handleNew,
 }) => {
 
-  const { data : kits } = useGetDefaultKitsQuery({
+  const { data : kitsBase } = useGetDefaultKitsQuery({
     page: 1,
-    pageSize: 10,
+    pageSize: 100,
     typeID: boxTypeId,
   });
+
+  const { data : kits } = useGetAuthKitsQuery({
+    page: 1,
+    pageSize: 100,
+    typeID: boxTypeId,
+  });
+
 
   const onClick = (value: TKits) => {
     if (!value.id) return;
@@ -54,7 +58,6 @@ const AccordionElementKit: FC<props> = ({
   };
 
   const onClickNew = () => {
-    //console.log(typeBoxesId[type])
     handleNew(boxTypeId);
   };
 
@@ -80,7 +83,7 @@ const AccordionElementKit: FC<props> = ({
       >
         <Grid container direction="column">
           <List disablePadding>
-            {kits?.map((value) => {
+            {kits && kitsBase && kitsBase?.concat(kits)?.map((value) => {
               const labelId = `checkbox-list-label-${value}`;
 
               return (

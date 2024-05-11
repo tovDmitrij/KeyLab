@@ -56,16 +56,14 @@ export const keycapsService = createApi({
         responseHandler: (response) => response.arrayBuffer(),
       }),
     }),
-    postKeycap: builder.mutation<any, any>({
+    putKeycap: builder.mutation<any, any>({
       query: (bodyFormData) => {
         let formData = new FormData();
         formData.append('file', bodyFormData.file);
-        formData.append('preview', bodyFormData.preview);
-        formData.append('title', bodyFormData.title);
-        formData.append('kitID', bodyFormData.kitID); 
+        formData.append('keycapID', bodyFormData.keycapID); 
         return {
           url: `/keycaps`,
-          method: "POST",
+          method: "PUT",
           body:  formData,
           formData: true,
         };
@@ -79,7 +77,7 @@ export const {
   useLazyGetKeycapsQuery,
   useGetKeycapsTotalPagesQuery,
   useLazyGetKeycapsTotalPagesQuery,
-  usePostKeycapMutation,
+  usePutKeycapMutation,
   useGetKeycapQuery,
   useLazyGetKeycapQuery,
 } = keycapsService;
