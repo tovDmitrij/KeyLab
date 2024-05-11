@@ -1,15 +1,14 @@
 postgres/production/keyboards/data
 postgres/production/users/data
 postgres/production/stats/data
-postgres/dev/keyboards/data
-postgres/dev/users/data
-postgres/dev/stats/data
 .vs
 .github
 logs
 files/*
 !files/README.md
-users_*.csv
+postgres/dev/users/init
+postgres/dev/stats/init
+postgres/dev/keyboards/init
 
 rabbitmq
 redis
