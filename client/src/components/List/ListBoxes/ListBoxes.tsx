@@ -1,16 +1,14 @@
 import { FC, useEffect, useRef, useState } from "react";
 import {
-  Accordion,
-  AccordionActions,
-  AccordionDetails,
-  AccordionSummary,
   Button,
-  Collapse,
   Container,
   Typography,
 } from "@mui/material";
 import AccordionElement from "./AccordionElement/AccordionElement";
 import { useNavigate } from "react-router-dom";
+import { useGetBoxesTypesQuery } from "../../../services/boxesService";
+import { useAppDispatch } from "../../../store/redux";
+import { setBoxID, setBoxTitle } from "../../../store/keyboardSlice";
 
 type TBoxes = {
   /**
@@ -39,33 +37,40 @@ type TBoxes = {
 };
 
 type props = {
-  boxes40?: TBoxes[];
-  boxes60?: TBoxes[];
-  boxes75?: TBoxes[];
-  boxes100?: TBoxes[];
   handleChoose: (id: string) => void;
-  handleNew: (typeID: string) => void;
+  handleNew: (idType: string, idBaseBox : string) => void;
 };
 
 const BoxesList: FC<props> = ({
-  boxes40,
-  boxes60,
-  boxes75,
-  boxes100,
   handleChoose,
   handleNew,
 }) => {
 
-  const navigate = useNavigate()
+  const { data : dataType } = useGetBoxesTypesQuery();
+
+  const [title, setTitle] = useState<string | undefined>(undefined)
+  const [id, setId] = useState<string | undefined>(undefined)
+
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const boxAdd = () => {
+    dispatch(setBoxTitle(title));
+    dispatch(setBoxID(id));
+    navigate("/constructors")
+  }
+
 
   const onClick = (value: TBoxes) => {
     if (!value.id) return;
     handleChoose(value.id);
+    setTitle(value.title);
+    setId(value.id);
   };
 
-  const onClickNew = (typeID: string) => {
-    if (!typeID) return;
-    handleNew(typeID);
+  const onClickNew = (idType: string, idBaseBox : string) => {
+    if (!idType) return;
+    handleNew(idType, idBaseBox);
   };
 
   return (
@@ -91,42 +96,16 @@ const BoxesList: FC<props> = ({
           overflowY: "auto",
         }}
       >
-        {
-          <AccordionElement
-            type="boxes100"
-            name="100 percent"
-            boxes={boxes100}
-            handleChoose={onClick}
-            handleNew={onClickNew}
-          />
-        }
-        {
-          <AccordionElement
-            type="boxes75"
-            name="75 percent"
-            boxes={boxes75}
-            handleChoose={onClick}
-            handleNew={onClickNew}
-          />
-        }
-        {
-          <AccordionElement
-            type="boxes60"
-            name="60 percent"
-            boxes={boxes60}
-            handleChoose={onClick}
-            handleNew={onClickNew}
-          />
-        }
-        {
-          <AccordionElement
-            type="boxes40"
-            name="40 percent"
-            boxes={boxes40}
-            handleChoose={onClick}
-            handleNew={onClickNew}
-          />
-        }
+        {dataType && dataType?.map((item : any) => {
+          return (
+            <AccordionElement
+              name= {`${item.title} percent`}
+              handleChoose={onClick}
+              handleNew={onClickNew}
+              boxTypeId={item.id}
+            />
+          )
+        })}
       </Container>
       <Container
         disableGutters
@@ -144,7 +123,7 @@ const BoxesList: FC<props> = ({
             border: "1px solid #c1c0c0",
           }}
           variant="contained"
-          //onClick={() => set }
+          onClick={() => boxAdd()}
         >
           <Typography
             sx={{

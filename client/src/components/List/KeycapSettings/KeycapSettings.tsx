@@ -1,24 +1,34 @@
-import { FC, MutableRefObject, useEffect, useState } from "react";
-
-import {
-  Button,
-  Container,
-  List,
-  ListItem,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { FC, useEffect, useRef, useState } from "react";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import { Button, Container, Typography } from "@mui/material";
 import { PopoverPicker } from "../../ColorPicker/PopoverPicker";
 import { RgbaColor } from "react-colorful";
 
-type props = {
-  handleChooseColor: (data: any) => void;
-  saveNewBox: (title: string) => void;
+type TKeycaps = {
+  /**
+   * id кита
+   */
+  id?: string;
+  /**
+   * название кита
+   */
+  title?: string;
+
+  /**
+   * дата создания бокса
+   */
+  creationDate?: string;
 };
 
-const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
+type props = {
+
+  handleChooseColor: (data: RgbaColor) => void;
+  saveNewKeycap: (data: any) => void;
+};
+
+const KeycapSettings: FC<props> = ({ handleChooseColor, saveNewKeycap }) => {
   const [color, setColor] = useState({ r: 205, g: 214, b: 199 });
-  const [title, setTitle] = useState<string>();
 
   const onChange = (newColor: RgbaColor) => {
     handleChooseColor(newColor);
@@ -26,8 +36,7 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
   };
 
   const onSave = () => {
-    if (!title) return;
-    saveNewBox(title);
+
   };
 
   return (
@@ -63,24 +72,8 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
             disablePadding
           >
             <Typography color={"#c1c0c0"} sx={{ m: "10px" }}>
-              Name
+              Название набора:
             </Typography>
-            <TextField
-              InputProps={{
-                sx: {
-                  color: "#c1c0c0",
-                  backgroundColor: "#191919",
-                },
-              }}
-              size="small"
-              name="New"
-              type="text"
-              sx={{
-                m: "10px",
-                width: "100%",
-              }}
-              onChange={(event) => setTitle(event.target.value)}
-            />
           </ListItem>
           <ListItem
             sx={{
@@ -92,7 +85,20 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
             disablePadding
           >
             <Typography color={"#c1c0c0"} sx={{ m: "10px" }}>
-              Color
+              Выбрана клавиша: 
+            </Typography>
+          </ListItem>
+          <ListItem
+            sx={{
+              height: "80px",
+              borderTop: "1px solid grey",
+              borderBottom: "1px solid grey",
+              margin: "0 0 -1px 0px",
+            }}
+            disablePadding
+          >
+            <Typography color={"#c1c0c0"} sx={{ m: "10px" }}>
+              Цвет клавиши:
             </Typography>
             <PopoverPicker color={color} onChange={onChange} />
           </ListItem>
@@ -101,6 +107,8 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
       <Container
         disableGutters
         sx={{
+          //height: "76%",
+          //position: "rela",
           marginTop: "auto",
         }}
       >
@@ -119,7 +127,7 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
               color: "#c1c0c0",
             }}
           >
-            добавить
+            сохранить
           </Typography>
         </Button>
       </Container>
@@ -127,4 +135,4 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
   );
 };
 
-export default ListBoxesNew;
+export default KeycapSettings;

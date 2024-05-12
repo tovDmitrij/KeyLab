@@ -61,12 +61,17 @@ export const kitsService = createApi({
         method: "GET",
       }),
     }),
-    postKits: builder.mutation<any, string>({
-      query: (title) => ({
+    postKits: builder.mutation<any, any>({
+      query: (bodyFormData) => {
+      let formData = new FormData();
+      formData.append('title', bodyFormData.title);
+      formData.append('boxTypeID', bodyFormData.boxTypeID); 
+      return {
         url: `/kits`,
         method: "POST",
-        body:  title,
-      }),
+        body:  formData,
+        formData: true,
+      }},
     }),
   }),
 });

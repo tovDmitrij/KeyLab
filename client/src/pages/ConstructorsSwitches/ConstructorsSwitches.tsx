@@ -13,29 +13,15 @@ import {
 } from "../../services/switchesService";
 import SwitchesList from "../../components/List/SwitchesList/SwitchesList";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
 
 import { GLTF } from 'three-stdlib'
 import BlueSwitch from "/src/assets/mxblue.glb?url"
 
 
-type GLTFResult = GLTF & {
-  nodes: {
-    Switch230: THREE.Mesh
-    Switch230_1: THREE.Mesh
-    Switch230_2: THREE.Mesh
-  }
-  materials: {
-    ['Material.013']: THREE.MeshStandardMaterial
-    ['Material.014']: THREE.MeshStandardMaterial
-    ['Material.015']: THREE.MeshStandardMaterial
-  }   
-}
-
-
 const Switch: FC<any> = ({model}) =>  {
   return (
-    <group rotation={[Math.PI / 2, 0, 0]} dispose={null} onClick={(e) => (console.log(e.object))}>
+    <group rotation={[Math.PI / 2, 0, 0]} dispose={null}>
         <mesh geometry={model.children[0].children[0].geometry} material={model.children[0].children[0].material}/>
         <mesh geometry={model.children[0].children[1].geometry} material={model.children[0].children[1].material}/>
         <mesh geometry={model.children[0].children[2].geometry} material={model.children[0].children[2].material}/>
@@ -43,14 +29,11 @@ const Switch: FC<any> = ({model}) =>  {
   )
 }
 
-
 const ConstructorsSwitches = () => {
   const ref = useRef(null);
   
   const [getSwitch] = useLazyGetSwitchQuery();
   const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
-
-  const loader = new GLTFLoader();
 
   const { data } = useGetSwitchesQuery({
     page: 1,
@@ -68,19 +51,6 @@ const ConstructorsSwitches = () => {
       });
   };
 
-  useEffect(() => {
-    if (!ref.current && ref.current === null) return;
-    //@ts-ignore
-    //saveImage()
-    //domtoimage.toBlob(ref.current).then((blob) => FileSaver.saveAs(blob, `image.png`));
-  }, [model])
-  
-
-  // useEffect(() => {
-  //   if (!previewFile) return;
-  //   //saveAs(previewFile, "image.png");
-  // }, [previewFile])
-
   return (
     <>
       <Header />
@@ -91,8 +61,13 @@ const ConstructorsSwitches = () => {
           item
           xs={10}
         >
-          <Canvas camera={{ fov: 35, zoom: 16, position: [-10, 10, 20]}}  gl={{ preserveDrawingBuffer: true }} ref={ref}>
-
+          <Canvas  gl={{ preserveDrawingBuffer: true }} ref={ref}>
+          <PerspectiveCamera     
+              makeDefault
+              zoom={60}
+              fov={90}
+              position={[-10, 10, 20]}
+            />
             <directionalLight  args={[0xffffff]} position={[0, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, 0, -3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, -3, 0]} intensity={1} />

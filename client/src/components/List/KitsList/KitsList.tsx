@@ -24,7 +24,7 @@ type props = {
   handleNew: (data: string) => void;
 };
 
-const KitsList: FC<props> = ({ kits, handleChoose, handleNew }) => {
+const KitsList: FC<props> = ({  handleChoose, handleNew }) => {
 
   const { data : dataType } = useGetBoxesTypesQuery();
 

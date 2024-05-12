@@ -51,7 +51,6 @@ export const switchesService = createApi({
       query: (ID : string ) => ({
         url: `/switches/preview?switchID=${ID}`,
         method: "GET",
-        responseHandler: response => response.blob()
       }),
     }),
     getSwitchSound: builder.query<any, string>({

@@ -4,35 +4,45 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
  * Интерфейс для представления готовой клавиатуры
  */
 type TKeyboardState = {
+  switchTitle?: string;
   switchTypeID?: string;
-  boxTypeID?: string;
+  boxID?: string;
+  boxTitle?: string;
   title?: string;
-
 };
 
 const initialState: TKeyboardState = {
+  switchTitle: undefined,
   switchTypeID: undefined,
-  boxTypeID: undefined,
+  boxID: undefined,
   title: undefined,
 };
 
-export const profileSlice = createSlice({
-  name: "profile",
+export const keyboardSlice = createSlice({
+  name: "keyboard",
   initialState: initialState,
   reducers: {
     setTitle: (state, action: PayloadAction<string | undefined>) => {
       state.title = action.payload;
     },
 
+    setSwitchTitle: (state, action: PayloadAction<string | undefined>) => {
+      state.switchTitle = action.payload;
+    },
+
     setSwitchTypeID: (state, action: PayloadAction<string | undefined>) => {
       state.switchTypeID = action.payload;
     },
 
-    setBoxTypeID: (state, action: PayloadAction<string | undefined>) => {
-      state.boxTypeID = action.payload;
+    setBoxTitle: (state, action: PayloadAction<string | undefined>) => {
+      state.boxTitle = action.payload;
+    },
+
+    setBoxID: (state, action: PayloadAction<string | undefined>) => {
+      state.boxID = action.payload;
     },
   },
 });
 
-export const { setTitle, setSwitchTypeID, setBoxTypeID } = profileSlice.actions;
-export default profileSlice.reducer;
+export const { setTitle, setSwitchTypeID, setBoxID, setSwitchTitle, setBoxTitle } = keyboardSlice.actions;
+export default keyboardSlice.reducer;
