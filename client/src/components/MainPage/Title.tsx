@@ -39,7 +39,7 @@ const Title = () => {
         Cобрать
       </Button>
       <div style={{ textAlign: "center", marginTop: "50px" }}>
-        <Box component="img" sx={{ width: "50%", mb: "50px" }} src={Keyboard} />
+        <Box component="img" sx={{ width: "50%", mb: "50px" }} src={Keyboard} draggable="false"/>
       </div>
     </Container>
   );

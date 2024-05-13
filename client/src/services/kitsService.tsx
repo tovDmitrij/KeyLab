@@ -73,10 +73,31 @@ export const kitsService = createApi({
         formData: true,
       }},
     }),
+    getKitPreview: builder.query<any, string>({
+      query: (ID : string ) => ({
+        url: `/kits/preview?kitID=${ID}`,
+        method: "GET",
+      }),
+    }),
+    patchKitsPreview: builder.mutation<any, any>({
+      query: (bodyFormData) => {
+      let formData = new FormData();
+      formData.append('kitID', bodyFormData.kitID);
+      formData.append('preview', bodyFormData.preview); 
+      return {
+        url: `kits/preview`,
+        method: "PATCH",
+        body:  formData,
+        formData: true,
+      }},
+    }),
   }),
 });
 
 export const {
+  useGetKitPreviewQuery,
+  useLazyGetKitPreviewQuery,
+  usePatchKitsPreviewMutation,
   useGetAuthKitsQuery,
   useGetAuthKitsTotalPagesQuery,
   useGetDefaultKitsQuery,

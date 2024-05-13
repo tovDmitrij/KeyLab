@@ -15,7 +15,6 @@ const SwitchCard = () => {
     (state) => state.keyboardReduer
   );
 
-  console.log(switchTitle);
   return (
     <Card className={classes.card} sx={{ borderRadius: 10 }}>
       <CardActionArea onClick={() => navigate("/constrSwitch")}>

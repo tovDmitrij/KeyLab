@@ -1,14 +1,12 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 
-import classes from "./ConstructorsSwitches.module.scss";
 import * as THREE from "three";
 import Header from "../../components/Header/Header";
 import { Grid } from "@mui/material";
 import { GLTFExporter, GLTFLoader } from "three/examples/jsm/Addons.js";
-import { saveAs } from "file-saver";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import BoxesList from "../../components/List/ListBoxes/ListBoxes";
+import BoxesList from "../../components/List/ListBoxes/BoxesList";
 import { useLazyGetBoxesQuery, usePostBoxMutation } from "../../services/boxesService";
 import ListBoxesNew from "../../components/List/ListBoxes/ListBoxesNew"
 
@@ -70,7 +68,6 @@ const ConstrucrotBoxes = () => {
   };
 
   const newBox = (idType: string, idBaseBox : string) => {
-    console.log(idType)
     setNewIdBoxType(idType);
     getId(idBaseBox);
   }
@@ -103,7 +100,6 @@ const ConstrucrotBoxes = () => {
       <Grid sx={{ bgcolor: "#2D393B" }} container spacing={0}>
         <Grid
           sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}
-          className={classes.editor}
           item
           xs={10}
         >

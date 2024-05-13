@@ -25,6 +25,7 @@ const Scheme = () => {
           component="img"
           sx={{ width: "60%", mb: "50px" }}
           src={SchemePic}
+          draggable="false"
         />
       </div>
     </Container>

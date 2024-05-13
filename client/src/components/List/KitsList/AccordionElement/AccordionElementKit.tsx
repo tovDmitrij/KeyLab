@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import {
   Accordion,
   AccordionDetails,
@@ -12,7 +12,12 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { useGetAuthKitsQuery, useGetDefaultKitsQuery } from "../../../../services/kitsService";
+import {
+  useGetAuthKitsQuery,
+  useGetDefaultKitsQuery,
+  useLazyGetAuthKitsQuery,
+  useLazyGetDefaultKitsQuery,
+} from "../../../../services/kitsService";
 
 type TKits = {
   /**
@@ -38,19 +43,9 @@ const AccordionElementKit: FC<props> = ({
   handleChoose,
   handleNew,
 }) => {
+  const [getBaseKits, { data: kitsBase }] = useLazyGetDefaultKitsQuery();
 
-  const { data : kitsBase } = useGetDefaultKitsQuery({
-    page: 1,
-    pageSize: 100,
-    typeID: boxTypeId,
-  });
-
-  const { data : kits } = useGetAuthKitsQuery({
-    page: 1,
-    pageSize: 100,
-    typeID: boxTypeId,
-  });
-
+  const [getAuthKits, { data: kits }]= useLazyGetAuthKitsQuery();
 
   const onClick = (value: TKits) => {
     if (!value.id) return;
@@ -61,18 +56,38 @@ const AccordionElementKit: FC<props> = ({
     handleNew(boxTypeId);
   };
 
+  useEffect(() => {
+    const data = {
+      page: 1,
+      pageSize: 100,
+      typeID: boxTypeId,
+    }
+    getAuthKits(data);
+    getBaseKits(data);
+  }, [])
+
   return (
     <Accordion>
       <AccordionSummary
         sx={{
           bgcolor: "#2A2A2A",
-          color: "#FFFFFF",
+          color: "#c1c0c0",
+          borderTop: "1px solid grey",
+          borderBottom: "1px solid grey",
+          margin: "0 0 -1px 0px",
         }}
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel2-content"
-        id="panel2-header"
+        expandIcon={
+          <ArrowDropDownIcon sx={{ color: "#AEAEAE", fontSize: 40 }} />
+        }
       >
-        <Typography>{name}</Typography>
+        <Typography
+          sx={{
+            textAlign: "center",
+            margin: "15px",
+          }}
+        >
+          {name}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails
         sx={{
@@ -83,37 +98,51 @@ const AccordionElementKit: FC<props> = ({
       >
         <Grid container direction="column">
           <List disablePadding>
-            {kits && kitsBase && kitsBase?.concat(kits)?.map((value) => {
-              const labelId = `checkbox-list-label-${value}`;
+            {kits &&
+              kitsBase &&
+              kitsBase?.concat(kits)?.map((value) => {
+                const labelId = `checkbox-list-label-${value}`;
 
-              return (
-                <>
-                  <ListItem
-                    sx={{ minWidth: "100" }}
-                    key={value.id}
-                    disablePadding
-                  >
-                    <ListItemButton
-                      role={undefined}
-                      onClick={() => onClick(value)}
-                      dense
+                return (
+                  <>
+                    <ListItem
+                      sx={{ minWidth: "100" }}
+                      key={value.id}
+                      disablePadding
                     >
-                      <ListItemText
+                      <ListItemButton
                         sx={{
                           textAlign: "center",
-                          color: "white",
-                          m: "5px",
+                          margin: "8px",
+                          borderTop: "1px solid grey",
+                          borderBottom: "1px solid grey",
                         }}
-                        id={labelId}
-                        primary={`${value.title}`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </>
-              );
-            })}
+                        role={undefined}
+                        onClick={() => onClick(value)}
+                        dense
+                      >
+                        <ListItemText
+                          sx={{
+                            textAlign: "center",
+                            color: "white",
+                            m: "5px",
+                          }}
+                          id={labelId}
+                          primary={`${value.title}`}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  </>
+                );
+              })}
             <ListItem sx={{ minWidth: "100" }} disablePadding>
               <ListItemButton
+                sx={{
+                  textAlign: "center",
+                  margin: "8px",
+                  borderTop: "1px solid grey",
+                  borderBottom: "1px solid grey",
+                }}
                 role={undefined}
                 onClick={() => onClickNew()}
                 dense
@@ -124,7 +153,7 @@ const AccordionElementKit: FC<props> = ({
                     color: "white",
                     m: "5px",
                   }}
-                  primary={`Custom`}
+                  primary={`Создать`}
                 />
               </ListItemButton>
             </ListItem>

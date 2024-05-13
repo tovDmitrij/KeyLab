@@ -2,15 +2,10 @@ import { FC, useEffect, useRef, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
-
-import classes from "./SwitchesList.module.scss";
+import ListItemText from "@mui/material/ListItemText"
 import { Button, Container, ListItemIcon, Typography } from "@mui/material";
-import PlusImage from "./Plus.png";
 import Preview from "./Preview";
 import { useNavigate } from "react-router-dom";
-import { useLazyGetSwitchPreviewQuery } from "../../../services/switchesService";
 import { useAppDispatch } from "../../../store/redux";
 import { setSwitchTitle, setSwitchTypeID } from "../../../store/keyboardSlice";
 

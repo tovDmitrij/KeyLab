@@ -141,7 +141,7 @@ const Register = () => {
             InputProps={{ sx: { borderRadius: 30 } }}
             size="small"
             name="nickname"
-            label="Nickname"
+            label="Никнейм"
             variant="outlined"
             type="text"
             value={newUser?.nickname}

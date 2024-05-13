@@ -35,7 +35,7 @@ const ScrollButton = () => {
       {showScrollButton && (
         <IconButton
           size="small"
-          sx={{ position: "fixed", bottom: "60px", right: "60px", color:"black" }}
+          sx={{ position: "fixed", bottom: "60px", right: "60px", color:"black", backgroundColor: "white" }}
           onClick={() => {
             scrollUp();
           }}
