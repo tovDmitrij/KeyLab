@@ -26,6 +26,7 @@ const Scheme = () => {
           sx={{ width: "60%", mb: "50px" }}
           src={SchemePic}
           draggable="false"
+          loading="lazy"
         />
       </div>
     </Container>

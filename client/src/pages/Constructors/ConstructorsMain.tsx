@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import Header from "../../components/Header/Header";
-import { Container, Grid, TextField, Typography } from "@mui/material";
+import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import classes from "./Constructors.module.scss";
 import KeycapsCard from "../../components/Card/KeycapsCard/KeycapsCard";
 import BoxCard from "../../components/Card/BoxCard/BoxCard";
@@ -11,14 +11,17 @@ import MoldaSetNameKeyboard from "../../components/Modals/MoldaSetNameKeyboard";
 import { useDispatch } from "react-redux";
 import { setTitle } from "../../store/keyboardSlice";
 import { useAppSelector } from "../../store/redux";
+import { useNavigate } from "react-router-dom"
 
 const ConstructorsMain = () => {
-  const { title } = useAppSelector(
+  const { title, kitID, boxID, switchTypeID } = useAppSelector(
     (state) => state.keyboardReduer
   );
 
   const [modal, setModal] = useState(false);
   const [titleKeyboard, setTitleKeyboard] = useState<string>(title);
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   return (
     <>
@@ -56,6 +59,23 @@ const ConstructorsMain = () => {
             <SwitchCard />
           </Grid>
         </Grid>
+        {kitID && boxID && switchTypeID && title !== "Безымянный"  && (
+          <Container
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              onClick={() => navigate(`/constrKeyboard`)}
+              variant="contained"
+              sx={{ borderRadius: "30px", m: "10px", width: "20%" }}
+            >
+              Сохранить
+            </Button>
+          </Container>
+        )}
       </Container>
 
       {modal && (
@@ -66,7 +86,6 @@ const ConstructorsMain = () => {
             setTitleKeyboard(title);
             dispatch(setTitle(title));
             setModal(false);
-            
           }}
         />
       )}

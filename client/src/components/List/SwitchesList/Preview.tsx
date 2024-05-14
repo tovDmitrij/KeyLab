@@ -33,14 +33,14 @@ const Preview: FC<props> = ({ width, height, type, id, scale}) => {
     if (type === "kit") {
       kitPreview(id)
       .unwrap()
-      .then((data) => {console.log(data), setPreviewImage(data.previewBase64)})
+      .then((data) => {setPreviewImage(data.previewBase64)})
     }
   }, [])
   
   return (
     {previewImage} && <img src={`data:image/webp;base64,${previewImage}`} style={{
       transform: "scale(1.1, 1.1)",
-      }} width={width} height={height} draggable="false"/>
+      }} width={width} height={height} draggable="false" />
   );
 };
 

@@ -32,8 +32,7 @@ type TKeycaps = {
 
 const Kits: FC<any> = ({ models, handleClick, setKitsScene}) => {
   const [state, setState] = useState(false);
-  const [currentModel, setCurrentModel] = useState<any>();
-  
+
   return (
     <group 
       onUpdate={(scene) => setKitsScene(scene)} 
@@ -43,12 +42,14 @@ const Kits: FC<any> = ({ models, handleClick, setKitsScene}) => {
       dispose={null}
     > 
       {models.map((model: any) => {
+        console.log(model)
         return (
           <mesh
+            scale={model.scene.children[0].scale}
             animations={model.animations}
             userData={{name: model.scene.children[0].name, uuid: model.uuid}}
             name={model.scene.children[0].name}
-            rotation={[Math.PI / 2, 0, 0]} 
+            rotation={model.scene.children[0].rotation} 
             position={model.scene.children[0].position}
             geometry={model.scene.children[0].geometry}
             material={model.scene.children[0].material}   
@@ -254,7 +255,6 @@ const ConstructorKeys = () => {
             {modelKit && 
               <mesh ref={refModel}>
                 <Kits
-                  ref={refModel}
                   models={modelKit}
                   handleClick={handleClick}
                   setKitsScene={setKitsScene}

@@ -13,8 +13,6 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  useGetAuthKitsQuery,
-  useGetDefaultKitsQuery,
   useLazyGetAuthKitsQuery,
   useLazyGetDefaultKitsQuery,
 } from "../../../../services/kitsService";
