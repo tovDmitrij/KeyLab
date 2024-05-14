@@ -20,12 +20,34 @@ const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel}) => {
   const ref = useRef(null)
 
   let mixer: THREE.AnimationMixer;
-  if (keycapList?.[1]?.animations.length && ref && ref.current !== null) {
+  if (keycapList?.[1]?.animations.length && keycapList?.[3]?.animations.length &&  keycapList?.[6]?.animations.length 
+      &&  keycapList?.[10]?.animations.length  &&  keycapList?.[16]?.animations.length  &&  keycapList?.[20]?.animations.length &&  ref && ref.current !== null) {
       mixer = new THREE.AnimationMixer(ref.current);
 
-      const action = mixer.clipAction(keycapList?.[1]?.animations?.[0])
-      action.play();
-
+      const action1 = mixer.clipAction(keycapList?.[1]?.animations?.[0])
+      const action2 = mixer.clipAction(keycapList?.[3]?.animations?.[0])
+      const action3 = mixer.clipAction(keycapList?.[6]?.animations?.[0])
+      const action4 = mixer.clipAction(keycapList?.[10]?.animations?.[0])
+      const action5 = mixer.clipAction(keycapList?.[16]?.animations?.[0])
+      const action6 = mixer.clipAction(keycapList?.[20]?.animations?.[0])
+      setTimeout(() => {
+        action1?.play();
+      }, 100)
+      setTimeout(() => {
+        action2?.play();
+      }, 200)
+      setTimeout(() => {
+        action3?.play();
+      }, 300)
+      setTimeout(() => {
+        action4?.play()
+      }, 400)
+      setTimeout(() => {
+        action5?.play();
+      }, 500)
+      setTimeout(() => {
+        action6?.play();
+      }, 600)
   }
 
   useFrame((state, delta) => {
