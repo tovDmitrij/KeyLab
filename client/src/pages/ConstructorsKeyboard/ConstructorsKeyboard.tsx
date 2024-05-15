@@ -10,52 +10,63 @@ import BoxesList from "../../components/List/ListBoxes/BoxesList";
 import { useLazyGetBoxesQuery, usePostBoxMutation } from "../../services/boxesService";
 import ListBoxesNew from "../../components/List/ListBoxes/ListBoxesNew"
 import { useAppSelector } from "../../store/redux";
-import { useLazyGetSwitchQuery } from "../../services/switchesService";
+import { useGetSwitchSoundQuery, useLazyGetSwitchQuery, useLazyGetSwitchSoundQuery } from "../../services/switchesService";
 import { useLazyGetKeycapQuery, useLazyGetKeycapsQuery } from "../../services/keycapsService";
 import Box from "../../components/Models/Box";
 import KeayboardComponents from "../../components/KeayboardComponents/KeayboardComponents";
+import { Keycap } from "../../constants";
 
-const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel}) => {
+const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel, switchSound}) => {
   const [boxScene, setBoxScene] = useState<THREE.Group<THREE.Object3DEventMap>>();
+  const [pressedKey, setPressedKey] = useState('');
+  const [count, setCount] = useState(0);
   const ref = useRef(null)
-
+  const snd = new Audio("data:audio/mp3;base64," + switchSound.soundBase64);
+  
   let mixer: THREE.AnimationMixer;
-  if (keycapList?.[1]?.animations.length && keycapList?.[3]?.animations.length &&  keycapList?.[6]?.animations.length 
-      &&  keycapList?.[10]?.animations.length  &&  keycapList?.[16]?.animations.length  &&  keycapList?.[20]?.animations.length &&  ref && ref.current !== null) {
-      mixer = new THREE.AnimationMixer(ref.current);
 
-      const action1 = mixer.clipAction(keycapList?.[1]?.animations?.[0])
-      const action2 = mixer.clipAction(keycapList?.[3]?.animations?.[0])
-      const action3 = mixer.clipAction(keycapList?.[6]?.animations?.[0])
-      const action4 = mixer.clipAction(keycapList?.[10]?.animations?.[0])
-      const action5 = mixer.clipAction(keycapList?.[16]?.animations?.[0])
-      const action6 = mixer.clipAction(keycapList?.[20]?.animations?.[0])
-      setTimeout(() => {
-        action1?.play();
-      }, 100)
-      setTimeout(() => {
-        action2?.play();
-      }, 200)
-      setTimeout(() => {
-        action3?.play();
-      }, 300)
-      setTimeout(() => {
-        action4?.play()
-      }, 400)
-      setTimeout(() => {
-        action5?.play();
-      }, 500)
-      setTimeout(() => {
-        action6?.play();
-      }, 600)
-  }
+  const handleKeyDown = (event: KeyboardEvent) => {
+    setCount(prevCount =>  prevCount  + 1);
+    setPressedKey(event.code);
+  }; 
+
+  console.log(switchSound);
+  useEffect(() => {
+    if (ref && ref.current !== null && pressedKey) {
+      if (!mixer) {
+        mixer = new THREE.AnimationMixer(ref.current);
+      }
+
+      const key = Object.keys(Keycap).find(k => Keycap[k as keyof typeof Keycap] === pressedKey);
+      
+      const matchedKeycap = keycapList?.find((keyCap: any) => keyCap.scene.children[0].name.replace(/\d+$/, "") === key);
+      if (matchedKeycap) {
+        const action1 = mixer?.clipAction(matchedKeycap?.animations[0]);
+        snd.play();
+        action1.play();
+        console.log(snd)
+        action1.clampWhenFinished = true;
+        action1.loop = THREE.LoopOnce; 
+      }
+    }
+  }, [keycapList, count, pressedKey]);
+
+  useFrame((state, delta) => {
+    mixer?.update(delta);
+  });
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   useFrame((state, delta) => {
       mixer?.update(delta)
   })
 
   return (
-
     <group ref={ref}>
       <Box model={boxModel} setBoxScene={setBoxScene} /> 
       <group
@@ -64,7 +75,7 @@ const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel}) => {
         {keycapList.map((model: any) => {
           const x = model.scene.children[0].position.x;
           const y = model.scene.children[0].position.y;
-          const z = model.scene.children[0].position.z;
+          const z = model.scene.children[0].position.z; 
           return ( 
             <>
               <mesh
@@ -110,13 +121,16 @@ const ConstructorKeyboard = () => {
   const [modelKit, setModelKit] = useState<{scene : THREE.Group<THREE.Object3DEventMap>, uuid: string | undefined, animations: THREE.AnimationClip[]}[]>([]);
   const [boxModel, setBoxModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [switchModel, setSwitchModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
+  
   const [getBoxesModel] = useLazyGetBoxesQuery();
   const [getSwitchModel] = useLazyGetSwitchQuery();
   const [getListKeyCaps, {data : keyCapsList}] = useLazyGetKeycapsQuery();
   const [getKeycapModel] = useLazyGetKeycapQuery();
+  const [getSwitchSound,  {data: switchSound}] = useLazyGetSwitchSoundQuery();
+
   const refModel = useRef(null);
   const loader = new GLTFLoader();
-  
+
   useEffect(() => {
     if (!boxID || !kitID || !switchTypeID || !title) return;
     getBoxesModel(boxID) 
@@ -126,7 +140,6 @@ const ConstructorKeyboard = () => {
           setBoxModel(gltf.scene);
         });
       });
-
 
     getSwitchModel(switchTypeID) 
       .unwrap()
@@ -141,6 +154,9 @@ const ConstructorKeyboard = () => {
       pageSize: 200,
       kitID: kitID
     })
+
+    getSwitchSound(switchTypeID);
+
   },[])
 
   useEffect(() => {
@@ -157,12 +173,6 @@ const ConstructorKeyboard = () => {
         });
       })
   }, [keyCapsList])
-
-
-  // if (modelKit && modelKit[0] && modelKit[0]?.animations &&  modelKit[0]?.scene) {
-  //   const { actions, mixer } = useAnimations(modelKit[0]?.animations, modelKit[0]?.scene)
-  //   console.log(actions)
-  // }
 
   const orbitref = useRef(null);
   const ref = useRef(null);
@@ -208,6 +218,7 @@ const ConstructorKeyboard = () => {
                   keycapList={modelKit}
                   boxModel={boxModel}
                   switchModel={switchModel}
+                  switchSound={switchSound}
                 />
               </mesh> }
           </Canvas>
