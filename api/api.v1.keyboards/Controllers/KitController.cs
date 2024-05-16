@@ -73,7 +73,7 @@ namespace api.v1.keyboards.Controllers
         public async Task<IActionResult> GetKitPreview([Required] Guid kitID)
         {
             var previewBase64 = await _kit.GetKitPreviewBase64(kitID);
-            return Ok(previewBase64);
+            return Ok(new { previewBase64 });
         }
 
 

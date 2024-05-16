@@ -1,23 +1,27 @@
-### UserController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_user_controller.svg" />
+# Компоненты микросервиса api_email
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_email_consumer.svg" />
 
-### KeyboardController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_keyboard_controller.svg" />
+# Компоненты микросервиса api_users
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_verification_controller.svg" />
 
-### BoxController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_box_controller.svg" />
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_user_controller.svg" />
 
-### KitController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_kit_controller.svg" />
+# Компоненты микросервиса api_keyboards
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_switch_controller.svg" />
 
-### KeycapController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_keycap_controller.svg" />
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_box_controller.svg" />
 
-### SwitchController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_switch_controller.svg" />
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_keycap_controller.svg" />
 
-### StatConsumer
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_stat_consumer.svg" />
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_kit_controller.svg" />
 
-### StatController
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/svg/class_stat_controller.svg" />
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_keyboard_controller.svg" />
+
+# Компоненты микросервиса api_stats
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_stat_consumer.svg" />
+
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_interval_controller.svg" />
+
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_activity_controller.svg" />
+
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/class/class_stat_controller.svg" />

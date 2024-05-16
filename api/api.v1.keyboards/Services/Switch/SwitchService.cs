@@ -26,7 +26,7 @@ namespace api.v1.keyboards.Services.Switch
 
         public async Task<byte[]> GetSwitchFileBytes(Guid switchID, Guid statsID)
         {
-            var file = await GetFile(switchID, _fileCfg.GetModelFilenameExtension);
+            var file = await GetFile(switchID, _fileCfg.GetModelFilenameExtension, _fileCfg.GetSwitchFilePath);
             
             await PublishActivity(statsID, _activityCfg.GetSeeSwitchActivityTag);
             return file;
@@ -34,23 +34,24 @@ namespace api.v1.keyboards.Services.Switch
 
         public async Task<string> GetSwitchBase64Sound(Guid switchID)
         {
-            var sound = await GetFile(switchID, _fileCfg.GetSoundFilenameExtension);
+            var sound = await GetFile(switchID, _fileCfg.GetSoundFilenameExtension, _fileCfg.GetSwitchSoundFilePath);
             return Convert.ToBase64String(sound);
         }
 
         public async Task<string> GetSwitchBase64Preview(Guid switchID)
         {
-            var preview = await GetFile(switchID, _fileCfg.GetPreviewFilenameExtension);
+            var preview = await GetFile(switchID, _fileCfg.GetPreviewFilenameExtension, _fileCfg.GetSwitchFilePath);
             return Convert.ToBase64String(preview);
         }
 
-        private async Task<byte[]> GetFile(Guid switchID, Func<string> cfgFuncFileExtension)
+        private async Task<byte[]> GetFile(Guid switchID, Func<string> cfgFuncFileExtension, 
+            Func<string, string, string> cfgFuncFilePath)
         {
             ValidateSwitchID(switchID);
 
             var fileName = _switch.SelectSwitchFileName(switchID)!;
             var fileExtension = cfgFuncFileExtension();
-            var filePath = _fileCfg.GetSwitchFilePath(fileName, fileExtension);
+            var filePath = cfgFuncFilePath(fileName, fileExtension);
 
             var file = await ReadFile(filePath);
             return file;
