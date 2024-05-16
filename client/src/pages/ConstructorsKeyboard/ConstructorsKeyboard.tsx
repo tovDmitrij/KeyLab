@@ -21,16 +21,16 @@ const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel, switchSound}) => 
   const [pressedKey, setPressedKey] = useState('');
   const [count, setCount] = useState(0);
   const ref = useRef(null)
-  const snd = new Audio("data:audio/mp3;base64," + switchSound.soundBase64);
-  
+  const snd = new Audio("data:audio/mp3;base64," + switchSound?.soundBase64);
+
   let mixer: THREE.AnimationMixer;
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    event.preventDefault();
     setCount(prevCount =>  prevCount  + 1);
     setPressedKey(event.code);
   }; 
 
-  console.log(switchSound);
   useEffect(() => {
     if (ref && ref.current !== null && pressedKey) {
       if (!mixer) {
@@ -180,6 +180,7 @@ const ConstructorKeyboard = () => {
   return (
     <>
       <Header />
+      <div onClick={() => document.body.focus()}>
       <Grid sx={{ bgcolor: "#2D393B" }} container spacing={0}>
         <Grid
           sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}
@@ -228,6 +229,7 @@ const ConstructorKeyboard = () => {
             <KeayboardComponents kitID={kitID} boxID={boxID} switchTypeID={switchTypeID}/>
         </Grid>
       </Grid>
+      </div>
     </>
   );
 };
