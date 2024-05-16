@@ -1,30 +1,34 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 
-import classes from "./ConstructorsSwitches.module.scss";
 import * as THREE from "three";
 import Header from "../../components/Header/Header";
 import { Grid } from "@mui/material";
 import { GLTFExporter, GLTFLoader } from "three/examples/jsm/Addons.js";
-import { saveAs } from "file-saver";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import BoxesList from "../../components/List/ListBoxes/ListBoxes";
-import { useLazyGetBoxesQuery, usePostBoxMutation } from "../../services/boxesService";
-import ListBoxesNew from "../../components/List/ListBoxes/ListBoxesNew"
+import BoxesList from "../../components/List/ListBoxes/BoxesList";
+import {
+  useLazyGetBoxesQuery,
+  usePostBoxMutation,
+} from "../../services/boxesService";
+import ListBoxesNew from "../../components/List/ListBoxes/ListBoxesNew";
+import Box from "../../components/Models/Box";
 
 const ConstrucrotBoxes = () => {
   const [getBoxes] = useLazyGetBoxesQuery();
   const [postBox] = usePostBoxMutation();
-
+  const [boxScene, setBoxScene] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
-  const [newIdBoxType, setNewIdBoxType] = useState<string | undefined>(undefined);
+  const [newIdBoxType, setNewIdBoxType] = useState<string | undefined>(
+    undefined
+  );
   const [color, setColor] = useState<any>(undefined);
   const orbitref = useRef(null);
   const ref = useRef(null);
   const refModel = useRef(null);
 
   const getId = (id: string) => {
-     getBoxes(id)
+    getBoxes(id)
       .unwrap()
       .then((payload) => {
         const loader = new GLTFLoader();
@@ -37,65 +41,72 @@ const ConstrucrotBoxes = () => {
   const saveNewBox = (title: string) => {
     const exporter = new GLTFExporter();
     if (!orbitref.current && orbitref.current === null) return;
-    //@ts-ignore      
+    //@ts-ignore
     orbitref.current.reset();
     setTimeout(() => {
       let previewFile: string | undefined = undefined;
       //@ts-ignore
-      ref?.current?.toBlob((blob: any) => {
-        previewFile = blob;
-        if (refModel.current === null || !previewFile || !newIdBoxType) return;
-        exporter.parse(
-          refModel?.current,
-          (gltf) => {
-            const jsonString = JSON.stringify(gltf);
-            const blob = new Blob([jsonString], { type: "application/json" });
-            const file = new File([blob], title + ".glb", {
-              type: "application/json",
-              lastModified: Date.now(),
-            });
-            postBox({
-              file: file,
-              preview: previewFile,
-              title: title,
-              typeID: newIdBoxType,
-            })
-              .unwrap()
-              .then(() => setNewIdBoxType(undefined));
-          },
-          (error) => console.log(error)
-        );
-      }, "image/webp", 1);
+      ref?.current?.toBlob(
+        (blob: any) => {
+          previewFile = blob;
+          if (!previewFile || !newIdBoxType || !boxScene)
+            return;
+          exporter.parse(
+            boxScene,
+            (gltf) => {
+              const jsonString = JSON.stringify(gltf);
+              const blob = new Blob([jsonString], { type: "application/json" });
+              const file = new File([blob], title + ".glb", {
+                type: "application/json",
+                lastModified: Date.now(),
+              });
+              postBox({
+                file: file,
+                preview: previewFile,
+                title: title,
+                typeID: newIdBoxType,
+              })
+                .unwrap()
+                .then(() => setNewIdBoxType(undefined));
+            },
+            (error) => console.log(error)
+          );
+        },
+        "image/webp",
+        1
+      );
     }, 500);
   };
 
-  const newBox = (idType: string, idBaseBox : string) => {
-    console.log(idType)
+  const newBox = (idType: string, idBaseBox: string) => {
     setNewIdBoxType(idType);
     getId(idBaseBox);
-  }
+  };
 
-  const handleChooseColor = (color: any) => { 
+  const handleChooseColor = (color: any) => {
     setColor(color);
-  }
-
-  useEffect(() => {
-    model?.children.forEach( child => {
-      if ((child.name.includes('Switch')) || (child.name.includes('keycap'))) {
-        child.visible = false;
-      }
-    })
-  }, [model])
-
+  };
+  
   useEffect(() => {
     if (!color) return;
-    model?.children.forEach( child => {
-      if (!((child.name.includes('Cube'))  || (child.name.includes('Stabilize'))  || (child.name.includes('Plate'))) && child.visible === true) {
+    model?.children.forEach((child) => {
+      if (
+        !(
+          child.name.includes("Cube") ||
+          child.name.includes("Stabilize") ||
+          child.name.includes("Plate")
+        ) &&
+        child.visible === true
+      ) {
         //@ts-ignore
-        child?.material?.color?.setRGB(color.r / 255, color.g / 255, color.b /  255)
+        child?.material?.color?.setRGB(
+          color.r / 255,
+          color.g / 255,
+          color.b / 255
+        );
       }
-    })
-  }, [color])
+    });
+  }, [color]);
 
   return (
     <>
@@ -103,12 +114,11 @@ const ConstrucrotBoxes = () => {
       <Grid sx={{ bgcolor: "#2D393B" }} container spacing={0}>
         <Grid
           sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}
-          className={classes.editor}
           item
           xs={10}
         >
           <Canvas gl={{ preserveDrawingBuffer: true }} ref={ref}>
-          <PerspectiveCamera     
+            <PerspectiveCamera
               makeDefault
               zoom={16}
               fov={90}
@@ -133,23 +143,26 @@ const ConstrucrotBoxes = () => {
               enablePan={false}
               target={[0, 0, 0]}
             />
-            {model && (
+            {
+              /* {model && (
               <mesh ref={refModel}>
                 <primitive object={model} />
               </mesh>
-            )}
+            )} */
+              model && <Box model={model} setBoxScene={setBoxScene}/>
+            }
           </Canvas>
         </Grid>
-        
+
         <Grid item xs={2}>
           {!newIdBoxType && (
-            <BoxesList
-              handleChoose={getId}
-              handleNew={newBox}
-            />
+            <BoxesList handleChoose={getId} handleNew={newBox} />
           )}
           {newIdBoxType && (
-            <ListBoxesNew saveNewBox={saveNewBox} handleChooseColor={handleChooseColor}/>
+            <ListBoxesNew
+              saveNewBox={saveNewBox}
+              handleChooseColor={handleChooseColor}
+            />
           )}
         </Grid>
       </Grid>

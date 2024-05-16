@@ -33,7 +33,9 @@ const Header = () => {
       setTitle("Выбор кейкапов");
     } else if (currentUrl.includes("/constructors")) {
       setTitle("Комплектующие");
-    }
+    } else if (currentUrl.includes("/constrKeyboard")) {
+      setTitle("3D просмотр");
+    } 
   }, [currentUrl]);
 
   const handleClickExit = () => {

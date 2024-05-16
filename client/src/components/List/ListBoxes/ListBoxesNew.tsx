@@ -63,7 +63,7 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
             disablePadding
           >
             <Typography color={"#c1c0c0"} sx={{ m: "10px" }}>
-              Name
+              Имя
             </Typography>
             <TextField
               InputProps={{
@@ -92,7 +92,7 @@ const ListBoxesNew: FC<props> = ({ handleChooseColor, saveNewBox }) => {
             disablePadding
           >
             <Typography color={"#c1c0c0"} sx={{ m: "10px" }}>
-              Color
+              Цвет
             </Typography>
             <PopoverPicker color={color} onChange={onChange} />
           </ListItem>

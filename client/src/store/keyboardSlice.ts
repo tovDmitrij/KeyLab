@@ -8,21 +8,23 @@ type TKeyboardState = {
   switchTypeID?: string;
   boxID?: string;
   boxTitle?: string;
-  title?: string;
+  title: string;
+  kitTitle?: string;
+  kitID?: string;
 };
 
 const initialState: TKeyboardState = {
   switchTitle: undefined,
   switchTypeID: undefined,
   boxID: undefined,
-  title: undefined,
+  title: "Безымянный",
 };
 
 export const keyboardSlice = createSlice({
   name: "keyboard",
   initialState: initialState,
   reducers: {
-    setTitle: (state, action: PayloadAction<string | undefined>) => {
+    setTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
     },
 
@@ -41,8 +43,24 @@ export const keyboardSlice = createSlice({
     setBoxID: (state, action: PayloadAction<string | undefined>) => {
       state.boxID = action.payload;
     },
+
+    setKitTitle: (state, action: PayloadAction<string | undefined>) => {
+      state.kitTitle = action.payload;
+    },
+
+    setKitID: (state, action: PayloadAction<string | undefined>) => {
+      state.kitID = action.payload;
+    },
   },
 });
 
-export const { setTitle, setSwitchTypeID, setBoxID, setSwitchTitle, setBoxTitle } = keyboardSlice.actions;
+export const {
+  setTitle,
+  setSwitchTypeID,
+  setBoxID,
+  setSwitchTitle,
+  setBoxTitle,
+  setKitID,
+  setKitTitle,
+} = keyboardSlice.actions;
 export default keyboardSlice.reducer;

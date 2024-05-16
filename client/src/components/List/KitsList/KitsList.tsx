@@ -1,11 +1,10 @@
 import { FC, useEffect, useRef, useState } from "react";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import { Button, Container, Typography } from "@mui/material";
 import AccordionElementKit from "./AccordionElement/AccordionElementKit";
 import { useGetBoxesTypesQuery } from "../../../services/boxesService";
+import { useAppDispatch } from "../../../store/redux";
+import { useNavigate } from "react-router-dom";
+import { setKitID, setKitTitle } from "../../../store/keyboardSlice";
 
 type TKits = {
   /**
@@ -28,9 +27,22 @@ const KitsList: FC<props> = ({  handleChoose, handleNew }) => {
 
   const { data : dataType } = useGetBoxesTypesQuery();
 
+  const [title, setTitle] = useState<string | undefined>(undefined)
+  const [id, setId] = useState<string | undefined>(undefined)
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const onClick = (value: TKits) => {
     if (!value.id) return;
     handleChoose(value.id);
+    setId(value.id);
+    setTitle(value.title)
+  };
+
+  const kitAdd = () => {
+    dispatch(setKitTitle(title));
+    dispatch(setKitID(id));
+    navigate("/constructors")
   };
 
   const onClickNew = (boxTypeId: string) => {
@@ -73,25 +85,41 @@ const KitsList: FC<props> = ({  handleChoose, handleNew }) => {
        
       </Container>
       <Container>
-        <Button
+      <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
+            border: "1px solid #c1c0c0",
           }}
           variant="contained"
+          onClick={() => kitAdd()}
         >
-          добавить
+          <Typography
+            sx={{
+              color: "#c1c0c0",
+            }}
+          >
+            добавить
+          </Typography>
         </Button>
         <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
+            border: "1px solid #c1c0c0",
           }}
           variant="contained"
+          onClick={() => navigate("/constructors")}
         >
-          назад
+          <Typography
+            sx={{
+              color: "#c1c0c0",
+            }}
+          >
+            назад
+          </Typography>
         </Button>
       </Container>
     </Container>

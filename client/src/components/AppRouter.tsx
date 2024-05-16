@@ -8,14 +8,18 @@ import ConstrucrotBoxes from "../pages/ConstructorsBoxes/ConstructorsBoxes";
 import ConstructorKeys from "../pages/ConstructorsKeys/ConstructorsKeys";
 import Stats from "../pages/Stats/Stats";
 import { useAppSelector } from "../store/redux";
+import ConstructorKeyboard from "../pages/ConstructorsKeyboard/ConstructorsKeyboard";
 
 const AppRouter = () => {
-  const { isAdmin } = useAppSelector(
-    (state) => state.profileReducer
+  const { title, kitID, boxID, switchTypeID } = useAppSelector(
+    (state) => state.keyboardReduer
   );
+
+  
 
   return (
     <Routes>
+      <Route path="/constrKeyboard" element={<ConstructorKeyboard/>} />
       <Route path="/constrKeys" element={<ConstructorKeys/>} />
       <Route path="/constrBoxes" element={<ConstrucrotBoxes/>} />
       <Route path="/constrSwitch" element={<ConstructorsSwitches />} />

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 
 import {
   Accordion,
@@ -12,7 +12,13 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { useGetAuthBoxesQuery, useGetBoxesQuery, useGetDefaultBoxesQuery } from "../../../../services/boxesService";
+import {
+  useGetAuthBoxesQuery,
+  useGetBoxesQuery,
+  useGetDefaultBoxesQuery,
+  useLazyGetAuthBoxesQuery,
+  useLazyGetDefaultBoxesQuery,
+} from "../../../../services/boxesService";
 
 type TBoxes = {
   /**
@@ -29,7 +35,7 @@ type props = {
   boxTypeId: string;
   name: string;
   handleChoose: (data: TBoxes) => void;
-  handleNew: (idType: string, idBaseBox : string) => void;
+  handleNew: (idType: string, idBaseBox: string) => void;
 };
 
 const AccordionElement: FC<props> = ({
@@ -38,18 +44,9 @@ const AccordionElement: FC<props> = ({
   handleChoose,
   handleNew,
 }) => {
+  const [getAuthBoxes, { data: boxes }] = useLazyGetAuthBoxesQuery();
 
-  const { data : boxes } = useGetAuthBoxesQuery({
-    page: 1,
-    pageSize: 100,
-    typeID: boxTypeId,
-  });
-
-  const { data : boxesBase } = useGetDefaultBoxesQuery({
-    page: 1,
-    pageSize: 100,
-    typeID: boxTypeId,
-  });
+  const [getBaseBoxes, { data: boxesBase }]= useLazyGetDefaultBoxesQuery();
 
   const onClick = (value: TBoxes) => {
     if (!value.id) return;
@@ -61,6 +58,16 @@ const AccordionElement: FC<props> = ({
     handleNew(boxTypeId, boxesBase[0]?.id as string);
   };
 
+  useEffect(() => {
+    const data = {
+      page: 1,
+      pageSize: 100,
+      typeID: boxTypeId,
+    }
+    getAuthBoxes(data);
+    getBaseBoxes(data);
+  }, [])
+
   return (
     <Accordion>
       <AccordionSummary
@@ -71,9 +78,9 @@ const AccordionElement: FC<props> = ({
           borderBottom: "1px solid grey",
           margin: "0 0 -1px 0px",
         }}
-        expandIcon={<ArrowDropDownIcon sx={{ color: "#AEAEAE", fontSize: 40 }} />}
-        aria-controls="panel2-content"
-        id="panel2-header"
+        expandIcon={
+          <ArrowDropDownIcon sx={{ color: "#AEAEAE", fontSize: 40 }} />
+        }
       >
         <Typography
           sx={{
@@ -93,41 +100,43 @@ const AccordionElement: FC<props> = ({
       >
         <Grid container direction="column">
           <List disablePadding>
-            {boxesBase && boxes && boxesBase.concat(boxes).map((value) => {
-              const labelId = `checkbox-list-label-${value}`;
+            {boxesBase &&
+              boxes &&
+              boxesBase.concat(boxes).map((value) => {
+                const labelId = `checkbox-list-label-${value}`;
 
-              return (
-                <>
-                  <ListItem
-                    sx={{ minWidth: "100" }}
-                    key={value.id}
-                    disablePadding
-                  >
-                    <ListItemButton
-                      sx={{
-                        textAlign: "center",
-                        margin: "8px",
-                        borderTop: "1px solid grey",
-                        borderBottom: "1px solid grey",
-                      }}
-                      role={undefined}
-                      onClick={() => onClick(value)}
-                      dense
+                return (
+                  <>
+                    <ListItem
+                      sx={{ minWidth: "100" }}
+                      key={value.id}
+                      disablePadding
                     >
-                      <ListItemText
+                      <ListItemButton
                         sx={{
                           textAlign: "center",
-                          color: "#c1c0c0",
-                          m: "5px",
+                          margin: "8px",
+                          borderTop: "1px solid grey",
+                          borderBottom: "1px solid grey",
                         }}
-                        id={labelId}
-                        primary={`${value.title}`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </>
-              );
-            })}
+                        role={undefined}
+                        onClick={() => onClick(value)}
+                        dense
+                      >
+                        <ListItemText
+                          sx={{
+                            textAlign: "center",
+                            color: "#c1c0c0",
+                            m: "5px",
+                          }}
+                          id={labelId}
+                          primary={`${value.title}`}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  </>
+                );
+              })}
             <ListItem sx={{ minWidth: "100" }} disablePadding>
               <ListItemButton
                 sx={{
@@ -146,7 +155,7 @@ const AccordionElement: FC<props> = ({
                     color: "#c1c0c0",
                     m: "5px",
                   }}
-                  primary={`Custom`}
+                  primary={`Создать`}
                 />
               </ListItemButton>
             </ListItem>
