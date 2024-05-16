@@ -6,6 +6,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 type TKeyboardState = {
   switchTitle?: string;
   switchTypeID?: string;
+  boxTypeId?: string;
   boxID?: string;
   boxTitle?: string;
   title: string;
@@ -26,6 +27,10 @@ export const keyboardSlice = createSlice({
   reducers: {
     setTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
+    },
+
+    setBoxTypeId: (state, action: PayloadAction<string | undefined>) => {
+      state.boxTypeId = action.payload;
     },
 
     setSwitchTitle: (state, action: PayloadAction<string | undefined>) => {
@@ -55,6 +60,7 @@ export const keyboardSlice = createSlice({
 });
 
 export const {
+  setBoxTypeId,
   setTitle,
   setSwitchTypeID,
   setBoxID,

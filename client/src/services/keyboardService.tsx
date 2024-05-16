@@ -41,10 +41,36 @@ export const keyboardsService = createApi({
         method: "GET",
       }),
     }),
+    getKeyBoardPreview: builder.query<any, string>({
+      query: (ID : string ) => ({
+        url: `keyboards/preview?keyboardID=${ID}`,
+        method: "GET",
+      }),
+    }),
+    postKeyboard: builder.mutation<any, any>({
+      query: (bodyFormData) => {
+        let formData = new FormData();
+        formData.append('file', bodyFormData.file);
+        formData.append('preview', bodyFormData.preview);
+        formData.append('title', bodyFormData.title);
+        formData.append('switchTypeID', bodyFormData.switchTypeID);
+        formData.append('boxTypeID', bodyFormData.boxTypeID);
+
+        return {
+          url: `/keyboards`,
+          method: "POST",
+          body:  formData,
+          formData: true,
+        };
+      },
+    }),
   }),
 });
 
 export const {
+  useGetKeyBoardPreviewQuery,
+  useLazyGetKeyBoardPreviewQuery,
+  usePostKeyboardMutation,
   useGetAuthKeyboardsQuery,
   useLazyGetAuthKeyboardsQuery,
   useGetAuthKeyboardsTotalPagesQuery,

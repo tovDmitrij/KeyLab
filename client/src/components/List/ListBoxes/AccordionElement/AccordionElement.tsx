@@ -51,6 +51,7 @@ const AccordionElement: FC<props> = ({
   const onClick = (value: TBoxes) => {
     if (!value.id) return;
     handleChoose(value);
+    
   };
 
   const onClickNew = () => {

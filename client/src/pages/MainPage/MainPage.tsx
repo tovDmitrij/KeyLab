@@ -11,11 +11,6 @@ import Constructor from "../../components/MainPage/Constructor";
 
 const MainPage = () => {
 
-  const { data } = useGetAuthKeyboardsQuery({
-    page: 1,
-    pageSize: 10,
-  });
-
   return (
     <>
       <Header />
