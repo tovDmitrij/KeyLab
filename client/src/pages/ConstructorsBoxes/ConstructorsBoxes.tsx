@@ -19,10 +19,9 @@ const ConstrucrotBoxes = () => {
   const [postBox] = usePostBoxMutation();
   const [boxScene, setBoxScene] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
-  const [newIdBoxType, setNewIdBoxType] = useState<string | undefined>(
-    undefined
-  );
+  const [newIdBoxType, setNewIdBoxType] = useState<string | undefined>( undefined);
   const [color, setColor] = useState<any>(undefined);
+
   const orbitref = useRef(null);
   const ref = useRef(null);
   const refModel = useRef(null);
@@ -143,14 +142,7 @@ const ConstrucrotBoxes = () => {
               enablePan={false}
               target={[0, 0, 0]}
             />
-            {
-              /* {model && (
-              <mesh ref={refModel}>
-                <primitive object={model} />
-              </mesh>
-            )} */
-              model && <Box model={model} setBoxScene={setBoxScene}/>
-            }
+            { model && <Box model={model} setBoxScene={setBoxScene}/> }
           </Canvas>
         </Grid>
 

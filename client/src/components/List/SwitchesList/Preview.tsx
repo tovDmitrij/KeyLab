@@ -2,6 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useLazyGetSwitchPreviewQuery } from "../../../services/switchesService";
 import { useLazyGetBoxPreviewQuery } from "../../../services/boxesService";
 import { useLazyGetKitPreviewQuery } from "../../../services/kitsService";
+import { useLazyGetKeyBoardPreviewQuery } from "../../../services/keyboardService";
 
 type props = {
   id?: string;
@@ -16,6 +17,7 @@ const Preview: FC<props> = ({ width, height, type, id, scale}) => {
   const [switchPreview] = useLazyGetSwitchPreviewQuery();
   const [boxPreview] = useLazyGetBoxPreviewQuery();
   const [kitPreview] = useLazyGetKitPreviewQuery();
+  const [keyBoardPreview] = useLazyGetKeyBoardPreviewQuery();
 
 
   useEffect(() => {
@@ -35,6 +37,13 @@ const Preview: FC<props> = ({ width, height, type, id, scale}) => {
       .unwrap()
       .then((data) => {setPreviewImage(data.previewBase64)})
     }
+    
+    if (type === "keyboard") {
+      keyBoardPreview(id)
+      .unwrap()
+      .then((data) => {setPreviewImage(data.previewBase64)})
+    }
+
   }, [])
   
   return (

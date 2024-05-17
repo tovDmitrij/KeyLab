@@ -15,22 +15,23 @@ import { useLazyGetKeycapQuery, useLazyGetKeycapsQuery } from "../../services/ke
 import Box from "../../components/Models/Box";
 import KeayboardComponents from "../../components/KeayboardComponents/KeayboardComponents";
 import { Keycap } from "../../constants";
+import { usePostKeyboardMutation } from "../../services/keyboardService";
 
-const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel, switchSound}) => {
+const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel, switchSound}) => {
   const [boxScene, setBoxScene] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [pressedKey, setPressedKey] = useState('');
   const [count, setCount] = useState(0);
   const ref = useRef(null)
-  const snd = new Audio("data:audio/mp3;base64," + switchSound.soundBase64);
-  
+  const snd = new Audio("data:audio/mp3;base64," + switchSound?.soundBase64);
+
   let mixer: THREE.AnimationMixer;
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    event.preventDefault();
     setCount(prevCount =>  prevCount  + 1);
     setPressedKey(event.code);
   }; 
 
-  console.log(switchSound);
   useEffect(() => {
     if (ref && ref.current !== null && pressedKey) {
       if (!mixer) {
@@ -44,7 +45,6 @@ const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel, switchSound}) => 
         const action1 = mixer?.clipAction(matchedKeycap?.animations[0]);
         snd.play();
         action1.play();
-        console.log(snd)
         action1.clampWhenFinished = true;
         action1.loop = THREE.LoopOnce; 
       }
@@ -62,12 +62,8 @@ const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel, switchSound}) => 
     };
   }, []);
 
-  useFrame((state, delta) => {
-      mixer?.update(delta)
-  })
-
   return (
-    <group ref={ref}>
+    <group onUpdate={(scene) => setKeyboardModel(scene)} ref={ref}>
       <Box model={boxModel} setBoxScene={setBoxScene} /> 
       <group
         dispose={null}
@@ -114,22 +110,68 @@ const Keyboard: FC<any> = ({ keycapList,boxModel, switchModel, switchSound}) => 
 };
 
 const ConstructorKeyboard = () => {
-  const { title, kitID, boxID, switchTypeID } = useAppSelector(
+  const { title, kitID, boxID, switchTypeID, boxTypeId } = useAppSelector(
     (state) => state.keyboardReduer
   );
 
   const [modelKit, setModelKit] = useState<{scene : THREE.Group<THREE.Object3DEventMap>, uuid: string | undefined, animations: THREE.AnimationClip[]}[]>([]);
   const [boxModel, setBoxModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [switchModel, setSwitchModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
-  
+  const [keyboardModel, setKeyboardModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
+
   const [getBoxesModel] = useLazyGetBoxesQuery();
   const [getSwitchModel] = useLazyGetSwitchQuery();
   const [getListKeyCaps, {data : keyCapsList}] = useLazyGetKeycapsQuery();
   const [getKeycapModel] = useLazyGetKeycapQuery();
   const [getSwitchSound,  {data: switchSound}] = useLazyGetSwitchSoundQuery();
+  const [postKeyboard] = usePostKeyboardMutation();
 
+  const orbitref = useRef(null);
+  const ref = useRef(null);
   const refModel = useRef(null);
   const loader = new GLTFLoader();
+  const exporter = new GLTFExporter();
+  
+  const saveKeyboard = () => {
+    
+    if (!orbitref.current && orbitref.current === null) return;
+    //@ts-ignore
+    orbitref.current.reset();
+    setTimeout(() => {
+      let previewFile: string | undefined = undefined;
+      //@ts-ignore
+      ref?.current?.toBlob(
+        (blob: any) => {
+          previewFile = blob;
+          if (!previewFile || !kitID || !boxID || !switchTypeID || !keyboardModel)
+            return;
+          exporter.parse(
+            keyboardModel,
+            (gltf) => {
+              const jsonString = JSON.stringify(gltf);
+              const blob = new Blob([jsonString], { type: "application/json" });
+              const file = new File([blob], title + ".glb", {
+                type: "application/json",
+                lastModified: Date.now(),
+              });
+              postKeyboard({
+                file: file,
+                preview: previewFile,
+                title: title,
+                switchTypeID: switchTypeID,
+                boxTypeID: boxTypeId,
+              })
+              .unwrap()
+
+            },
+            (error) => console.log(error)
+          );
+        },
+        "image/webp",
+        1
+      );
+    }, 1500);
+  };
 
   useEffect(() => {
     if (!boxID || !kitID || !switchTypeID || !title) return;
@@ -156,8 +198,7 @@ const ConstructorKeyboard = () => {
     })
 
     getSwitchSound(switchTypeID);
-
-  },[])
+  }, []);
 
   useEffect(() => {
     if (!keyCapsList) return;
@@ -174,12 +215,14 @@ const ConstructorKeyboard = () => {
       })
   }, [keyCapsList])
 
-  const orbitref = useRef(null);
-  const ref = useRef(null);
+  useEffect(() => {
+    saveKeyboard()
+  }, [ref, kitID, boxID, switchTypeID, keyboardModel])
 
   return (
     <>
       <Header />
+      <div onClick={() => document.body.focus()}>
       <Grid sx={{ bgcolor: "#2D393B" }} container spacing={0}>
         <Grid
           sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}
@@ -191,7 +234,7 @@ const ConstructorKeyboard = () => {
               makeDefault
               zoom={16}
               fov={90}
-              position={[0, 20, 20]}
+              position={[-10, 20, 20]}
             />
             <directionalLight  args={[0xffffff]} position={[0, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, 0, -3]} intensity={1} />
@@ -219,6 +262,7 @@ const ConstructorKeyboard = () => {
                   boxModel={boxModel}
                   switchModel={switchModel}
                   switchSound={switchSound}
+                  setKeyboardModel={setKeyboardModel} 
                 />
               </mesh> }
           </Canvas>
@@ -228,6 +272,7 @@ const ConstructorKeyboard = () => {
             <KeayboardComponents kitID={kitID} boxID={boxID} switchTypeID={switchTypeID}/>
         </Grid>
       </Grid>
+      </div>
     </>
   );
 };

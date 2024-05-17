@@ -8,7 +8,7 @@ import AccordionElement from "./AccordionElement/AccordionElement";
 import { useNavigate } from "react-router-dom";
 import { useGetBoxesTypesQuery } from "../../../services/boxesService";
 import { useAppDispatch } from "../../../store/redux";
-import { setBoxID, setBoxTitle } from "../../../store/keyboardSlice";
+import { setBoxID, setBoxTitle, setBoxTypeId } from "../../../store/keyboardSlice";
 
 type TBoxes = {
   /**
@@ -50,6 +50,7 @@ const BoxesList: FC<props> = ({
 
   const [title, setTitle] = useState<string | undefined>(undefined)
   const [id, setId] = useState<string | undefined>(undefined)
+  const [typeID,  setTypeID] = useState<string | undefined>(undefined)
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -57,6 +58,7 @@ const BoxesList: FC<props> = ({
   const boxAdd = () => {
     dispatch(setBoxTitle(title));
     dispatch(setBoxID(id));
+    dispatch(setBoxTypeId(typeID));
     navigate("/constructors")
   }
 
@@ -66,6 +68,7 @@ const BoxesList: FC<props> = ({
     handleChoose(value.id);
     setTitle(value.title);
     setId(value.id);
+    setTypeID(value.typeID);
   };
 
   const onClickNew = (idType: string, idBaseBox : string) => {
