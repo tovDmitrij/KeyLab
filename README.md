@@ -76,23 +76,18 @@
 [Ссылка на Youtube](https://youtu.be/8doCy77QzFE)
 
 ## :notebook: Документация
-**API** - см. README файл в папке */api*;
+**API** - см. README файл в папке */api* и диаграммы в */docs*;
 
-**Client** - см. README файл в папке */client*;
+**Client** - см. README файл в папке */client* и диаграммы в */docs*;
 
-**PostgreSQL** - см. README файлы в папке */postgres/production*.
+**PostgreSQL** - см. README файлы в папке */postgres/production* и диаграммы в */docs*.
 
 ## :rocket: Запуск (Docker)
 1. Установить Docker;
 2. Скачать архив с файлами [по ссылке](https://drive.google.com/drive/folders/1msr1UAy3w1_vsBq9aF4zVs5QZepKXcow?usp=sharing) и распаковать его в папку *files*;
-3. В файле *configurations/production/api.json* в блоке *Email* определить *Login* и *Password* приложения, привязанного к аккаунту Google (см. [справочник Google](https://support.google.com/accounts/answer/185833?hl=en));
-4. Запустить скрипт *docker-production.bash*.
-
-*Пояснение:*
-```
-compose-production - необходим для запуска релизной версии ПО;
-compose-dev - необходим для тестирования ПО.
-```
+3. **(Опционально, если планируется регистрировать аккаунт в системе)** В файле *configurations/production/api.json* в блоке *Email* определить *Login* и *Password* приложения, привязанного к аккаунту Google (см. [справочник Google](https://support.google.com/accounts/answer/185833?hl=en));
+4. Запустить скрипт *docker-production.bash*;
+5. Зарегистрировать новый аккаунт *(см. п.3)*, либо войти в аккаунт администратора (admin@keyboard.ru:11111111).
 
 ## :computer: Технологический стек
 ```
