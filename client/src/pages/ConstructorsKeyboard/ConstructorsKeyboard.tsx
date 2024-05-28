@@ -1,7 +1,9 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
+
 import Header from "../../components/Header/Header";
 import { Grid } from "@mui/material";
 import { GLTFExporter, GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -17,6 +19,7 @@ import KeayboardComponents from "../../components/KeayboardComponents/KeayboardC
 import { Keycap } from "../../constants";
 import { usePostKeyboardMutation } from "../../services/keyboardService";
 import { resetKeyBoardState } from "../../store/keyboardSlice";
+
 
 const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel, switchSound}) => {
   const [boxScene, setBoxScene] = useState<THREE.Group<THREE.Object3DEventMap>>();
@@ -117,7 +120,7 @@ const ConstructorKeyboard = () => {
     (state) => state.keyboardReduer
   );
   const dispatch = useAppDispatch();
-
+  const navigate = useNavigate();
   const [modelKit, setModelKit] = useState<{scene : THREE.Group<THREE.Object3DEventMap>, uuid: string | undefined, animations: THREE.AnimationClip[]}[]>([]);
   const [boxModel, setBoxModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [switchModel, setSwitchModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
@@ -171,6 +174,7 @@ const ConstructorKeyboard = () => {
                 boxTypeID: boxTypeId,
               })
               .unwrap()
+              .then(() => navigate('/'))
             },
             (error) => console.log(error), options);
         },

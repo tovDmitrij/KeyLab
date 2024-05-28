@@ -61,7 +61,7 @@ const Graphs = () => {
       },
       {
         chartData: countUsers,
-        title: "Количество пользователей на сайте",
+        title: "Количество уникальных пользователей на сайте",
       },
       {
         chartData: averageTimeOnPages,
@@ -70,7 +70,7 @@ const Graphs = () => {
       },
       {
         chartData: countUsersOnPages,
-        title: "Количество пользователей на страницах",
+        title: "Количество уникальных пользователей на страницах",
         flag: true,
       },
     ]);
