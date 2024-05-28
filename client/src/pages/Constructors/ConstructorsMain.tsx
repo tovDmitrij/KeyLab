@@ -3,15 +3,13 @@ import React, { FC, useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import classes from "./Constructors.module.scss";
-import KeycapsCard from "../../components/Card/KeycapsCard/KeycapsCard";
-import BoxCard from "../../components/Card/BoxCard/BoxCard";
-import SwitchCard from "../../components/Card/SwitchCard/SwitchCard";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import MoldaSetNameKeyboard from "../../components/Modals/MoldaSetNameKeyboard";
 import { useDispatch } from "react-redux";
 import { setTitle } from "../../store/keyboardSlice";
 import { useAppSelector } from "../../store/redux";
 import { useNavigate } from "react-router-dom"
+import CardConstr from "../../components/Card/KeycapsCard/CardConstr";
 
 const ConstructorsMain = () => {
   const { title, kitID, boxID, switchTypeID } = useAppSelector(
@@ -50,13 +48,13 @@ const ConstructorsMain = () => {
           spacing={0.5}
         >
           <Grid item>
-            <KeycapsCard />
+            <CardConstr type='kit'/>
           </Grid>
           <Grid item>
-            <BoxCard />
+            <CardConstr type='box'/>
           </Grid>
           <Grid item>
-            <SwitchCard />
+            <CardConstr type='switch'/>
           </Grid>
         </Grid>
         {kitID && boxID && switchTypeID && title !== "Безымянный"  && (
@@ -72,7 +70,7 @@ const ConstructorsMain = () => {
               variant="contained"
               sx={{ borderRadius: "30px", m: "10px", width: "20%" }}
             >
-              Сохранить
+              продолжить
             </Button>
           </Container>
         )}

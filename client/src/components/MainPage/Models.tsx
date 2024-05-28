@@ -8,18 +8,23 @@ import "swiper/css";
 import "swiper/css/pagination";
 import 'swiper/css/navigation';
 import { Pagination, Navigation } from 'swiper/modules';
-import { useGetAuthKeyboardsQuery, useGetDefaultKeyboardsQuery } from "../../services/keyboardService";
+import { useGetAuthKeyboardsQuery, useGetDefaultKeyboardsQuery, useLazyGetAuthKeyboardsQuery, useLazyGetDefaultKeyboardsQuery } from "../../services/keyboardService";
+import { useEffect } from "react";
 
 const Models = () => {
-  const { data : authKeyboards } = useGetAuthKeyboardsQuery({
-    page: 1,
-    pageSize: 100,
-  });
+  const [getAuthKeyboards, { data : authKeyboards }] = useLazyGetDefaultKeyboardsQuery();
 
-  const { data : baseKeyboards } = useGetDefaultKeyboardsQuery({
-    page: 1,
-    pageSize: 100,
-  });
+  const [getKeyboards, { data : baseKeyboards }] = useLazyGetAuthKeyboardsQuery();
+  
+ 
+  useEffect(() => {
+    const data = {
+      page: 1,
+      pageSize: 100,
+    }
+    getAuthKeyboards(data);
+    getKeyboards(data); 
+  }, [])
 
   return (
     <Container
@@ -65,7 +70,13 @@ const Models = () => {
         <SwiperSlide>
           <PreviewCard />
         </SwiperSlide>
-        {authKeyboards && baseKeyboards &&  authKeyboards?.concat(baseKeyboards).map((value : any) => {
+        {authKeyboards && baseKeyboards && authKeyboards?.concat(baseKeyboards).map((value : any) => {
+          return (
+            <SwiperSlide>
+              <PreviewCard keyBoardId={value.id} title={value.title}/>
+            </SwiperSlide>
+          )})}
+        {!authKeyboards && baseKeyboards && baseKeyboards?.map((value : any) => {
           return (
             <SwiperSlide>
               <PreviewCard keyBoardId={value.id} title={value.title}/>

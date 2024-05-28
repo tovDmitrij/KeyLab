@@ -55,8 +55,8 @@ const AtomStats = () => {
       },
       {
         data: countUsers,
-        title: "Количество пользователей на сайте",
-        postfix: "- пользователей"
+        title: "Количество уникальных пользователей на сайте",
+        postfix: ""
       },
       {
         data: averageTimeOnPages,
@@ -66,13 +66,12 @@ const AtomStats = () => {
       },
       {
         data: countUsersOnPages,
-        title: "Количество пользователей на страницах",
-        postfix: "- пользователей"
+        title: "Количество уникальных пользователей на страницах",
+        postfix: ""
       },
     ]);
   }, [averageTime, countUsers, averageTimeOnPages]);
 
-  console.log(cardsList)
   return (
     <Container
       disableGutters
@@ -102,7 +101,7 @@ const AtomStats = () => {
             }}
           >
             <Typography
-              sx={{ fontSize: 10, textAlign: "left", m: 0 }}
+              sx={{ fontSize: 12, textAlign: "left", m: 0 }}
               color="text.secondary"
               gutterBottom
             >
@@ -113,7 +112,7 @@ const AtomStats = () => {
               color="text.secondary"
               gutterBottom
             >
-              {item?.data?.quantity && (item?.data?.quantity).toFixed(4)} {item?.data?.seconds && (item?.data?.seconds / 60).toFixed(2)} {item?.postfix}
+              {item?.data?.quantity && (item?.data?.quantity)} {item?.data?.seconds && (item?.data?.seconds / 60).toFixed(2)} {item?.postfix}
             </Typography>
           </CardContent>
         </Card>

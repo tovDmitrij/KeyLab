@@ -61,7 +61,7 @@ const Graphs = () => {
       },
       {
         chartData: countUsers,
-        title: "Количество пользователей на сайте",
+        title: "Количество уникальных пользователей на сайте",
       },
       {
         chartData: averageTimeOnPages,
@@ -70,7 +70,7 @@ const Graphs = () => {
       },
       {
         chartData: countUsersOnPages,
-        title: "Количество пользователей на страницах",
+        title: "Количество уникальных пользователей на страницах",
         flag: true,
       },
     ]);
@@ -80,7 +80,7 @@ const Graphs = () => {
   return (
     <Container
       disableGutters
-      sx={{ mt: "40px", textAlign: "center", alignItems: "center" }}
+      sx={{ mt: "50px", textAlign: "center", alignItems: "center", mb: "40px"}}
     >
       {accordionList?.map((item) => {
         return (
@@ -104,6 +104,7 @@ const Graphs = () => {
             </AccordionSummary>
             <AccordionDetails
               sx={{
+                textAlign: "left",
                 border: "1px solid grey",
                 margin: "0 0 -1px 0px",
               }}

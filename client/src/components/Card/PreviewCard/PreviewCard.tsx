@@ -27,7 +27,7 @@ const PreviewCard: FC<any> = ({ keyBoardId, title }) => {
         </>
       ) : (
         <>
-          <CardActionArea onClick={() => navigate("/constructors")}>
+          <CardActionArea onClick={() => navigate(`/keyboard/${keyBoardId}`)}>
             <CardContent className={classes.card_content}>
               <Preview
                 id={keyBoardId}

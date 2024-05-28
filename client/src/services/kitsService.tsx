@@ -43,15 +43,15 @@ export const kitsService = createApi({
         method: "GET",
       }),
     }),
-    getAuthKitsTotalPages: builder.query<any, TPages>({
-      query: ({ pageSize }) => ({
-        url: `kits/auth/totalPages?pageSize=${pageSize}`,
-        method: "GET",
-      }),
-    }),
     getDefaultKits: builder.query<TKits[], TPages>({
       query: ({ page, pageSize, typeID }) => ({
         url: `/kits/default?page=${page}&pageSize=${pageSize}&boxTypeID=${typeID}`,
+        method: "GET",
+      }),
+    }),
+    getAuthKitsTotalPages: builder.query<any, TPages>({
+      query: ({ pageSize }) => ({
+        url: `kits/auth/totalPages?pageSize=${pageSize}`,
         method: "GET",
       }),
     }),

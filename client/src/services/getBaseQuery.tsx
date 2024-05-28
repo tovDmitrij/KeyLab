@@ -32,11 +32,10 @@ export const getBaseQuery: BaseQueryFn<string | FetchArgs, unknown, unknown>
 
     if (result?.error && result.error.status === 401) {
         let tryRefreshToken = await refreshBaseQuery('users/refresh', api, extraOption); 
-        console.log(tryRefreshToken) 
         // @ts-ignore
         if (tryRefreshToken?.data) {
           console.log("🚀 ~ = ~ Token refreshed successfully")
-          // @ts-ignore
+          // @ts-ignoreВ
           api.dispatch(updateToken({ accessToken: tryRefreshToken.data.accessToken }))
           
           result = await baseQuery(args, api, extraOption)

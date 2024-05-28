@@ -2,8 +2,6 @@ import { useNavigate } from "react-router-dom";
 
 import { Box, Button, Container, Typography } from "@mui/material";
 
-import Keyboard from "/src/assets/fullkb 1.png";
-
 const Constructor = () => {
 
   const navigate = useNavigate();
@@ -28,7 +26,6 @@ const Constructor = () => {
       <Button
         size="large"
         sx={{
-          
           alignItems: "center",
           textAlign: "center",
           borderRadius: "30px",
@@ -37,7 +34,6 @@ const Constructor = () => {
           backgroundColor: "#FFFFFF",
           color: 'black',
           '&:hover': {
-            //backgroundColor: '#FFFFFF',
             color: 'white',
           },
         }}

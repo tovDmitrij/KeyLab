@@ -1,74 +1,56 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 
-import classes from "./ConstructorsSwitches.module.scss";
 import * as THREE from "three";
 import Header from "../../components/Header/Header";
-import { Grid } from "@mui/material";
-import {
-  useGetSwitchQuery,
-  useGetSwitchesQuery,
-  useLazyGetSwitchQuery,
-  useLazyGetSwitchesQuery,
-} from "../../services/switchesService";
-import SwitchesList from "../../components/List/SwitchesList/SwitchesList";
+import { OrbitControls, PerspectiveCamera, useAnimations } from "@react-three/drei";
+import { useLazyGetKeyBoardQuery } from "../../services/keyboardService";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
+import { useParams } from "react-router-dom";
+import { Grid } from "@mui/material";
 
 
-type props = {
-  model: any,
-}
-
-const Switch: FC<props> = ({model}) =>  {
-  return (
-    <group rotation={model.children[0].rotation} name={model.children[0].name} position={model.children[0].position} dispose={null}>
-        <mesh geometry={model.children[0].children[0].geometry} material={model.children[0].children[0].material}/>
-        <mesh geometry={model.children[0].children[1].geometry} material={model.children[0].children[1].material}/>
-        <mesh geometry={model.children[0].children[2].geometry} material={model.children[0].children[2].material}/>
-    </group>
-  )
-}
-
-const ConstructorsSwitches = () => {
-  const ref = useRef(null);
+const KeyboardViwer  = () => {
+  const [getKeyBoard] = useLazyGetKeyBoardQuery();
+  const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();  
+  const { uuid } = useParams();
+  const orbitref = useRef(null);
+  const refModel = useRef(null);
   
-  const [getSwitch] = useLazyGetSwitchQuery();
-  const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
+  
 
-  const { data } = useGetSwitchesQuery({
-    page: 1,
-    pageSize: 10,
-  });
-
-  const getId = async (id: string) => {
-    await getSwitch(id)
+  const getModel = (id: string) => {
+    getKeyBoard(id)
       .unwrap()
-      .then((payload) => {
+      .then((payload) => {  
         const loader = new GLTFLoader();
         loader.parse(payload, "", (gltf) => {
-          console.log(gltf);
+          console.log(gltf)
           setModel(gltf.scene);
         });
       });
   };
 
+  useEffect(() => {
+    if (!uuid) return;
+    getModel(uuid);
+  }, [uuid]);
+
   return (
     <>
       <Header />
+      <div onClick={() => document.body.focus()}>
       <Grid sx={{ bgcolor: "#2D393B" }} container spacing={0}>
-        <Grid
+        <Grid 
           sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}
-          className={classes.editor}
           item
-          xs={10}
         >
-          <Canvas  gl={{ preserveDrawingBuffer: true }} ref={ref}>
+          <Canvas gl={{ preserveDrawingBuffer: true }}>
           <PerspectiveCamera     
               makeDefault
-              zoom={60}
+              zoom={16}
               fov={90}
-              position={[-10, 10, 20]}
+              position={[-10, 20, 20]}
             />
             <directionalLight  args={[0xffffff]} position={[0, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, 0, -3]} intensity={1} />
@@ -76,29 +58,31 @@ const ConstructorsSwitches = () => {
             <directionalLight  args={[0xffffff]} position={[0, 3, 0]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[-3, 0, 0]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, 0, 0]} intensity={1} />
-
             <directionalLight  args={[0xffffff]} position={[0, 3, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[0, -3, -3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, -3, 0]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, 3, 0]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[-3, 0, 3]} intensity={1} />
             <directionalLight  args={[0xffffff]} position={[3, 0, 3]} intensity={1} />
-            
             <OrbitControls
+              ref={orbitref}
               maxDistance={2}
               minDistance={1}
               enablePan={false}
               target={[0, 0, 0]}
             />
-            {model && ( <Switch model = {model}/>)}
+            {model &&
+              <mesh ref={refModel}>
+                <primitive
+                  object={model}
+                />
+              </mesh> }
           </Canvas>
-        </Grid>
-        <Grid item xs={2}>
-          {data && <SwitchesList switches={data} handleChoose={getId} />}
-        </Grid>
+          </Grid>
       </Grid>
+      </div> 
     </>
   );
 };
 
-export default ConstructorsSwitches;
+export default KeyboardViwer;

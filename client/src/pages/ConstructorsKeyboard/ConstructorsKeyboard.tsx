@@ -1,7 +1,9 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
+
 import Header from "../../components/Header/Header";
 import { Grid } from "@mui/material";
 import { GLTFExporter, GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -9,13 +11,15 @@ import { OrbitControls, PerspectiveCamera, useAnimations } from "@react-three/dr
 import BoxesList from "../../components/List/ListBoxes/BoxesList";
 import { useLazyGetBoxesQuery, usePostBoxMutation } from "../../services/boxesService";
 import ListBoxesNew from "../../components/List/ListBoxes/ListBoxesNew"
-import { useAppSelector } from "../../store/redux";
+import { useAppDispatch, useAppSelector } from "../../store/redux";
 import { useGetSwitchSoundQuery, useLazyGetSwitchQuery, useLazyGetSwitchSoundQuery } from "../../services/switchesService";
 import { useLazyGetKeycapQuery, useLazyGetKeycapsQuery } from "../../services/keycapsService";
 import Box from "../../components/Models/Box";
 import KeayboardComponents from "../../components/KeayboardComponents/KeayboardComponents";
 import { Keycap } from "../../constants";
 import { usePostKeyboardMutation } from "../../services/keyboardService";
+import { resetKeyBoardState } from "../../store/keyboardSlice";
+
 
 const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel, switchSound}) => {
   const [boxScene, setBoxScene] = useState<THREE.Group<THREE.Object3DEventMap>>();
@@ -30,7 +34,14 @@ const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel,
     event.preventDefault();
     setCount(prevCount =>  prevCount  + 1);
     setPressedKey(event.code);
-  }; 
+  };   
+  
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     if (ref && ref.current !== null && pressedKey) {
@@ -55,12 +66,6 @@ const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel,
     mixer?.update(delta);
   });
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   return (
     <group onUpdate={(scene) => setKeyboardModel(scene)} ref={ref}>
@@ -87,6 +92,7 @@ const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel,
                 material={model.scene.children[0].material}
               />
               <group
+                name={switchModel?.children[0].name}
                 rotation={switchModel?.children[0].rotation}
                 position={[x, y - 0.01, z]}
               >
@@ -113,7 +119,8 @@ const ConstructorKeyboard = () => {
   const { title, kitID, boxID, switchTypeID, boxTypeId } = useAppSelector(
     (state) => state.keyboardReduer
   );
-
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [modelKit, setModelKit] = useState<{scene : THREE.Group<THREE.Object3DEventMap>, uuid: string | undefined, animations: THREE.AnimationClip[]}[]>([]);
   const [boxModel, setBoxModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [switchModel, setSwitchModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
@@ -132,12 +139,17 @@ const ConstructorKeyboard = () => {
   const loader = new GLTFLoader();
   const exporter = new GLTFExporter();
   
+  
   const saveKeyboard = () => {
-    
     if (!orbitref.current && orbitref.current === null) return;
     //@ts-ignore
     orbitref.current.reset();
+    const animations : THREE.AnimationClip[] = modelKit?.map((clip) => clip.animations[0]);
+
     setTimeout(() => {
+      const options = {
+        animations: animations,
+      };
       let previewFile: string | undefined = undefined;
       //@ts-ignore
       ref?.current?.toBlob(
@@ -162,15 +174,14 @@ const ConstructorKeyboard = () => {
                 boxTypeID: boxTypeId,
               })
               .unwrap()
-
+              .then(() => navigate('/'))
             },
-            (error) => console.log(error)
-          );
+            (error) => console.log(error), options);
         },
         "image/webp",
         1
       );
-    }, 1500);
+    }, 500);
   };
 
   useEffect(() => {
@@ -214,10 +225,6 @@ const ConstructorKeyboard = () => {
         });
       })
   }, [keyCapsList])
-
-  useEffect(() => {
-    saveKeyboard()
-  }, [ref, kitID, boxID, switchTypeID, keyboardModel])
 
   return (
     <>
@@ -269,7 +276,7 @@ const ConstructorKeyboard = () => {
         </Grid>
         
         <Grid item xs={2}>
-            <KeayboardComponents kitID={kitID} boxID={boxID} switchTypeID={switchTypeID}/>
+            <KeayboardComponents onSave={saveKeyboard} kitID={kitID} boxID={boxID} switchTypeID={switchTypeID}/>
         </Grid>
       </Grid>
       </div>

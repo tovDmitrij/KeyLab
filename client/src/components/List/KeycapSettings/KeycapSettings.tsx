@@ -93,15 +93,6 @@ const KeycapSettings: FC<props> = ({ handleChooseColor,  saveKit, title, paintFu
             </Typography>
             <PopoverPicker color={color} onChange={onChange} />
           </ListItem>
-          <ListItem
-            sx={{
-              height: "80px",
-              borderTop: "1px solid grey",
-              borderBottom: "1px solid grey",
-              margin: "0 0 -1px 0px",
-            }}
-            disablePadding
-          ></ListItem>
         </List>
       </Container>
       <Container
