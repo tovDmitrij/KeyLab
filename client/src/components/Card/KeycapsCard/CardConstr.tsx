@@ -53,7 +53,7 @@ const CardConstr: FC<any> = ({type}) => {
             <>
               {id && <Preview id={id} type={type} width={type === 'switch' ? 165 : 300} height={165} />}
               <Typography sx={{ mt: 1, fontSize: 20, color: "#AEAEAE" }}>
-                {kitTitle}
+                {title}
               </Typography>
             </>
           )}

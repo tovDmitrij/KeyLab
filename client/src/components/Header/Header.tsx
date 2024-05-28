@@ -37,6 +37,8 @@ const Header = () => {
       setTitle("3D просмотр");
     } else if (currentUrl.includes("/stats")) {
       setTitle("Статистика");
+    } else if (currentUrl.includes("/keyboard/")) {
+      setTitle("3D просмотр");
     } 
   }, [currentUrl]);
 

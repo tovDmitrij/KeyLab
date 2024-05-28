@@ -80,7 +80,7 @@ const Graphs = () => {
   return (
     <Container
       disableGutters
-      sx={{ mt: "40px", textAlign: "center", alignItems: "center" }}
+      sx={{ mt: "50px", textAlign: "center", alignItems: "center", mb: "40px"}}
     >
       {accordionList?.map((item) => {
         return (

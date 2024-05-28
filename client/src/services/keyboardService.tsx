@@ -45,6 +45,7 @@ export const keyboardsService = createApi({
       query: (ID : string ) => ({
         url: `keyboards/file?keyboardID=${ID}`,
         method: "GET",
+        responseHandler: (response) => response.arrayBuffer(),
       }),
     }),
     getKeyBoardPreview: builder.query<any, string>({
