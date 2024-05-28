@@ -65,7 +65,13 @@ const Models = () => {
         <SwiperSlide>
           <PreviewCard />
         </SwiperSlide>
-        {authKeyboards && baseKeyboards &&  authKeyboards?.concat(baseKeyboards).map((value : any) => {
+        {authKeyboards && baseKeyboards && authKeyboards?.concat(baseKeyboards).map((value : any) => {
+          return (
+            <SwiperSlide>
+              <PreviewCard keyBoardId={value.id} title={value.title}/>
+            </SwiperSlide>
+          )})}
+        {!authKeyboards && baseKeyboards && baseKeyboards?.map((value : any) => {
           return (
             <SwiperSlide>
               <PreviewCard keyBoardId={value.id} title={value.title}/>

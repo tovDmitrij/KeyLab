@@ -9,6 +9,7 @@ import ConstructorKeys from "../pages/ConstructorsKeys/ConstructorsKeys";
 import Stats from "../pages/Stats/Stats";
 import { useAppSelector } from "../store/redux";
 import ConstructorKeyboard from "../pages/ConstructorsKeyboard/ConstructorsKeyboard";
+import KeyboardViwer from "../pages/KeyboardViwer/KeyboardViwer";
 
 const AppRouter = () => {
   const { title, kitID, boxID, switchTypeID } = useAppSelector(
@@ -19,7 +20,8 @@ const AppRouter = () => {
 
   return (
     <Routes>
-      <Route path="/constrKeyboard" element={<ConstructorKeyboard/>} />
+      <Route path="/keyboard/:uuid"  element={<KeyboardViwer/>} />
+      <Route path="/constrKeyboard"  element={<ConstructorKeyboard/>} />
       <Route path="/constrKeys" element={<ConstructorKeys/>} />
       <Route path="/constrBoxes" element={<ConstrucrotBoxes/>} />
       <Route path="/constrSwitch" element={<ConstructorsSwitches />} />

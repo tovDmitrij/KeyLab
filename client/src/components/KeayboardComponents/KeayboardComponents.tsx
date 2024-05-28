@@ -10,7 +10,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { RgbaColor } from "react-colorful";
 import Preview from "../List/SwitchesList/Preview";
 import { useAppSelector } from "../../store/redux";
 
@@ -18,9 +17,10 @@ type props = {
   kitID?: string;
   boxID?: string;
   switchTypeID?: string;
+  onSave?: () => void;
 };
 
-const KeayboardComponents: FC<props> = ({ kitID, boxID, switchTypeID }) => {
+const KeayboardComponents: FC<props> = ({ kitID, boxID, switchTypeID, onSave }) => {
   const { kitTitle, boxTitle, switchTitle} = useAppSelector(
     (state) => state.keyboardReduer
   );
@@ -152,6 +152,7 @@ const KeayboardComponents: FC<props> = ({ kitID, boxID, switchTypeID }) => {
             border: "1px solid #c1c0c0",
           }}
           variant="contained"
+          onClick={onSave}
         >
           <Typography
             sx={{

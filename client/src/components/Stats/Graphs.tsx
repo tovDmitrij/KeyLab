@@ -104,6 +104,7 @@ const Graphs = () => {
             </AccordionSummary>
             <AccordionDetails
               sx={{
+                textAlign: "left",
                 border: "1px solid grey",
                 margin: "0 0 -1px 0px",
               }}

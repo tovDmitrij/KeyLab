@@ -25,7 +25,7 @@ export const keyboardSlice = createSlice({
   name: "keyboard",
   initialState: initialState,
   reducers: {
-    setTitle: (state, action: PayloadAction<string>) => {
+    setTitle: (state, action: PayloadAction<string >) => {
       state.title = action.payload;
     },
 
@@ -56,10 +56,22 @@ export const keyboardSlice = createSlice({
     setKitID: (state, action: PayloadAction<string | undefined>) => {
       state.kitID = action.payload;
     },
+
+    resetKeyBoardState: (state) => {
+      state.switchTitle = undefined;
+      state.switchTypeID= undefined;
+      state.boxTypeId= undefined;
+      state.boxID= undefined;
+      state.boxTitle= undefined;
+      state.title= "Безымянный";
+      state.kitTitle= undefined;
+      state.kitID= undefined;
+    }
   },
 });
 
 export const {
+  resetKeyBoardState,
   setBoxTypeId,
   setTitle,
   setSwitchTypeID,

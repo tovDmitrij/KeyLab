@@ -13,17 +13,11 @@ type TAuthState = {
    * JWT токен, связанный с аутентифицированным пользователем.
    */
   accessToken?: string;
-
-  /**
-   * JWT токен, служащий для актуализации токена доступа.
-   */
-  refresh_token?: string;
 };
 
 const initialState: TAuthState = {
   isAuth: !!localStorage.getItem("token"),
   accessToken: localStorage.getItem("token") || undefined,
-  refresh_token: localStorage.getItem("refresh_token") || undefined,
 };
 
 export const authSlice = createSlice({
@@ -45,15 +39,12 @@ export const authSlice = createSlice({
      */
     logOut: (state) => {
       //state.user = null;
-      
+      localStorage.removeItem("admin");
       localStorage.removeItem("token");
       state.isAuth = false;
       state.accessToken = undefined;
     },
 
-    /**
-     * Action creator для выхода пользователя из системы.
-     */
     updateToken: (state, action) => {
       const accesToken = action.payload.accessToken;
       state.accessToken = accesToken;

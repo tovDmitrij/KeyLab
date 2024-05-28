@@ -24,7 +24,6 @@ const ConstrucrotBoxes = () => {
 
   const orbitref = useRef(null);
   const ref = useRef(null);
-  const refModel = useRef(null);
 
   const getId = (id: string) => {
     getBoxes(id)
@@ -32,6 +31,7 @@ const ConstrucrotBoxes = () => {
       .then((payload) => {
         const loader = new GLTFLoader();
         loader.parse(payload, "", (gltf) => {
+          console.log(gltf)
           setModel(gltf.scene);
         });
       });

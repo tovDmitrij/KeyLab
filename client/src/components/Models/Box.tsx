@@ -1,7 +1,6 @@
 import { FC } from "react";
 
 const Box: FC<any> = ({ model, setBoxScene }) => {
-  
 
   return (
     <group

@@ -30,7 +30,13 @@ type TKeycaps = {
   creationDate?: string;
 };
 
-const Kits: FC<any> = ({ models, handleClick, setKitsScene}) => {
+type props = {
+  handleClick: (data: any) => void;
+  setKitsScene: (scene: any) => void;
+  models: any
+}
+
+const Kits: FC<props> = ({ models, handleClick, setKitsScene}) => {
   const [state, setState] = useState(false);
 
   return (
@@ -137,7 +143,6 @@ const ConstructorKeys = () => {
     if (e.object.parent === null) return;
     //@ts-ignore
     e.object.material?.color?.setRGB(color.r  / 255, color.g / 255, color.b / 255);  
-    //saveKeycap(e.object);
     e.stopPropagation(); 
   }
 
@@ -204,7 +209,9 @@ const ConstructorKeys = () => {
       .unwrap()
       .then((payload) => {
         loader.parse(payload, "", (gltf) => {
-        setModelKit(prevModelKit => [...prevModelKit, {scene: gltf.scene, uuid: keycap?.id, animations: gltf.animations}]);
+        setModelKit(prevModelKit => [...prevModelKit, {scene: gltf.scene, 
+          uuid: keycap?.id, 
+          animations: gltf.animations}]);
         });
       });
     })

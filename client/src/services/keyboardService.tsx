@@ -41,6 +41,12 @@ export const keyboardsService = createApi({
         method: "GET",
       }),
     }),
+    getKeyBoard: builder.query<any, string>({
+      query: (ID : string ) => ({
+        url: `keyboards/file?keyboardID=${ID}`,
+        method: "GET",
+      }),
+    }),
     getKeyBoardPreview: builder.query<any, string>({
       query: (ID : string ) => ({
         url: `keyboards/preview?keyboardID=${ID}`,
@@ -68,6 +74,8 @@ export const keyboardsService = createApi({
 });
 
 export const {
+  useLazyGetKeyBoardQuery,
+  useGetKeyBoardQuery,
   useGetKeyBoardPreviewQuery,
   useLazyGetKeyBoardPreviewQuery,
   usePostKeyboardMutation,
