@@ -170,7 +170,6 @@ services:
     ports:
       - 6041:8080
 
-      
   client:
     container_name: client
     restart: always

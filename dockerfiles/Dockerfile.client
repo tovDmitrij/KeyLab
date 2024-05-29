@@ -3,6 +3,8 @@ WORKDIR /client
 
 COPY ../client/package.json .
 RUN npm i
+RUN npm i --save react-date-range
+RUN npm i --save react date-fns@2.30.0
 
 COPY ../client .
 EXPOSE 8000
