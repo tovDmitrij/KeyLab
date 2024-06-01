@@ -9,14 +9,14 @@ import "swiper/css/pagination";
 import 'swiper/css/navigation';
 import { Pagination, Navigation } from 'swiper/modules';
 import { useGetAuthKeyboardsQuery, useGetDefaultKeyboardsQuery, useLazyGetAuthKeyboardsQuery, useLazyGetDefaultKeyboardsQuery } from "../../services/keyboardService";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Models = () => {
   const [getAuthKeyboards, { data : authKeyboards }] = useLazyGetDefaultKeyboardsQuery();
 
   const [getKeyboards, { data : baseKeyboards }] = useLazyGetAuthKeyboardsQuery();
   
- 
+  const [uniqueKeyboard ,setUniqueKeyboard] = useState<any[]>();
   useEffect(() => {
     const data = {
       page: 1,
@@ -25,6 +25,13 @@ const Models = () => {
     getAuthKeyboards(data);
     getKeyboards(data); 
   }, [])
+
+  useEffect(() => {
+    if (authKeyboards && baseKeyboards)
+      setUniqueKeyboard(Array.from(new Set(authKeyboards.concat(baseKeyboards))));
+    if (baseKeyboards) setUniqueKeyboard(baseKeyboards);
+    if (authKeyboards) setUniqueKeyboard(authKeyboards);
+  }, [baseKeyboards, authKeyboards]);
 
   return (
     <Container
@@ -70,7 +77,7 @@ const Models = () => {
         <SwiperSlide>
           <PreviewCard />
         </SwiperSlide>
-        {authKeyboards && baseKeyboards && authKeyboards?.concat(baseKeyboards).map((value : any) => {
+        {uniqueKeyboard?.map((value : any) => {
           return (
             <SwiperSlide>
               <PreviewCard keyBoardId={value.id} title={value.title}/>

@@ -13,6 +13,8 @@ import { GLTFExporter, GLTFLoader } from "three/examples/jsm/Addons.js";
 import { saveAs } from 'file-saver';
 import KeycapSettings from "../../components/List/KeycapSettings/KeycapSettings";
 import ModalCreateKits from "../../components/Modals/ModalCreateKits";
+import { useAppDispatch } from "../../store/redux";
+import { setKitID, setKitTitle } from "../../store/keyboardSlice";
 
 type TKeycaps = {
   /**
@@ -48,7 +50,6 @@ const Kits: FC<props> = ({ models, handleClick, setKitsScene}) => {
       dispose={null}
     > 
       {models.map((model: any) => {
-        console.log(model)
         return (
           <mesh
             scale={model.scene.children[0].scale}
@@ -67,6 +68,9 @@ const Kits: FC<props> = ({ models, handleClick, setKitsScene}) => {
 };
 
 const ConstructorKeys = () => {
+
+  const dispatch = useAppDispatch();
+
   const ref = useRef(null);
   const orbitref = useRef(null);
   const refModel = useRef(null);
@@ -110,6 +114,9 @@ const ConstructorKeys = () => {
       title: title,
       boxTypeID: idBoxType,
     }).unwrap().then((data) => {
+      setIdKit(data.kitID);
+      dispatch(setKitTitle(title));
+      dispatch(setKitID(data.kitID));
       setNewIdKit(data.kitID); 
       setTitle(title);  
       setModal(false);
@@ -271,7 +278,7 @@ const ConstructorKeys = () => {
         </Grid>
         <Grid item xs={2}>
           {newIdKit && <KeycapSettings title={title} handleChooseColor={handleChooseColor} saveKit={saveKit} paintFull={paintFull}/>}
-          {!newIdKit && <KitsList kits={data} handleChoose={handleChoose} handleNew={handleNew} /> }
+          {!newIdKit && <KitsList kits={data} handleChoose={handleChoose} handleNew={handleNew} kitID={newIdKit}/> }
         </Grid>
       </Grid>
 

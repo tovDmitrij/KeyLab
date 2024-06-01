@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import {
@@ -10,12 +10,14 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import {
   useLazyGetAuthKitsQuery,
   useLazyGetDefaultKitsQuery,
 } from "../../../../services/kitsService";
+import Preview from "../../SwitchesList/Preview";
 
 type TKits = {
   /**
@@ -30,7 +32,7 @@ type TKits = {
 
 type props = {
   name: string;
-  handleChoose: (data: TKits) => void;
+  handleChoose: (data: TKits, boxTypeId?: string) => void;
   handleNew: (data: string) => void;
   boxTypeId: string;
 };
@@ -41,13 +43,13 @@ const AccordionElementKit: FC<props> = ({
   handleChoose,
   handleNew,
 }) => {
+  const [uniqueKits, setUniqueKits] = useState<TKits[]>();
   const [getBaseKits, { data: kitsBase }] = useLazyGetDefaultKitsQuery();
-
-  const [getAuthKits, { data: kits }]= useLazyGetAuthKitsQuery();
+  const [getAuthKits, { data: kits }] = useLazyGetAuthKitsQuery();
 
   const onClick = (value: TKits) => {
     if (!value.id) return;
-    handleChoose(value);
+    handleChoose(value, boxTypeId);
   };
 
   const onClickNew = () => {
@@ -59,13 +61,20 @@ const AccordionElementKit: FC<props> = ({
       page: 1,
       pageSize: 100,
       typeID: boxTypeId,
-    }
+    };
     getAuthKits(data);
     getBaseKits(data);
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    if (kitsBase && kits)
+      setUniqueKits(Array.from(new Set(kitsBase.concat(kits))));
+    if (kitsBase) setUniqueKits(kitsBase);
+    if (kits) setUniqueKits(kits);
+  }, [kitsBase, kits]);
 
   return (
-    <Accordion>
+    <Accordion disableGutters={true}>
       <AccordionSummary
         sx={{
           bgcolor: "#2A2A2A",
@@ -96,24 +105,38 @@ const AccordionElementKit: FC<props> = ({
       >
         <Grid container direction="column">
           <List disablePadding>
-            {kits &&
-              kitsBase &&
-              kitsBase?.concat(kits)?.map((value) => {
-                const labelId = `checkbox-list-label-${value}`;
+            {uniqueKits?.map((value) => {
+              const labelId = `checkbox-list-label-${value}`;
 
-                return (
-                  <>
-                    <ListItem
-                      sx={{ minWidth: "100" }}
-                      key={value.id}
-                      disablePadding
+              return (
+                <>
+                  <ListItem
+                    sx={{ minWidth: "100" }}
+                    key={value.id}
+                    disablePadding
+                  >
+                    <Tooltip
+                      placement="left"
+                      title={
+                        <>
+                          <Preview
+                            id={value?.id}
+                            type="kit"
+                            width={300}
+                            height={165}
+                          />
+                        </>
+                      }
+                      arrow
                     >
                       <ListItemButton
                         sx={{
                           textAlign: "center",
-                          margin: "8px",
-                          borderTop: "1px solid grey",
-                          borderBottom: "1px solid grey",
+                          margin: "0 0 -1px 0px",
+                          border: "1px solid grey",
+                          "&:hover": {
+                            backgroundColor: "grey",
+                          },
                         }}
                         role={undefined}
                         onClick={() => onClick(value)}
@@ -122,24 +145,27 @@ const AccordionElementKit: FC<props> = ({
                         <ListItemText
                           sx={{
                             textAlign: "center",
-                            color: "white",
+                            color: "#c1c0c0",
                             m: "5px",
                           }}
                           id={labelId}
                           primary={`${value.title}`}
                         />
                       </ListItemButton>
-                    </ListItem>
-                  </>
-                );
-              })}
+                    </Tooltip>
+                  </ListItem>
+                </>
+              );
+            })}
             <ListItem sx={{ minWidth: "100" }} disablePadding>
-              <ListItemButton
+              {localStorage.getItem("token") && <ListItemButton
                 sx={{
                   textAlign: "center",
-                  margin: "8px",
-                  borderTop: "1px solid grey",
-                  borderBottom: "1px solid grey",
+                  border: "1px solid grey",
+                  margin: "8px 0 -1px 0px",
+                  "&:hover": {
+                    backgroundColor: "grey",
+                  },
                 }}
                 role={undefined}
                 onClick={() => onClickNew()}
@@ -153,7 +179,7 @@ const AccordionElementKit: FC<props> = ({
                   }}
                   primary={`Создать`}
                 />
-              </ListItemButton>
+              </ListItemButton>}
             </ListItem>
           </List>
         </Grid>

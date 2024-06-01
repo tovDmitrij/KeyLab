@@ -1,10 +1,14 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { Button, Container, Typography } from "@mui/material";
+import { Button, Container, Tooltip, Typography } from "@mui/material";
 import AccordionElementKit from "./AccordionElement/AccordionElementKit";
 import { useGetBoxesTypesQuery } from "../../../services/boxesService";
-import { useAppDispatch } from "../../../store/redux";
+import { useAppDispatch, useAppSelector } from "../../../store/redux";
 import { useNavigate } from "react-router-dom";
-import { setKitID, setKitTitle } from "../../../store/keyboardSlice";
+import {
+  setKitID,
+  setKitTitle,
+  setTypeSizeKit,
+} from "../../../store/keyboardSlice";
 
 type TKits = {
   /**
@@ -19,30 +23,41 @@ type TKits = {
 
 type props = {
   kits?: TKits[];
+  kitID?: string;
   handleChoose: (data: string) => void;
   handleNew: (data: string) => void;
 };
 
-const KitsList: FC<props> = ({  handleChoose, handleNew }) => {
+const KitsList: FC<props> = ({ handleChoose, handleNew, kitID }) => {
+  const { data: dataType } = useGetBoxesTypesQuery();
 
-  const { data : dataType } = useGetBoxesTypesQuery();
+  const { boxTypeId: sizeBox } = useAppSelector(
+    (state) => state.keyboardReduer
+  );
 
-  const [title, setTitle] = useState<string | undefined>(undefined)
-  const [id, setId] = useState<string | undefined>(undefined)
+  const [title, setTitle] = useState<string | undefined>(undefined);
+  const [id, setId] = useState<string | undefined>(undefined);
+  const [typeID, setTypeID] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const onClick = (value: TKits) => {
+  const onClick = (value: TKits, boxTypeID: string | undefined) => {
     if (!value.id) return;
     handleChoose(value.id);
     setId(value.id);
-    setTitle(value.title)
+    setTitle(value.title);
+    setTypeID(boxTypeID);
   };
 
   const kitAdd = () => {
+    if (id === kitID) {
+      navigate("/constructors");
+      return;
+    }
     dispatch(setKitTitle(title));
     dispatch(setKitID(id));
-    navigate("/constructors")
+    dispatch(setTypeSizeKit(typeID));
+    navigate("/constructors");
   };
 
   const onClickNew = (boxTypeId: string) => {
@@ -72,26 +87,28 @@ const KitsList: FC<props> = ({  handleChoose, handleNew }) => {
           overflowY: "auto",
         }}
       >
-        {dataType && dataType?.map((item : any) => {
-          return (
-            <AccordionElementKit
-              name= {`${item.title} percent`}
-              handleChoose={onClick}
-              handleNew={onClickNew}
-              boxTypeId={item.id}
-            />
-          )
-        })}
-       
+        {dataType &&
+          dataType?.map((item: any) => {
+            if (item.id === sizeBox || sizeBox === undefined)
+              return (
+                <AccordionElementKit
+                  name={`${item.title} percent`}
+                  handleChoose={onClick}
+                  handleNew={onClickNew}
+                  boxTypeId={item.id}
+                />
+              );
+          })}
       </Container>
       <Container>
-      <Button
+        <Button
           sx={{
             m: "15px",
             width: "90%",
             borderRadius: "30px",
             border: "1px solid #c1c0c0",
           }}
+          disabled={!localStorage.getItem("token")}
           variant="contained"
           onClick={() => kitAdd()}
         >
@@ -102,7 +119,7 @@ const KitsList: FC<props> = ({  handleChoose, handleNew }) => {
           >
             добавить
           </Typography>
-        </Button>
+      </Button>
         <Button
           sx={{
             m: "15px",
