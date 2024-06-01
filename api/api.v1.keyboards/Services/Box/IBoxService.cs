@@ -9,7 +9,7 @@ namespace api.v1.keyboards.Services.Box
     public interface IBoxService
     {
         /// <exception cref="BadRequestException"></exception>
-        public Task AddBox(IFormFile? file, IFormFile? preview, string? title, Guid typeID, Guid userID, Guid statsID);
+        public Task<Guid> AddBox(IFormFile? file, IFormFile? preview, string? title, Guid typeID, Guid userID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>
         public Task UpdateBox(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid boxID, Guid statsID);
         /// <exception cref="BadRequestException"></exception>

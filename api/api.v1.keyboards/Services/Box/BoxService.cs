@@ -31,7 +31,7 @@ namespace api.v1.keyboards.Services.Box
 
 
 
-        public async Task AddBox(IFormFile? file, IFormFile? preview, string? title, Guid typeID, Guid userID, Guid statsID)
+        public async Task<Guid> AddBox(IFormFile? file, IFormFile? preview, string? title, Guid typeID, Guid userID, Guid statsID)
         {
             ValidateUserID(userID);
             ValidateBoxType(typeID);
@@ -41,9 +41,10 @@ namespace api.v1.keyboards.Services.Box
                 _fileCfg.GetPreviewFilenameExtension, _fileCfg.GetBoxFilePath);
 
             var currentTime = _time.GetCurrentUNIXTime();
-            _box.InsertBox(userID, typeID, title!, fileName, currentTime);
+            var boxID = _box.InsertBox(userID, typeID, title!, fileName, currentTime);
 
             await PublishActivity(statsID, _activityCfg.GetEditBoxActivityTag);
+            return boxID;
         }
 
         public async Task UpdateBox(IFormFile? file, IFormFile? preview, string? title, Guid userID, Guid boxID, Guid statsID)
