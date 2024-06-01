@@ -99,9 +99,9 @@ namespace api.v1.keyboards.Controllers
             var userID = GetAccessTokenUserID();
 
             var statsID = GetStatsID();
-            await _box.AddBox(file, preview, title, typeID, userID, statsID);
+            var boxID = await _box.AddBox(file, preview, title, typeID, userID, statsID);
 
-            return Ok();
+            return Ok(new { boxID = boxID });
         }
 
         [HttpPut]
