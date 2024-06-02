@@ -172,7 +172,7 @@ const AccordionElementKit: FC<props> = ({
                   textAlign: "center",
                   borderRight: "1px solid grey",
                   borderLeft: "1px solid grey",
-                  margin: "8px 8px 8px 8px",
+                  margin: "8px",
                   "&:hover": {
                     backgroundColor: "grey",
                   },

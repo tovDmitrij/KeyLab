@@ -153,8 +153,9 @@ const AccordionElement: FC<props> = ({
                       <ListItemButton
                         sx={{
                           textAlign: "center",
-                          margin: "0 0 -1px 0px",
-                          border: "1px solid grey",
+                          margin: "8px 8px -1px 8px",
+                          borderRight: "1px solid grey",
+                          borderLeft: "1px solid grey",
                           "&:hover": {
                             backgroundColor: "grey",
                           },
@@ -182,8 +183,9 @@ const AccordionElement: FC<props> = ({
               {localStorage.getItem("token") && <ListItemButton
                 sx={{
                   textAlign: "center",
-                  border: "1px solid grey",
-                  margin: "8px 0 -1px 0px",
+                  borderRight: "1px solid grey",
+                  borderLeft: "1px solid grey",
+                  margin: "8px",
                   "&:hover": {
                     backgroundColor: "grey",
                   },
