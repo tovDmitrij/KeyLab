@@ -9,6 +9,8 @@ import { Pagination, Navigation } from 'swiper/modules';
 import { useGetAuthKeyboardsQuery, useGetDefaultKeyboardsQuery, useLazyGetAuthKeyboardsQuery, useLazyGetDefaultKeyboardsQuery } from "../../services/keyboardService";
 import { useEffect, useState } from "react";
 
+import classes from "./models.module.scss";
+
 const Models = () => {
   const [getAuthKeyboards, { data: authKeyboards }] = useLazyGetAuthKeyboardsQuery();
   const [getBaseKeyboards, { data: baseKeyboards }] = useLazyGetDefaultKeyboardsQuery();
@@ -42,6 +44,7 @@ const Models = () => {
       id="models"
       maxWidth={false}
       sx={{ width: "86%" }}
+      className={classes.button}
       disableGutters
     >
       <Typography fontSize={32} sx={{ textAlign: "center", pt: "50px" }}>
@@ -52,6 +55,7 @@ const Models = () => {
         pagination={{
           clickable: true,
         }}
+        // style={{width: "100%",}}        
         breakpoints={{
           '@0.00': {
             slidesPerView: 1,
