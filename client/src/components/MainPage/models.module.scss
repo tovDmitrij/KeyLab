@@ -1,0 +1,20 @@
+
+.button {
+  
+  :global(.swiper-button-prev) {
+    color: #000; 
+    width: 40px; 
+    height: 40px;
+    left: -9px;
+  }
+
+  :global(.swiper-button-next) {
+    color: #000; 
+    width: 40px; 
+    height: 40px;
+  }
+
+  :global(.swiper-wrapper) {
+    padding-left: 10px;
+  }
+}
