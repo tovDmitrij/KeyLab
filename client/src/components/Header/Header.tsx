@@ -14,6 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { resetState } from "../../store/profileSlice";
 import { logOut } from "../../store/authSlice";
 import { useDispatch } from "react-redux";
+import { resetKeyBoardState } from "../../store/keyboardSlice";
 
 const Header = () => {
   const [title, setTitle] = useState<string | undefined>();
@@ -48,6 +49,7 @@ const Header = () => {
     localStorage.removeItem("token");
     dispatch(resetState());
     dispatch(logOut()); 
+    dispatch(resetKeyBoardState())
     window.location.reload();
     setTitleButton('Войти');
   };

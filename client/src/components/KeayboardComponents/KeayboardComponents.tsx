@@ -8,10 +8,12 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Preview from "../List/SwitchesList/Preview";
 import { useAppSelector } from "../../store/redux";
+import { useNavigate } from "react-router-dom";
 
 type props = {
   kitID?: string;
@@ -24,6 +26,9 @@ const KeayboardComponents: FC<props> = ({ kitID, boxID, switchTypeID, onSave }) 
   const { kitTitle, boxTitle, switchTitle} = useAppSelector(
     (state) => state.keyboardReduer
   );
+
+  const navigate = useNavigate();
+  const isTokenAvailable = !!localStorage.getItem("token");
 
   return (
     <Container
@@ -144,6 +149,31 @@ const KeayboardComponents: FC<props> = ({ kitID, boxID, switchTypeID, onSave }) 
           marginTop: "auto",
         }}
       >
+        <Tooltip  title={!isTokenAvailable ? "Авторизируйтесь в системе" : ""}
+      placement="top"
+      disableHoverListener={isTokenAvailable}>
+          <span>
+            <Button
+              sx={{
+                m: "15px",
+                width: "90%",
+                borderRadius: "30px",
+                border: "1px solid #c1c0c0",
+              }}
+              disabled={!isTokenAvailable}
+              variant="contained"
+              onClick={onSave}
+            >
+              <Typography
+                sx={{
+                  color: "#c1c0c0",
+                }}
+              >
+                сохранить
+              </Typography>
+            </Button>
+          </span>
+        </Tooltip>
         <Button
           sx={{
             m: "15px",
@@ -152,14 +182,14 @@ const KeayboardComponents: FC<props> = ({ kitID, boxID, switchTypeID, onSave }) 
             border: "1px solid #c1c0c0",
           }}
           variant="contained"
-          onClick={onSave}
+          onClick={() => navigate("/constructors")}
         >
           <Typography
             sx={{
               color: "#c1c0c0",
             }}
           >
-            сохранить
+            назад
           </Typography>
         </Button>
       </Container>

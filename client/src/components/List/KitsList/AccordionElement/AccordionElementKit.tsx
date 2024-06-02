@@ -56,6 +56,8 @@ const AccordionElementKit: FC<props> = ({
     handleNew(boxTypeId);
   };
 
+  console.log(uniqueKits)
+
   useEffect(() => {
     const data = {
       page: 1,
@@ -67,10 +69,16 @@ const AccordionElementKit: FC<props> = ({
   }, []);
 
   useEffect(() => {
-    if (kitsBase && kits)
-      setUniqueKits(Array.from(new Set(kitsBase.concat(kits))));
-    if (kitsBase) setUniqueKits(kitsBase);
-    if (kits) setUniqueKits(kits);
+    if (kitsBase || kits) {
+      const mergedKits = [...(kitsBase || []), ...(kits || [])];
+      const uniqueKitsMap = new Map();
+  
+      mergedKits.forEach(kit => {
+        uniqueKitsMap.set(kit.id, kit);
+      });
+  
+      setUniqueKits(Array.from(uniqueKitsMap.values()));
+    }
   }, [kitsBase, kits]);
 
   return (
@@ -132,8 +140,9 @@ const AccordionElementKit: FC<props> = ({
                       <ListItemButton
                         sx={{
                           textAlign: "center",
-                          margin: "0 0 -1px 0px",
-                          border: "1px solid grey",
+                          margin: "8px 8px -1px 8px",
+                          borderRight: "1px solid grey",
+                          borderLeft: "1px solid grey",
                           "&:hover": {
                             backgroundColor: "grey",
                           },
@@ -161,8 +170,9 @@ const AccordionElementKit: FC<props> = ({
               {localStorage.getItem("token") && <ListItemButton
                 sx={{
                   textAlign: "center",
-                  border: "1px solid grey",
-                  margin: "8px 0 -1px 0px",
+                  borderRight: "1px solid grey",
+                  borderLeft: "1px solid grey",
+                  margin: "8px 8px 8px 8px",
                   "&:hover": {
                     backgroundColor: "grey",
                   },

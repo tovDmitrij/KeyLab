@@ -6,7 +6,7 @@ import classes from "./Constructors.module.scss";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import MoldaSetNameKeyboard from "../../components/Modals/MoldaSetNameKeyboard";
 import { useDispatch } from "react-redux";
-import { setTitle } from "../../store/keyboardSlice";
+import { resetKeyBoardState, setTitle } from "../../store/keyboardSlice";
 import { useAppSelector } from "../../store/redux";
 import { useNavigate } from "react-router-dom"
 import CardConstr from "../../components/Card/KeycapsCard/CardConstr";
@@ -19,8 +19,9 @@ const ConstructorsMain = () => {
   const [modal, setModal] = useState(false);
   const [titleKeyboard, setTitleKeyboard] = useState<string>(title);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   return (
     <>
       <Header />
@@ -57,6 +58,23 @@ const ConstructorsMain = () => {
             <CardConstr type='switch'/>
           </Grid>
         </Grid>
+        {(kitID || boxID || switchTypeID || title !== "Безымянный") && (
+          <Container
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              onClick={() => dispatch(resetKeyBoardState())}
+              variant="contained"
+              sx={{ borderRadius: "30px", m: "10px", width: "20%" }}
+            >
+              сбросить
+            </Button>
+          </Container>
+        )}
         {kitID && boxID && switchTypeID && title !== "Безымянный"  && (
           <Container
             sx={{
@@ -70,7 +88,7 @@ const ConstructorsMain = () => {
               variant="contained"
               sx={{ borderRadius: "30px", m: "10px", width: "20%" }}
             >
-              продолжить
+              предпросмотр
             </Button>
           </Container>
         )}

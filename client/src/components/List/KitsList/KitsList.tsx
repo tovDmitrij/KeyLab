@@ -69,7 +69,8 @@ const KitsList: FC<props> = ({ handleChoose, handleNew, kitID }) => {
     <Container
       disableGutters
       sx={{
-        width: "100%",
+        display: "flex",
+        flexDirection: "column",
         textAlign: "center",
         bgcolor: "#2A2A2A",
         height: "100vh",
@@ -100,7 +101,12 @@ const KitsList: FC<props> = ({ handleChoose, handleNew, kitID }) => {
               );
           })}
       </Container>
-      <Container>
+      <Container
+        disableGutters
+        sx={{
+          marginTop: "auto",
+        }}
+      >
         <Button
           sx={{
             m: "15px",
@@ -108,7 +114,6 @@ const KitsList: FC<props> = ({ handleChoose, handleNew, kitID }) => {
             borderRadius: "30px",
             border: "1px solid #c1c0c0",
           }}
-          disabled={!localStorage.getItem("token")}
           variant="contained"
           onClick={() => kitAdd()}
         >

@@ -191,7 +191,10 @@ const ConstructorKeyboard = () => {
                 boxTypeID: boxTypeId,
               })
               .unwrap()
-              .then(() => navigate('/'))
+              .then(() => {
+                dispatch(resetKeyBoardState())
+                navigate('/')
+              })
             },
             (error) => console.log(error), options);
         },

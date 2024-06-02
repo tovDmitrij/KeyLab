@@ -117,7 +117,6 @@ const SwitchesList: FC<props> = ({ switches, handleChoose }) => {
             border: "1px solid #c1c0c0",
             
           }}
-          disabled={!localStorage.getItem("token")}
           onClick={() => switchAdd()}
           variant="contained"
         >
