@@ -153,7 +153,7 @@ const AccordionElement: FC<props> = ({
                       <ListItemButton
                         sx={{
                           textAlign: "center",
-                          margin: "8px 8px -1px 8px",
+                          margin: "0px 8px -1px 8px",
                           borderRight: "1px solid grey",
                           borderLeft: "1px solid grey",
                           "&:hover": {

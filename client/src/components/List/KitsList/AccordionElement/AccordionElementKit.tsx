@@ -112,7 +112,7 @@ const AccordionElementKit: FC<props> = ({
         }}
       >
         <Grid container direction="column">
-          <List disablePadding>
+          <List disablePadding >
             {uniqueKits?.map((value) => {
               const labelId = `checkbox-list-label-${value}`;
 
@@ -140,7 +140,7 @@ const AccordionElementKit: FC<props> = ({
                       <ListItemButton
                         sx={{
                           textAlign: "center",
-                          margin: "8px 8px -1px 8px",
+                          margin: "0px 8px -1px 8px",
                           borderRight: "1px solid grey",
                           borderLeft: "1px solid grey",
                           "&:hover": {
