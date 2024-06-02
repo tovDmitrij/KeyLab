@@ -17,6 +17,7 @@ const Models = () => {
   const [getKeyboards, { data : baseKeyboards }] = useLazyGetAuthKeyboardsQuery();
   
   const [uniqueKeyboard ,setUniqueKeyboard] = useState<any[]>();
+  
   useEffect(() => {
     const data = {
       page: 1,
@@ -27,11 +28,17 @@ const Models = () => {
   }, [])
 
   useEffect(() => {
-    if (authKeyboards && baseKeyboards)
-      setUniqueKeyboard(Array.from(new Set(authKeyboards.concat(baseKeyboards))));
-    if (baseKeyboards) setUniqueKeyboard(baseKeyboards);
-    if (authKeyboards) setUniqueKeyboard(authKeyboards);
-  }, [baseKeyboards, authKeyboards]);
+    if (authKeyboards || baseKeyboards) {
+      const mergedKeyboards = [...(baseKeyboards || []), ...(authKeyboards || [])];
+      const uniqueKeyboardsMap = new Map();
+  
+      mergedKeyboards.forEach(keyboard => {
+        uniqueKeyboardsMap.set(keyboard.id, keyboard);
+      });
+  
+      setUniqueKeyboard(Array.from(uniqueKeyboardsMap.values()));
+    }
+  }, [authKeyboards, baseKeyboards]);
 
   return (
     <Container

@@ -73,19 +73,12 @@ const AccordionElement: FC<props> = ({
   }, []);
 
   useEffect(() => {
-    if (boxesBase && boxes)
-      setUniqueBoxes(Array.from(new Set(boxesBase.concat(boxes))));
-    else if (boxesBase) setUniqueBoxes(boxesBase);
-    else if (boxes) setUniqueBoxes(boxes);
-  }, [boxesBase, boxes]);
-
-  useEffect(() => {
     if (boxesBase || boxes) {
       const mergedBoxes = [...(boxesBase || []), ...(boxes || [])];
       const uniqueBoxesMap = new Map();
   
-      mergedBoxes.forEach(kit => {
-        uniqueBoxesMap.set(kit.id, kit);
+      mergedBoxes.forEach(box => {
+        uniqueBoxesMap.set(box.id, box);
       });
   
       setUniqueBoxes(Array.from(uniqueBoxesMap.values()));
@@ -142,7 +135,6 @@ const AccordionElement: FC<props> = ({
                           <Preview
                             id = {value?.id}
                             type="box"
-                            
                             width={300}
                             height={165}
                           />
@@ -153,8 +145,9 @@ const AccordionElement: FC<props> = ({
                       <ListItemButton
                         sx={{
                           textAlign: "center",
-                          margin: "0 0 -1px 0px",
-                          border: "1px solid grey",
+                          margin: "0px 8px -1px 8px",
+                          borderRight: "1px solid grey",
+                          borderLeft: "1px solid grey",
                           "&:hover": {
                             backgroundColor: "grey",
                           },
@@ -182,8 +175,9 @@ const AccordionElement: FC<props> = ({
               {localStorage.getItem("token") && <ListItemButton
                 sx={{
                   textAlign: "center",
-                  border: "1px solid grey",
-                  margin: "8px 0 -1px 0px",
+                  borderRight: "1px solid grey",
+                  borderLeft: "1px solid grey",
+                  margin: "8px",
                   "&:hover": {
                     backgroundColor: "grey",
                   },

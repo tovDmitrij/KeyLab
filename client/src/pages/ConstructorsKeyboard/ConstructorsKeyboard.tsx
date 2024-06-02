@@ -194,6 +194,7 @@ const ConstructorKeyboard = () => {
               .then(() => {
                 dispatch(resetKeyBoardState())
                 navigate('/')
+                window.location.reload();
               })
             },
             (error) => console.log(error), options);

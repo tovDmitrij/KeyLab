@@ -67,7 +67,10 @@ const ConstructorsMain = () => {
             }}
           >
             <Button
-              onClick={() => dispatch(resetKeyBoardState())}
+              onClick={() => {
+                dispatch(resetKeyBoardState());
+                setTitleKeyboard('Безымянный');
+              }}
               variant="contained"
               sx={{ borderRadius: "30px", m: "10px", width: "20%" }}
             >
