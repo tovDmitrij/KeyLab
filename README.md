@@ -65,11 +65,12 @@
 
 ## :rocket: Запуск (Docker)
 1. Установить Docker;
-2. Скачать архив с файлами [по ссылке](https://drive.google.com/drive/folders/1msr1UAy3w1_vsBq9aF4zVs5QZepKXcow?usp=sharing) и распаковать его в папку *files*;
+2. Скачать архив с файлами 3D-моделей [по ссылке](https://drive.google.com/drive/folders/1msr1UAy3w1_vsBq9aF4zVs5QZepKXcow?usp=sharing) и распаковать его в папку *files*;
 3. **(Опционально, если планируется регистрировать новый аккаунт в системе)** В файле *configurations/production/api.json* в блоке *Email* определить *Login* и *Password* приложения, привязанного к аккаунту Google (см. [справочник Google](https://support.google.com/accounts/answer/185833?hl=en));
-4. **(В СВЯЗИ С БЛОКИРОВКОЙ DOCKER В РФ 30.05.2024)** Добавить в конфигурационном файле Docker daemon.json следующею строку: **"registry-mirrors": ["https://mirror.gcr.io", "https://daocloud.io", "https://c.163.com/", "https://registry.docker-cn.com"]**;
+4. **(В СВЯЗИ С БЛОКИРОВКОЙ DOCKER В РФ 30.05.2024)** Добавить в конфигурационном файле Docker *daemon.json* (см. [docker.docs](https://docs.docker.com/config/daemon/)) следующею строку: **"registry-mirrors": ["https://mirror.gcr.io", "https://daocloud.io", "https://c.163.com/", "https://registry.docker-cn.com"]**;
 5. Запустить скрипт *docker-production.bash* (первый запуск из-за скачивания библиотек продлится примерно **7 минут**. Далее будет примерно за **10-30 секунд**);
-6. Зарегистрировать новый аккаунт *(см. п.3)*, либо войти в аккаунт администратора (admin@keyboard.ru:11111111).
+6. Перейти по адресу http://localhost:6051/. Должна открыться главная страница клиентского приложения;
+7. Зарегистрировать новый аккаунт (см. п.3), либо войти в аккаунт администратора (admin@keyboard.ru:11111111).
 
 ## :computer: Технологический стек
 ```
