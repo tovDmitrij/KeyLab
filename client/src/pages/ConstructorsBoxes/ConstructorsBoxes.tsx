@@ -13,6 +13,8 @@ import {
 } from "../../services/boxesService";
 import ListBoxesNew from "../../components/List/ListBoxes/ListBoxesNew";
 import Box from "../../components/Models/Box";
+import { useAppDispatch } from "../../store/redux";
+import { setBoxID, setBoxTitle, setBoxTypeId } from "../../store/keyboardSlice";
 
 const ConstrucrotBoxes = () => {
   const [getBoxes] = useLazyGetBoxesQuery();
@@ -21,7 +23,7 @@ const ConstrucrotBoxes = () => {
   const [model, setModel] = useState<THREE.Group<THREE.Object3DEventMap>>();
   const [newIdBoxType, setNewIdBoxType] = useState<string | undefined>( undefined);
   const [color, setColor] = useState<any>(undefined);
-
+  const dispatch = useAppDispatch();
   const orbitref = useRef(null);
   const ref = useRef(null);
 
@@ -66,7 +68,12 @@ const ConstrucrotBoxes = () => {
                 typeID: newIdBoxType,
               })
                 .unwrap()
-                .then(() => setNewIdBoxType(undefined));
+                .then((data) => {
+                  dispatch(setBoxTitle(title));
+                  dispatch(setBoxID(data.boxID));
+                  dispatch(setBoxTypeId(newIdBoxType));
+                  setNewIdBoxType(undefined);
+                });
             },
             (error) => console.log(error)
           );

@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 
 const Header = () => {
   const [title, setTitle] = useState<string | undefined>();
+  const [titleButton, setTitleButton] = useState<string | undefined>();
   const currentUrl = window.location.href;
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const Header = () => {
 
   useEffect(() => {
     if (currentUrl.includes("/constrSwitch")) {
-      setTitle("Выбор свитчей");
+      setTitle("Выбор переключателя");
     } else if (currentUrl.includes("/constrBoxes")) {
       setTitle("Выбор размера клавиатуры");
     } else if (currentUrl.includes("/constrKeys")) {
@@ -43,16 +44,20 @@ const Header = () => {
   }, [currentUrl]);
 
   const handleClickExit = () => {
+    localStorage.removeItem("admin");
+    localStorage.removeItem("token");
     dispatch(resetState());
-    dispatch(logOut());
+    dispatch(logOut()); 
+    window.location.reload();
+    setTitleButton('Войти');
   };
 
   const getNickName = () => {
-    return nickName || localStorage.getItem('nickName')
+    return localStorage.getItem('nickName') || nickName
   }
 
   const getAdmin = () => {
-    return isAdmin || localStorage.getItem('isAdmin') === "true"  
+    return localStorage.getItem('isAdmin') === "true"  
   }
 
   const scrollToSection = (sectionId: string) => {
@@ -69,6 +74,13 @@ const Header = () => {
     }
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      setTitleButton('Выйти')
+    } else {
+      setTitleButton('Войти')
+    }
+  }, [titleButton])
 
   return (
     <AppBar position="absolute">
@@ -79,7 +91,7 @@ const Header = () => {
               <div className={classes.logo} onClick={() => navigate("/")}>
                 <KeyboardIcon sx={{ fontSize: 50 }} />
                 <Typography className={classes.link} fontSize={34}>
-                  Keylab
+                  KeyLab
                 </Typography>
               </div>
           </Toolbar>
@@ -89,7 +101,7 @@ const Header = () => {
               <div className={classes.logo} onClick={() => navigate("/")}>
                 <KeyboardIcon sx={{ fontSize: 50 }} />
                 <Typography className={classes.link} fontSize={34}>
-                  Keylab
+                  KeyLab
                 </Typography>
               </div>
               {!title && (
@@ -154,7 +166,7 @@ const Header = () => {
                   localStorage.getItem("token") ? handleClickExit() : navigate("/login");
                 }}
               >
-                {localStorage.getItem("token") ? 'Выйти' : 'Войти'}
+                {titleButton}
               </Typography>
             </Box>
           </Toolbar>

@@ -4,6 +4,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
  * Интерфейс для представления готовой клавиатуры
  */
 type TKeyboardState = {
+  typeSizeBox?: string;
+  typeSizeKit?: string;
   switchTitle?: string;
   switchTypeID?: string;
   boxTypeId?: string;
@@ -25,6 +27,14 @@ export const keyboardSlice = createSlice({
   name: "keyboard",
   initialState: initialState,
   reducers: {
+    setTypeSizeBox: (state, action: PayloadAction<string | undefined>) => {
+      state.typeSizeBox = action.payload;
+    },
+
+    setTypeSizeKit: (state, action: PayloadAction<string | undefined >) => {
+      state.typeSizeKit = action.payload;
+    },
+
     setTitle: (state, action: PayloadAction<string >) => {
       state.title = action.payload;
     },
@@ -58,6 +68,8 @@ export const keyboardSlice = createSlice({
     },
 
     resetKeyBoardState: (state) => {
+      state.typeSizeBox = undefined;
+      state.typeSizeKit = undefined;
       state.switchTitle = undefined;
       state.switchTypeID= undefined;
       state.boxTypeId= undefined;
@@ -71,6 +83,8 @@ export const keyboardSlice = createSlice({
 });
 
 export const {
+  setTypeSizeKit,
+  setTypeSizeBox,
   resetKeyBoardState,
   setBoxTypeId,
   setTitle,

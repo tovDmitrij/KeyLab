@@ -34,7 +34,7 @@ const Title = () => {
           mt: "50px"
         }}
         variant="contained"
-        onClick={() => navigate('/login')}
+        onClick={() => localStorage.getItem("token") ? navigate('/constructors') : navigate('/login')}
       >
         Cобрать
       </Button>

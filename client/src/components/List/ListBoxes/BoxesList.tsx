@@ -7,7 +7,7 @@ import {
 import AccordionElement from "./AccordionElement/AccordionElement";
 import { useNavigate } from "react-router-dom";
 import { useGetBoxesTypesQuery } from "../../../services/boxesService";
-import { useAppDispatch } from "../../../store/redux";
+import { useAppDispatch, useAppSelector } from "../../../store/redux";
 import { setBoxID, setBoxTitle, setBoxTypeId } from "../../../store/keyboardSlice";
 
 type TBoxes = {
@@ -45,6 +45,9 @@ const BoxesList: FC<props> = ({
   handleChoose,
   handleNew,
 }) => {
+  const { typeSizeKit, boxID } = useAppSelector(
+    (state) => state.keyboardReduer
+  );
 
   const { data : dataType } = useGetBoxesTypesQuery();
 
@@ -56,6 +59,10 @@ const BoxesList: FC<props> = ({
   const dispatch = useAppDispatch();
 
   const boxAdd = () => {
+    if (!id) {
+      navigate("/constructors")
+      return;
+    }
     dispatch(setBoxTitle(title));
     dispatch(setBoxID(id));
     dispatch(setBoxTypeId(typeID));
@@ -75,6 +82,7 @@ const BoxesList: FC<props> = ({
     if (!idType) return;
     handleNew(idType, idBaseBox);
   };
+  
 
   return (
     <Container
@@ -100,6 +108,7 @@ const BoxesList: FC<props> = ({
         }}
       >
         {dataType && dataType?.map((item : any) => {
+          if (item.id === typeSizeKit || typeSizeKit === undefined)
           return (
             <AccordionElement
               name= {`${item.title} percent`}
@@ -126,6 +135,7 @@ const BoxesList: FC<props> = ({
             border: "1px solid #c1c0c0",
           }}
           variant="contained"
+          disabled={!localStorage.getItem("token")}
           onClick={() => boxAdd()}
         >
           <Typography

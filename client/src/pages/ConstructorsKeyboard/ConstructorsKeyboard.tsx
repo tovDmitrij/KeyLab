@@ -34,6 +34,7 @@ const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel,
     event.preventDefault();
     setCount(prevCount =>  prevCount  + 1);
     setPressedKey(event.code);
+  
   };   
   
   useEffect(() => {
@@ -49,9 +50,25 @@ const Keyboard: FC<any> = ({setKeyboardModel, keycapList, boxModel, switchModel,
         mixer = new THREE.AnimationMixer(ref.current);
       }
 
-      const key = Object.keys(Keycap).find(k => Keycap[k as keyof typeof Keycap] === pressedKey);
-      
-      const matchedKeycap = keycapList?.find((keyCap: any) => keyCap.scene.children[0].name.replace(/\d+$/, "") === key);
+      const keys = Object.keys(Keycap) as Array<keyof typeof Keycap>;
+      let keyName : string;
+      for (let key of keys) {
+
+        
+        if (key === pressedKey) {
+          keyName = Keycap[key] 
+          break;
+        } else {
+          // console.log(pressedKey)
+        }
+      }
+
+      const matchedKeycap = keycapList?.find((keyCap: any) => 
+        
+        keyCap.scene.children[0].name === keyName
+  
+      );
+
       if (matchedKeycap) {
         const action1 = mixer?.clipAction(matchedKeycap?.animations[0]);
         snd.play();

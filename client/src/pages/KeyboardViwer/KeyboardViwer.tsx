@@ -17,15 +17,12 @@ const KeyboardViwer  = () => {
   const orbitref = useRef(null);
   const refModel = useRef(null);
   
-  
-
   const getModel = (id: string) => {
     getKeyBoard(id)
       .unwrap()
       .then((payload) => {  
         const loader = new GLTFLoader();
         loader.parse(payload, "", (gltf) => {
-          console.log(gltf)
           setModel(gltf.scene);
         });
       });
