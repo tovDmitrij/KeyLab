@@ -14,7 +14,7 @@ import { saveAs } from 'file-saver';
 import KeycapSettings from "../../components/List/KeycapSettings/KeycapSettings";
 import ModalCreateKits from "../../components/Modals/ModalCreateKits";
 import { useAppDispatch } from "../../store/redux";
-import { setKitID, setKitTitle } from "../../store/keyboardSlice";
+import { setKitID, setKitTitle, setTypeSizeKit } from "../../store/keyboardSlice";
 
 type TKeycaps = {
   /**
@@ -117,6 +117,7 @@ const ConstructorKeys = () => {
       setIdKit(data.kitID);
       dispatch(setKitTitle(title));
       dispatch(setKitID(data.kitID));
+      dispatch(setTypeSizeKit(idBoxType));
       setNewIdKit(data.kitID); 
       setTitle(title);  
       setModal(false);

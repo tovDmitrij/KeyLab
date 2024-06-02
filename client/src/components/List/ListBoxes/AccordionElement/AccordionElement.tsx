@@ -75,9 +75,23 @@ const AccordionElement: FC<props> = ({
   useEffect(() => {
     if (boxesBase && boxes)
       setUniqueBoxes(Array.from(new Set(boxesBase.concat(boxes))));
-    if (boxesBase) setUniqueBoxes(boxesBase);
-    if (boxes) setUniqueBoxes(boxes);
+    else if (boxesBase) setUniqueBoxes(boxesBase);
+    else if (boxes) setUniqueBoxes(boxes);
   }, [boxesBase, boxes]);
+
+  useEffect(() => {
+    if (boxesBase || boxes) {
+      const mergedBoxes = [...(boxesBase || []), ...(boxes || [])];
+      const uniqueBoxesMap = new Map();
+  
+      mergedBoxes.forEach(kit => {
+        uniqueBoxesMap.set(kit.id, kit);
+      });
+  
+      setUniqueBoxes(Array.from(uniqueBoxesMap.values()));
+    }
+  }, [boxesBase, boxes]);
+  
 
   return (
     <Accordion disableGutters={true}>

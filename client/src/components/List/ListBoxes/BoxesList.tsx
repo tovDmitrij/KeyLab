@@ -135,7 +135,6 @@ const BoxesList: FC<props> = ({
             border: "1px solid #c1c0c0",
           }}
           variant="contained"
-          disabled={!localStorage.getItem("token")}
           onClick={() => boxAdd()}
         >
           <Typography

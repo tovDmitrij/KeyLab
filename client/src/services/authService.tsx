@@ -27,7 +27,6 @@ export const getBaseQueryAuth = (
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).authReducer.accessToken;
-      console.log(token);
       token && headers.set("Authorization", `Bearer ${token}`);
 
       return headers;
