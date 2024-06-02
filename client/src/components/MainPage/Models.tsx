@@ -1,9 +1,7 @@
 import { useNavigate } from "react-router-dom";
-
 import { Box, Container, Grid, Typography } from "@mui/material";
 import PreviewCard from "../Card/PreviewCard/PreviewCard";
 import { Swiper, SwiperSlide } from "swiper/react";
-
 import "swiper/css";
 import "swiper/css/pagination";
 import 'swiper/css/navigation';
@@ -12,24 +10,23 @@ import { useGetAuthKeyboardsQuery, useGetDefaultKeyboardsQuery, useLazyGetAuthKe
 import { useEffect, useState } from "react";
 
 const Models = () => {
-  const [getAuthKeyboards, { data : authKeyboards }] = useLazyGetDefaultKeyboardsQuery();
+  const [getAuthKeyboards, { data: authKeyboards }] = useLazyGetAuthKeyboardsQuery();
+  const [getBaseKeyboards, { data: baseKeyboards }] = useLazyGetDefaultKeyboardsQuery();
+  
+  const [uniqueKeyboard, setUniqueKeyboard] = useState<any[]>([]);
 
-  const [getKeyboards, { data : baseKeyboards }] = useLazyGetAuthKeyboardsQuery();
-  
-  const [uniqueKeyboard ,setUniqueKeyboard] = useState<any[]>();
-  
   useEffect(() => {
     const data = {
       page: 1,
       pageSize: 100,
-    }
+    };
     getAuthKeyboards(data);
-    getKeyboards(data); 
-  }, [])
+    getBaseKeyboards(data); 
+  }, [getAuthKeyboards, getBaseKeyboards]);
 
   useEffect(() => {
     if (authKeyboards || baseKeyboards) {
-      const mergedKeyboards = [...(baseKeyboards || []), ...(authKeyboards || [])];
+      const mergedKeyboards = [...(authKeyboards || []), ...(baseKeyboards || [])];
       const uniqueKeyboardsMap = new Map();
   
       mergedKeyboards.forEach(keyboard => {
@@ -52,7 +49,6 @@ const Models = () => {
       </Typography>
 
       <Swiper
-        //style={{paddingLeft: "50px", paddingRight: "50px"}}
         pagination={{
           clickable: true,
         }}
@@ -81,23 +77,14 @@ const Models = () => {
         navigation={true}
         modules={[Pagination, Navigation]}
       > 
-        <SwiperSlide>
+        <SwiperSlide key="add">
           <PreviewCard />
         </SwiperSlide>
-        {uniqueKeyboard?.map((value : any) => {
-          return (
-            <SwiperSlide>
-              <PreviewCard keyBoardId={value.id} title={value.title}/>
-            </SwiperSlide>
-          )})}
-        {!authKeyboards && baseKeyboards && baseKeyboards?.map((value : any) => {
-          return (
-            <SwiperSlide>
-              <PreviewCard keyBoardId={value.id} title={value.title}/>
-            </SwiperSlide>
-          )})}
-       
-
+        {uniqueKeyboard?.map((value: any) => (
+          <SwiperSlide key={value.id}>
+            <PreviewCard keyBoardId={value.id} title={value.title} />
+          </SwiperSlide>
+        ))}
       </Swiper>
     </Container>
   );
