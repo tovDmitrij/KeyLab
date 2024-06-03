@@ -33,28 +33,7 @@
 
 ## :test_tube: Пример работы конструктора клавиатур
 Сначала регистрируемся/авторизовываемся в системе. Затем переходим в редактор клавиатур, где нам необходимо выбрать три компонента:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step1.png" />
-
-Выбираем механический переключатель из списка:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step2.png" />
-
-Выбираем из базового списка или создаём своё основание клавиатуры:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step3.png" />
-
-Выбираем из базового списка или создаём свой набор клавиш:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step4.png" />
-
-Подписываем название клавиатуры:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step5.png" />
-
-Переходим в режим предпросмотра, где можно понажимать на клавиши и послушать звук нажатия. Затем сохраняем результат:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step6.png" />
-
-Созданная клавиатура теперь отображается вместе с базовыми на главной странице:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step7.png" />
-
-Из списка клавиатур можно выбрать желаемую и дополнительно её просмотреть:
-<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/step8.png" />
+<img src="https://github.com/tovDmitrij/keyboards/blob/main/docs/_readme/KeyLabDemo.gif" />
 
 ## :notebook: Документация
 **API** - см. README файл в папке */api* и диаграммы в */docs*;
