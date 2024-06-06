@@ -8,6 +8,7 @@ import Scheme from "../../components/MainPage/Scheme";
 import Models from "../../components/MainPage/Models";
 import ScrollButton from "../../components/MainPage/ScrollButton";
 import Constructor from "../../components/MainPage/Constructor";
+import Footer from "../../components/Footer/Footer";
 
 const MainPage = () => {
 
@@ -21,6 +22,7 @@ const MainPage = () => {
         <Models />
         <Constructor />
         <ScrollButton/>
+        <Footer />
       </Container>
     </>
   );
